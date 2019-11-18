@@ -10,5 +10,6 @@ jobs:
     steps:
       - uses: mathrix-education/actions-gcloud@dev
         with:
-          service-account-key: lol
+          service-account-key: ${{ secrets.GCLOUD_AUTH }}
           version: latest
+      - run: gcloud version

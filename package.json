@@ -30,6 +30,7 @@
     "webpack-cli": "^3.3.10"
   },
   "scripts": {
-    "build": "webpack"
+    "build": "webpack",
+    "run": "npm run build && node dist/install.js"
   }
 }
