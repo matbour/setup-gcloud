@@ -11,16 +11,14 @@ export async function install() {
     const destinationFolder = resolve(process.cwd(), 'google-cloud-sdk');
 
     if (sdkFile.endsWith('.zip')) {
-        core.debug('Downloaded file is a zip, unzipping...');
-        const zip = new AdmZip(resolve(process.cwd(), sdkFile));
-        zip.extractAllTo(destinationFolder, true);
-        core.debug(`Unzipped to ${destinationFolder}`);
+        exec.exec(`7z e ${sdkFile}`);
+
     } else {
-        exec.exec('tar -xvf ' + sdkFile);
+        exec.exec(`tar -xvf ${sdkFile}`);
     }
 
     if (process.platform === 'win32') {
-
+        await exec.exec(resolve(destinationFolder, 'install.bat'));
     } else {
         await exec.exec(resolve(destinationFolder, 'install.sh'));
     }
