@@ -1,0 +1,13 @@
+name: Test
+on: push
+jobs:
+  test:
+    strategy:
+      matrix:
+        os: [windows-latest, ubuntu-18.04, ubuntu-16.04, macos-latest]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: mathrix-education/actions-gcloud@${{ github.sha }}
+        with:
+          service-account-key: lol
+          version: latest

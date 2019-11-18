@@ -1,0 +1,27 @@
+{
+  "name": "@mathrix-education/actions-gcloud",
+  "version": "0.0.1",
+  "description": "",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mathrix-education/actions-gcloud.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/mathrix-education/actions-gcloud/issues"
+  },
+  "homepage": "https://github.com/mathrix-education/actions-gcloud#readme",
+  "dependencies": {
+    "@actions/core": "^1.2.0",
+    "@actions/exec": "^1.0.1",
+    "typescript": "^3.7.2"
+  },
+  "devDependencies": {
+    "@types/node": "^12.12.8"
+  },
+  "scripts": {
+    "build": "tsc"
+  }
+}

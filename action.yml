@@ -1,0 +1,21 @@
+name: gcloud
+description: Setup Google Cloud SDK on Gith Actions
+runs:
+  using: 'node12'
+  main: 'dist/install.js'
+inputs:
+  service-account-key:
+    description: The service account key to use, base64-encoded.
+    required: true
+  version:
+    description: Google Cloud SDK to use. If left null, will use the latest one.
+    required: false
+  install-beta:
+    description: Install beta components.
+    required: false
+    default: false
+  install-alpha:
+    description: Install alpha components.
+    required: false
+    default: false
+
