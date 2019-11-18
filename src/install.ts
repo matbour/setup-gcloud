@@ -15,10 +15,14 @@ export async function install() {
         await exec.exec(`tar -xf ${sdkFile}`);
     }
 
-    if (process.platform === 'win32') {
-        await exec.exec(resolve(destinationFolder, 'CLOUDSDK_CORE_DISABLE_PROMPTS=1 install.bat'));
-    } else {
-        await exec.exec(resolve(destinationFolder, 'CLOUDSDK_CORE_DISABLE_PROMPTS=1 install.sh'));
+    try {
+        if (process.platform === 'win32') {
+            await exec.exec(resolve(destinationFolder, 'CLOUDSDK_CORE_DISABLE_PROMPTS=1 install.bat'));
+        } else {
+            await exec.exec(resolve(destinationFolder, 'CLOUDSDK_CORE_DISABLE_PROMPTS=1 install.sh'));
+        }
+    } catch (error) {
+        core.setFailed(error.message);
     }
 
     const serviceAccountKeyBase64 = core.getInput('service-account-key');
@@ -28,8 +32,4 @@ export async function install() {
     await exec.exec(`gcloud auth activate-service-account --key-file=${serviceAccountKeyPath}`);
 }
 
-try {
-    install();
-} catch (error) {
-    core.setFailed(error.message);
-}
+install();
