@@ -27,11 +27,15 @@ export async function install() {
         core.setFailed(error.message);
     }
 
+    const bin = resolve(destinationFolder, 'bin');
+    core.addPath(bin);
+
+    const gcloud = resolve(bin, 'gcloud');
     const serviceAccountKeyBase64 = core.getInput('service-account-key');
     const serviceAccountKeyJson = Buffer.from(serviceAccountKeyBase64, 'base64');
     const serviceAccountKeyPath = resolve(process.cwd(), 'gcloud.json');
     writeFileSync(serviceAccountKeyPath, serviceAccountKeyJson);
-    await exec.exec(`gcloud auth activate-service-account --key-file=${serviceAccountKeyPath}`);
+    await exec.exec(`${gcloud} auth activate-service-account --key-file=${serviceAccountKeyPath}`);
 }
 
 install();
