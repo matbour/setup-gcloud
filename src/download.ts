@@ -15,7 +15,9 @@ export class Download {
         const destination = `google-cloud-sdk.${this.compressMode}`;
 
         core.debug(`Downloading ${this.sdkUrl}`);
-        const response = await Axios.get(this.sdkUrl);
+        const response = await Axios.get(this.sdkUrl, {
+            onDownloadProgress: (e) =>console.log(e)
+        });
         await promises.writeFile(destination, response.data);
         core.debug(`Downloaded ${this.sdkUrl}`);
 
