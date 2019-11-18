@@ -1,6 +1,6 @@
-import * as exec from '@actions/exec';
 import Axios from 'axios';
-import {writeFileSync} from 'fs';
+import {promises} from 'fs';
+import * as core from '@actions/core';
 
 export class Download {
     private readonly BASE_URL: string = 'https://dl.google.com/dl/cloudsdk/channels/rapid';
@@ -11,9 +11,15 @@ export class Download {
         this.setSdkDownloadUrl();
     }
 
-    async download() {
+    async download(): Promise<string> {
+        const destination = `google-cloud-sdk.${this.compressMode}`;
+
+        core.debug(`Downloading ${this.sdkUrl}`);
         const response = await Axios.get(this.sdkUrl);
-        writeFileSync(`google-cloud-sdk.${this.compressMode}`, response.data);
+        await promises.writeFile(destination, response.data);
+        core.debug(`Downloaded ${this.sdkUrl}`);
+
+        return destination;
     }
 
     setSdkDownloadUrl(): void {
