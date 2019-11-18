@@ -20,7 +20,7 @@ export class Download {
         }
 
         core.debug(`Downloading ${this.sdkUrl}`);
-        await exec.exec(`curl -S -o ${destination} ${this.sdkUrl}`);
+        await exec.exec(`curl -s -o ${destination} ${this.sdkUrl}`);
         core.debug(`Downloaded ${this.sdkUrl}`);
 
         return destination;
