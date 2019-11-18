@@ -1,4 +1,6 @@
 import * as exec from '@actions/exec';
+import Axios from 'axios';
+import {writeFileSync} from 'fs';
 
 export class Download {
     private readonly BASE_URL: string = 'https://dl.google.com/dl/cloudsdk/channels/rapid';
@@ -10,7 +12,8 @@ export class Download {
     }
 
     async download() {
-        return exec.exec(`curl -o google-cloud-sdk.${this.compressMode} '${this.sdkUrl}'`);
+        const response = await Axios.get(this.sdkUrl);
+        writeFileSync(`google-cloud-sdk.${this.compressMode}`, response.data);
     }
 
     setSdkDownloadUrl(): void {
