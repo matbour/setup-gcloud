@@ -12,7 +12,7 @@ export async function install() {
     const destinationFolder = resolve(process.cwd(), 'google-cloud-sdk');
 
     if (sdkFile.endsWith('.zip')) {
-        await exec.exec(`7z e ${sdkFile} -y`);
+        await exec.exec(`Expand-Archive ${sdkFile} ${destinationFolder}`);
     } else {
         await exec.exec(`tar -xf ${sdkFile}`);
     }
