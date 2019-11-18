@@ -21,7 +21,7 @@ export async function install() {
         } else if(process.platform === 'darwin') {
             await exec.exec(resolve(destinationFolder, 'CLOUDSDK_CORE_DISABLE_PROMPTS=1 install.sh'));
         } else {
-            await exec.exec(resolve(destinationFolder, 'install.sh'));
+            await exec.exec(resolve(destinationFolder, 'install.sh --disable-prompts'));
         }
     } catch (error) {
         core.setFailed(error.message);
