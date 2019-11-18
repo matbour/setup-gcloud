@@ -11,16 +11,15 @@ export async function install() {
     const destinationFolder = resolve(process.cwd(), 'google-cloud-sdk');
 
     if (sdkFile.endsWith('.zip')) {
-        exec.exec(`7z e ${sdkFile} -y`);
-
+        await exec.exec(`7z e ${sdkFile} -y`);
     } else {
-        exec.exec(`tar -xf ${sdkFile}`);
+        await exec.exec(`tar -xf ${sdkFile}`);
     }
 
     if (process.platform === 'win32') {
-        await exec.exec(resolve(destinationFolder, 'install.bat'));
+        await exec.exec(resolve(destinationFolder, 'install.bat --disable-prompts'));
     } else {
-        await exec.exec(resolve(destinationFolder, 'install.sh'));
+        await exec.exec(resolve(destinationFolder, 'install.sh --disable-prompts'));
     }
 
     const serviceAccountKeyBase64 = core.getInput('service-account-key');
