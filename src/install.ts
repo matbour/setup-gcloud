@@ -17,6 +17,7 @@ export async function install() {
     }
 
     if (process.platform === 'win32') {
+        await exec.exec('dir');
         await exec.exec(resolve(destinationFolder, 'install.bat --disable-prompts'));
     } else {
         await exec.exec(resolve(destinationFolder, 'install.sh --disable-prompts'));
