@@ -12,4 +12,6 @@ jobs:
         with:
           service-account-key: ${{ secrets.GCLOUD_AUTH }}
           version: latest
-      - run: gcloud version
+      - run: |
+          gcloud version
+          gcloud config list account --format "value(core.account)"
