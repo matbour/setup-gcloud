@@ -17,11 +17,11 @@ export async function install() {
 
     try {
         if (process.platform === 'win32') {
-            await exec.exec(resolve(destinationFolder, 'install.bat --quiet'));
+            await exec.exec(resolve(destinationFolder, 'install.bat') + ' --quiet');
         } else if(process.platform === 'darwin') {
-            await exec.exec(resolve(destinationFolder, 'install.sh --quiet'));
+            await exec.exec(resolve(destinationFolder, 'install.sh') + ' --quiet');
         } else {
-            await exec.exec(resolve(destinationFolder, 'install.sh --quiet'));
+            await exec.exec(resolve(destinationFolder, 'install.sh') + ' --quiet');
         }
     } catch (error) {
         core.setFailed(error.message);
