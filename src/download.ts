@@ -1,6 +1,6 @@
 import {existsSync} from 'fs';
-import * as core from '@actions/core';
 import {resolve} from 'path';
+import * as core from '@actions/core';
 import * as exec from '@actions/exec';
 
 export class Download {
