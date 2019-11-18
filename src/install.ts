@@ -1,10 +1,8 @@
 import {Download} from './download';
-import AdmZip from 'adm-zip';
 import {resolve} from 'path';
 import * as core from '@actions/core';
 import * as exec from '@actions/exec';
 import {writeFileSync} from 'fs';
-import {platform} from 'os';
 
 export async function install() {
     const downloader = new Download('latest');
@@ -20,7 +18,7 @@ export async function install() {
     if (process.platform === 'win32') {
         await exec.exec('dir');
         await exec.exec(resolve(destinationFolder, 'install.bat --disable-prompts'));
-    } else if(process.platform == 'darwin') {
+    } else if (process.platform == 'darwin') {
         await exec.exec(resolve(destinationFolder, 'install.sh'));
     } else {
         await exec.exec(resolve(destinationFolder, 'install.sh --disable-prompts'));
@@ -33,4 +31,8 @@ export async function install() {
     await exec.exec(`gcloud auth activate-service-account --key-file=${serviceAccountKeyPath}`);
 }
 
-install();
+try {
+    install();
+} catch (error) {
+    core.setFailed(error.message);
+}
