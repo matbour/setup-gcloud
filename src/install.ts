@@ -14,7 +14,7 @@ export async function install() {
         exec.exec(`7z e ${sdkFile}`);
 
     } else {
-        exec.exec(`tar -xvf ${sdkFile}`);
+        exec.exec(`tar -xf ${sdkFile}`);
     }
 
     if (process.platform === 'win32') {
