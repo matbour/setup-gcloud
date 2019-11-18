@@ -16,12 +16,9 @@ export async function install() {
     }
 
     if (process.platform === 'win32') {
-        await exec.exec('dir');
-        await exec.exec(resolve(destinationFolder, 'install.bat --disable-prompts'));
-    } else if (process.platform == 'darwin') {
-        await exec.exec(resolve(destinationFolder, 'install.sh'));
+        await exec.exec(resolve(destinationFolder, 'CLOUDSDK_CORE_DISABLE_PROMPTS=1 install.bat'));
     } else {
-        await exec.exec(resolve(destinationFolder, 'install.sh --disable-prompts'));
+        await exec.exec(resolve(destinationFolder, 'CLOUDSDK_CORE_DISABLE_PROMPTS=1 install.sh'));
     }
 
     const serviceAccountKeyBase64 = core.getInput('service-account-key');
