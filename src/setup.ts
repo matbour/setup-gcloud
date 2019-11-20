@@ -16,17 +16,12 @@ export async function setup() {
         '--quiet'
     ];
 
-    try {
         if (isWindows()) {
             // @actions/exec does not exit on windows
             execSync(`${installScript} ${args.join(' ')}`, {stdio: 'inherit'});
         } else {
             await exec.exec(installScript, args);
         }
-    } catch (e) {
-        core.error(e.message);
-        process.exit(1);
-    }
 
     const binPath = resolve(getCloudSDKFolder(), 'bin');
     core.addPath(binPath);
