@@ -18,6 +18,7 @@ export async function setup() {
 
     try {
         if (isWindows()) {
+            // @actions/exec does not exit on windows
             execSync(`${installScript} ${args.join(' ')}`, {stdio: 'inherit'});
         } else {
             await exec.exec(installScript, args);
