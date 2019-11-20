@@ -10,3 +10,10 @@ inputs:
   version:
     description: Google Cloud SDK to use. If left null, will use the latest one.
     required: false
+  install-components:
+    description: Install additional components (e.g. beta, gsutils, etc.)
+    required: false
+  configure-docker:
+    description: Configure Docker to interact with Google Cloud Container Registry.
+    required: false
+    default: false
