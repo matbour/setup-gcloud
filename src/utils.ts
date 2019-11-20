@@ -23,6 +23,14 @@ export function getDownloadLink(): string {
     const baseUrl = 'https://dl.google.com/dl/cloudsdk/channels/rapid';
     const version = core.getInput('version');
 
+    if (version === 'latest') {
+        if (isWindows()) {
+            return `${baseUrl}/google-cloud-sdk.zip`;
+        } else {
+            return `${baseUrl}/google-cloud-sdk.tar.gz`;
+        }
+    }
+
     if (isWindows()) {
         return `${baseUrl}/downloads/google-cloud-sdk-${version}-windows-x86_64.zip`;
     } else if (isMacOS()) {
