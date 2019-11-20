@@ -12,6 +12,7 @@ export async function setup() {
     if (isWindows()) {
         // args = ['/S', `/D=${getCloudSDKFolder()}`, '/singleuser', '/noreporting', '/nostartmenu', '/nodesktop'];
         args = [
+            '--disable-prompts',
             '--usage-reporting=false',
             '--command-completion=false',
             '--path-update=false',
