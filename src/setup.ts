@@ -17,6 +17,7 @@ export async function setup() {
     ];
 
         if (isWindows()) {
+            execSync(`dir "${getCloudSDKFolder()}"`);
             // @actions/exec does not exit on windows
             execSync(`"${installScript}" ${args.join(' ')}`, {stdio: 'inherit'});
         } else {
