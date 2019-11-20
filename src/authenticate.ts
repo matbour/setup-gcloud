@@ -11,6 +11,11 @@ export async function authenticate() {
     const gcloud = resolve(getCloudSDKFolder(), 'bin', 'gcloud');
 
     writeFileSync(serviceAccountKeyPath, serviceAccountKeyJson);
-    await exec.exec(`${gcloud} auth activate-service-account --key-file=${serviceAccountKeyPath}`);
+    await exec.exec('gcloud', [
+        'auth',
+        'activate-service-account',
+        `--key-file=${serviceAccountKeyPath}`
+    ]);
+    // await exec.exec(`${gcloud} auth activate-service-account --key-file=${serviceAccountKeyPath}`);
     unlinkSync(serviceAccountKeyPath);
 }
