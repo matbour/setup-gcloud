@@ -18,10 +18,10 @@ export async function setup() {
     ];
 
         if (isWindows()) {
-            const ls = readdirSync(getCloudSDKFolder());
-            core.info(ls.join('\n'));
             // @actions/exec does not exit on windows
             execSync(`"${installScript}" ${args.join(' ')}`, {stdio: 'inherit'});
+            const ls = readdirSync(resolve(getCloudSDKFolder(), 'bin'));
+            core.info(ls.join('\n'));
         } else {
             await exec.exec(installScript, args);
         }
