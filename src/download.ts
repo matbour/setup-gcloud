@@ -10,7 +10,7 @@ export async function download() {
     const extractionPath = resolve(getCloudSDKFolder(), '..');
 
     if (isUbuntu()) {
-        exec.exec('rm -rf ' + getCloudSDKFolder());
+        await exec.exec('rm -rf ' + getCloudSDKFolder());
     }
 
     mkdirSync(getCloudSDKFolder());
