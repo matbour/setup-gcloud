@@ -10,7 +10,7 @@ export async function setup() {
     const args = [
         '--usage-reporting=false',
         '--command-completion=false',
-        '--path-update=false',
+        '--path-update=true',
         '--usage-reporting=false',
         // '--additional-components',
         '--quiet'
