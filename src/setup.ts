@@ -13,18 +13,21 @@ export async function setup() {
         '--command-completion=false',
         '--path-update=true',
         '--usage-reporting=false',
-        // '--additional-components',
         '--quiet'
     ];
 
-        if (isWindows()) {
-            // @actions/exec does not exit on windows
-            execSync(`"${installScript}" ${args.join(' ')}`, {stdio: 'inherit'});
-            const ls = readdirSync(resolve(getCloudSDKFolder(), 'bin'));
-            core.info(ls.join('\n'));
-        } else {
-            await exec.exec(installScript, args);
-        }
+    if (core.getInput('components')) {
+        args.push('--additional-components=' + core.getInput('components'));
+    }
+
+    if (isWindows()) {
+        // @actions/exec does not exit on windows
+        execSync(`"${installScript}" ${args.join(' ')}`, {stdio: 'inherit'});
+        const ls = readdirSync(resolve(getCloudSDKFolder(), 'bin'));
+        core.info(ls.join('\n'));
+    } else {
+        await exec.exec(installScript, args);
+    }
 
     const binPath = resolve(getCloudSDKFolder(), 'bin');
     core.addPath(binPath);
