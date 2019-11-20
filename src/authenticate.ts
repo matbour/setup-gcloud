@@ -2,6 +2,7 @@ import {resolve} from "path";
 import {unlinkSync, writeFileSync} from "fs";
 import * as core from '@actions/core';
 import * as exec from '@actions/exec';
+import {gcloud} from './utils';
 
 export async function authenticate() {
     const serviceAccountKeyBase64 = core.getInput('service-account-key');
@@ -9,7 +10,7 @@ export async function authenticate() {
     const serviceAccountKeyPath = resolve(process.cwd(), 'gcloud.json');
 
     writeFileSync(serviceAccountKeyPath, serviceAccountKeyJson);
-    await exec.exec('gcloud', [
+    await gcloud([
         'auth',
         'activate-service-account',
         `--key-file=${serviceAccountKeyPath}`

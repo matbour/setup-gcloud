@@ -1,5 +1,7 @@
 import {resolve} from "path";
 import * as core from '@actions/core';
+import * as exec from '@actions/exec';
+
 
 export function isWindows() {
     return process.platform === 'win32';
@@ -44,4 +46,9 @@ export function getDownloadLink(): string {
     } else {
         return `${baseUrl}/downloads/google-cloud-sdk-${version}-linux-x86_64.tar.gz`;
     }
+}
+
+export async function gcloud(args: string[], options: any = undefined) {
+    const gcloudPath = resolve(getCloudSDKFolder(), 'bin', 'gcloud' + isWindows() ? '.cmd' : '');
+    await exec.exec(gcloudPath, args, options);
 }
