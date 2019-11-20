@@ -2,7 +2,7 @@ import {getCloudSDKFolder, isWindows} from './utils';
 import {resolve} from "path";
 import * as core from '@actions/core';
 import * as exec from '@actions/exec';
-import {lstatSync, readdirSync} from 'fs';
+import {readdirSync} from 'fs';
 
 export async function setup() {
     const installScriptExtension = isWindows() ? 'bat' : 'sh';
@@ -10,9 +10,24 @@ export async function setup() {
     let args: string[];
 
     if (isWindows()) {
-        args = ['/S', `/D=${getCloudSDKFolder()}`, '/singleuser', '/noreporting', '/nostartmenu', '/nodesktop'];
+        // args = ['/S', `/D=${getCloudSDKFolder()}`, '/singleuser', '/noreporting', '/nostartmenu', '/nodesktop'];
+        args = [
+            '--usage-reporting=false',
+            '--command-completion=false',
+            '--path-update=false',
+            '--usage-reporting=false',
+            // '--additional-components',
+            '--quiet'
+        ];
     } else {
-        args = ['--path-update=false', '--usage-reporting=false', '--command-completion=false'];
+        args = [
+            '--usage-reporting=false',
+            '--command-completion=false',
+            '--path-update=false',
+            '--usage-reporting=false',
+            // '--additional-components',
+            '--quiet'
+        ];
     }
 
     try {
