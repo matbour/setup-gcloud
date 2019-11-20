@@ -2,6 +2,7 @@ import {getCloudSDKFolder, isWindows} from './utils';
 import {resolve} from "path";
 import * as core from '@actions/core';
 import * as exec from '@actions/exec';
+import {lstatSync, readdirSync} from 'fs';
 
 export async function setup() {
     const installScriptExtension = isWindows() ? 'bat' : 'sh';
@@ -15,9 +16,10 @@ export async function setup() {
     }
 
     try {
+        const ls = readdirSync(getCloudSDKFolder());
+        core.info(ls.join('\n'));
         await exec.exec(installScript, args);
     } catch (e) {
-        core.error('Error during Google Cloud SDK setup!');
         core.error(e.message);
         process.exit(1);
     }
