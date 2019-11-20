@@ -17,7 +17,7 @@ export function isUbuntu() {
 
 export function getCloudSDKFolder(): string {
     if (isWindows()) {
-        return 'C:\\Program Files\\google-cloud-sdk';
+        return 'C:\\google-cloud-sdk';
     } else if (isUbuntu()) {
         return '/home/runner/google-cloud-sdk';
     } else {
