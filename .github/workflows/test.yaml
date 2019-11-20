@@ -4,14 +4,15 @@ jobs:
   test:
     strategy:
       matrix:
-        os: [windows-latest, ubuntu-18.04, ubuntu-16.04, macos-latest]
+        os: [ubuntu-latest, macos-latest]
       fail-fast: false
     runs-on: ${{ matrix.os }}
     steps:
       - uses: mathrix-education/actions-gcloud@dev
         with:
-          service-account-key: ${{ secrets.GCLOUD_AUTH }}
           version: latest
+          components: beta
+          service-account-key: ${{ secrets.GCLOUD_AUTH }}
       - run: |
           gcloud version
           gcloud config list account --format "value(core.account)"

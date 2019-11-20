@@ -14,5 +14,10 @@ export async function authenticate() {
         'activate-service-account',
         `--key-file=${serviceAccountKeyPath}`
     ]);
+    await gcloud([
+        '--quiet',
+        'auth',
+        'configure-docker'
+    ]);
     unlinkSync(serviceAccountKeyPath);
 }
