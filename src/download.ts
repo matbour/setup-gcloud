@@ -1,5 +1,6 @@
+import * as exec from '@actions/exec';
 import * as tc from '@actions/tool-cache';
-import {getCloudSDKFolder, getDownloadLink} from './utils';
+import {getCloudSDKFolder, getDownloadLink, isUbuntu} from './utils';
 import {mkdirSync} from 'fs';
 import {resolve} from 'path';
 
@@ -7,6 +8,10 @@ export async function download() {
     const downloadLink = getDownloadLink();
     const downloadPath = await tc.downloadTool(downloadLink);
     const extractionPath = resolve(getCloudSDKFolder(), '..');
+
+    if (isUbuntu()) {
+        exec.exec('rm -rf ' + getCloudSDKFolder());
+    }
 
     mkdirSync(getCloudSDKFolder());
 
