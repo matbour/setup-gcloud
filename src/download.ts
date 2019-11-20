@@ -9,10 +9,6 @@ export async function download() {
     const downloadPath = await tc.downloadTool(downloadLink);
     const extractionPath = resolve(getCloudSDKFolder(), '..');
 
-    if (isUbuntu()) {
-        await exec.exec('rm -rf ' + getCloudSDKFolder());
-    }
-
     mkdirSync(getCloudSDKFolder());
 
     if (downloadLink.endsWith('.zip')) {

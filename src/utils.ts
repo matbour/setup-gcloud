@@ -17,7 +17,7 @@ export function getCloudSDKFolder(): string {
     if (isWindows()) {
         return 'C:\\Program Files\\Google Cloud SDK';
     } else if (isUbuntu()) {
-        return '/usr/lib/google-cloud-sdk';
+        return '/usr/lib/google-cloud-sdk-custom';
     } else {
         const home = process.env.HOME ? process.env.HOME : process.cwd();
         return resolve(home, 'google-cloud-sdk');
