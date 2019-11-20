@@ -49,6 +49,6 @@ export function getDownloadLink(): string {
 }
 
 export async function gcloud(args: string[], options: any = undefined) {
-    const gcloudPath = resolve(getCloudSDKFolder(), 'bin', 'gcloud' + isWindows() ? '.cmd' : '');
+    const gcloudPath = resolve(getCloudSDKFolder(), 'bin', 'gcloud' + (isWindows() ? '.cmd' : ''));
     await exec.exec(gcloudPath, args, options);
 }

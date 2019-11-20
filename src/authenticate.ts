@@ -1,7 +1,6 @@
 import {resolve} from "path";
 import {unlinkSync, writeFileSync} from "fs";
 import * as core from '@actions/core';
-import * as exec from '@actions/exec';
 import {gcloud} from './utils';
 
 export async function authenticate() {
