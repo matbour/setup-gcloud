@@ -10,12 +10,3 @@ inputs:
   version:
     description: Google Cloud SDK to use. If left null, will use the latest one.
     required: false
-  install-beta:
-    description: Install beta components.
-    required: false
-    default: false
-  install-alpha:
-    description: Install alpha components.
-    required: false
-    default: false
-

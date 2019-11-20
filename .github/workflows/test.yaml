@@ -11,7 +11,7 @@ jobs:
       - uses: mathrix-education/actions-gcloud@dev
         with:
           service-account-key: ${{ secrets.GCLOUD_AUTH }}
-          version: latest
+          version: 245.0.0
       - run: |
           gcloud version
           gcloud config list account --format "value(core.account)"
