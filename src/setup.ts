@@ -3,6 +3,7 @@ import {resolve} from "path";
 import * as core from '@actions/core';
 import * as exec from '@actions/exec';
 import {execSync} from 'child_process';
+import {readdirSync} from 'fs';
 
 export async function setup() {
     const installScriptExtension = isWindows() ? 'bat' : 'sh';
@@ -17,7 +18,8 @@ export async function setup() {
     ];
 
         if (isWindows()) {
-            execSync(`dir "${getCloudSDKFolder()}"`);
+            const ls = readdirSync(getCloudSDKFolder());
+            core.info(ls.join('\n'));
             // @actions/exec does not exit on windows
             execSync(`"${installScript}" ${args.join(' ')}`, {stdio: 'inherit'});
         } else {
