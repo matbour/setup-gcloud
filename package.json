@@ -1,23 +1,33 @@
 {
   "name": "@mathrix-education/actions-gcloud",
   "version": "0.1.0",
-  "description": "",
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/mathrix-education/actions-gcloud.git"
-  },
+  "description": "Small GitHub action to install the Google Cloud SDK on the virtual environment.",
   "keywords": [
     "github-actions",
     "actions",
     "google-cloud-sdk",
     "gcloud "
   ],
-  "author": "",
-  "license": "MIT",
-  "bugs": {
-    "url": "https://github.com/mathrix-education/actions-gcloud/issues"
-  },
   "homepage": "https://github.com/mathrix-education/actions-gcloud#readme",
+  "bugs": {
+    "url": "https://github.com/mathrix-education/actions-gcloud/issues",
+    "email": "mathieux@mathrix.fr"
+  },
+  "license": "MIT",
+  "author": {
+    "name": "Mathieu Bour",
+    "email": "mathieu@mathrix.fr",
+    "url": "https://github.com/mathieu-bour"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mathrix-education/actions-gcloud.git"
+  },
+  "scripts": {
+    "lint": "",
+    "format": "prettier --write \"src/**/*.ts\" \"*.js\"",
+    "build": "ncc build src/install.ts"
+  },
   "dependencies": {
     "@actions/core": "^1.2.0",
     "@actions/exec": "^1.0.1",
@@ -36,9 +46,5 @@
     "husky": "^3.1.0",
     "prettier": "^1.19.1"
   },
-  "scripts": {
-    "lint": "",
-    "format": "prettier --write \"src/**/*.ts\" \"*.js\"",
-    "build": "ncc build src/install.ts"
-  }
+  "private": true
 }
