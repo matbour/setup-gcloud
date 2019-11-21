@@ -1,6 +1,6 @@
 {
   "name": "@mathrix-education/setup-gcloud",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "Small GitHub action to install the Google Cloud SDK on the virtual environment.",
   "keywords": [
     "github-actions",
