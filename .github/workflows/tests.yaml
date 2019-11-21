@@ -9,11 +9,19 @@ jobs:
       fail-fast: false
     runs-on: ${{ matrix.os }}
     steps:
-      - uses: mathrix-education/setup-gcloud@${{ github.ref }}
+      - name: Checkout repository
+        uses: actions/checkout@v1
+      - name: Setup Node.js 12
+        uses: actions/setup-node@v1.2.0
         with:
-          version: ${{ matrix.version }}
-          components: beta
-          service-account-key: ${{ secrets.GCLOUD_AUTH }}
-      - run: |
+          node-version: 12.x
+      - name: Install Google Cloud SDK
+        run: node dist/index.js
+        with:
+          INPUT_VERSION: ${{ matrix.version }}
+          INPUT_COMPONENTS: beta
+          INPUT_SERVICE-ACCOUNT-KEY: ${{ secrets.GCLOUD_AUTH }}
+      - name: Test Google Cloud SDK CLI
+        run: |
           gcloud version
           gcloud config list account --format "value(core.account)"
