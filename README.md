@@ -52,6 +52,7 @@ Simply add this step in your workflow `steps`.
 - uses: mathrix-education/setup-gcloud@master
   with:
     version: 245.0.0.0      # default: latest
+    project: my-project     # the default Google Cloud project
     service-account-key:    # base64 encoded JSON service account key
     components: beta        # additional components to install
     configure-docker: true  # configure docker during install
