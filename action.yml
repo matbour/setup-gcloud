@@ -14,6 +14,7 @@ inputs:
   version:
     description: Google Cloud SDK to use. If left null, will use the latest one.
     required: false
+    default: latest
   components:
     description: Install additional components (e.g. beta, gsutils, etc.)
     required: false
