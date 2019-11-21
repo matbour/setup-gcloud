@@ -3777,6 +3777,10 @@ const utils_1 = __webpack_require__(163);
  */
 function authenticate() {
     return __awaiter(this, void 0, void 0, function* () {
+        // If service account key is not provided, skip the authentication
+        if (!core.getInput('service-account-key')) {
+            return;
+        }
         // Write the service account key
         const serviceAccountKeyBase64 = core.getInput('service-account-key');
         const serviceAccountKeyJson = Buffer.from(serviceAccountKeyBase64, 'base64');

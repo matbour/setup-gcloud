@@ -10,7 +10,7 @@ runs:
 inputs:
   service-account-key:
     description: The service account key to use, base64-encoded.
-    required: true
+    required: false
   project:
     description: The default Google Cloud project. You can change it later.
     required: false
