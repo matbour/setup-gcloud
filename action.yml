@@ -1,5 +1,9 @@
-name: gcloud
-description: Setup Google Cloud SDK on Gith Actions
+name: @mathrix-education/gcloud
+author: Mathrix Education SA
+description: Setup Google Cloud SDK on Github Actions.
+branding:
+  color: blue
+  icon: upload-cloud
 runs:
   using: 'node12'
   main: 'dist/index.js'
