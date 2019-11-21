@@ -1,4 +1,4 @@
-name: mathrix-education/gcloud
+name: Setup Google Cloud SDK
 author: Mathrix Education SA
 description: Setup Google Cloud SDK on Github Actions.
 branding:
@@ -11,6 +11,9 @@ inputs:
   service-account-key:
     description: The service account key to use, base64-encoded.
     required: true
+  project:
+    description: The default Google Cloud project. You can change it later.
+    required: false
   version:
     description: Google Cloud SDK to use. If left null, will use the latest one.
     required: false

@@ -17,7 +17,7 @@ jobs:
           node-version: 12.x
       - name: Install Google Cloud SDK
         run: node dist/index.js
-        with:
+        env:
           INPUT_VERSION: ${{ matrix.version }}
           INPUT_COMPONENTS: beta
           INPUT_SERVICE-ACCOUNT-KEY: ${{ secrets.GCLOUD_AUTH }}
