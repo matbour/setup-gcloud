@@ -1,4 +1,4 @@
-# @mathrix-education/actions-gcloud
+# @mathrix-education/setup-gcloud
 Small GitHub action to install the Google Cloud SDK on the virtual
 environment.
 
@@ -49,7 +49,7 @@ See [action.yml](action.yml) for details.
 Simply add this step in your workflow `steps`.
 
 ```yaml
-- uses: mathrix-education/actions-gcloud@master
+- uses: mathrix-education/setup-gcloud@master
   with:
     version: 245.0.0.0      # default: latest
     service-account-key:    # base64 encoded JSON service account key

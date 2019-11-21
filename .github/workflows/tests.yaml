@@ -9,7 +9,7 @@ jobs:
       fail-fast: false
     runs-on: ${{ matrix.os }}
     steps:
-      - uses: mathrix-education/actions-gcloud@dev
+      - uses: mathrix-education/setup-gcloud@${{ github.ref }}
         with:
           version: ${{ matrix.version }}
           components: beta
