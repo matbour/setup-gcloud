@@ -60,5 +60,8 @@ export async function gcloud(
     'bin',
     'gcloud' + (isWindows() ? '.cmd' : ''),
   );
+
+  args.unshift('--quiet');
+
   await exec.exec(gcloudPath, args, options);
 }

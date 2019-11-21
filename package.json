@@ -1,6 +1,6 @@
 {
-  "name": "@mathrix-education/actions-gcloud",
-  "version": "0.1.1",
+  "name": "@mathrix-education/setup-gcloud",
+  "version": "0.1.2",
   "description": "Small GitHub action to install the Google Cloud SDK on the virtual environment.",
   "keywords": [
     "github-actions",
@@ -8,9 +8,9 @@
     "google-cloud-sdk",
     "gcloud "
   ],
-  "homepage": "https://github.com/mathrix-education/actions-gcloud#readme",
+  "homepage": "https://github.com/mathrix-education/setup-gcloud#readme",
   "bugs": {
-    "url": "https://github.com/mathrix-education/actions-gcloud/issues",
+    "url": "https://github.com/mathrix-education/setup-gcloud/issues",
     "email": "mathieux@mathrix.fr"
   },
   "license": "MIT",
@@ -21,10 +21,9 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/mathrix-education/actions-gcloud.git"
+    "url": "git+https://github.com/mathrix-education/setup-gcloud.git"
   },
   "scripts": {
-    "lint": "",
     "format": "prettier --write \"src/**/*.ts\" \"*.js\"",
     "build": "ncc build src/install.ts"
   },

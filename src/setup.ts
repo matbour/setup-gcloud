@@ -2,7 +2,7 @@ import * as core from '@actions/core';
 import * as exec from '@actions/exec';
 import { execSync } from 'child_process';
 import { resolve } from 'path';
-import { getCloudSDKFolder, isWindows } from './utils';
+import { gcloud, getCloudSDKFolder, isWindows } from './utils';
 
 /**
  * Setup the Google Cloud SDK.
@@ -31,6 +31,10 @@ export async function setup(): Promise<void> {
     execSync(`"${installScript}" ${args.join(' ')}`, { stdio: 'inherit' });
   } else {
     await exec.exec(installScript, args);
+  }
+
+  if (core.getInput('project')) {
+    await gcloud(['config', 'set', 'project', core.getInput('project')]);
   }
 
   const binPath = resolve(getCloudSDKFolder(), 'bin');
