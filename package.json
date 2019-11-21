@@ -1,0 +1,44 @@
+{
+  "name": "@mathrix-education/actions-gcloud",
+  "version": "0.0.1",
+  "description": "",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mathrix-education/actions-gcloud.git"
+  },
+  "keywords": [
+    "github-actions",
+    "actions",
+    "google-cloud-sdk",
+    "gcloud "
+  ],
+  "author": "",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/mathrix-education/actions-gcloud/issues"
+  },
+  "homepage": "https://github.com/mathrix-education/actions-gcloud#readme",
+  "dependencies": {
+    "@actions/core": "^1.2.0",
+    "@actions/exec": "^1.0.1",
+    "@actions/tool-cache": "^1.1.2",
+    "original-fs": "^1.1.0",
+    "typescript": "^3.7.2"
+  },
+  "devDependencies": {
+    "@types/node": "^12.12.8",
+    "@typescript-eslint/eslint-plugin": "^2.8.0",
+    "@typescript-eslint/parser": "^2.8.0",
+    "@zeit/ncc": "^0.20.5",
+    "eslint": "^6.6.0",
+    "eslint-config-prettier": "^6.7.0",
+    "eslint-plugin-prettier": "^3.1.1",
+    "husky": "^3.1.0",
+    "prettier": "^1.19.1"
+  },
+  "scripts": {
+    "lint": "",
+    "format": "prettier --write \"src/**/*.ts\" \"*.js\"",
+    "build": "ncc build src/install.ts"
+  }
+}
