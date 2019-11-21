@@ -1,12 +1,12 @@
-import { resolve } from 'path';
-import { unlinkSync, writeFileSync } from 'fs';
 import * as core from '@actions/core';
+import { unlinkSync, writeFileSync } from 'fs';
+import { resolve } from 'path';
 import { gcloud } from './utils';
 
 /**
  * Authenticate the Google Cloud SDK.
  */
-export async function authenticate() {
+export async function authenticate(): Promise<void> {
   // Write the service account key
   const serviceAccountKeyBase64 = core.getInput('service-account-key');
   const serviceAccountKeyJson = Buffer.from(serviceAccountKeyBase64, 'base64');

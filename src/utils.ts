@@ -1,21 +1,21 @@
-import { resolve } from 'path';
 import * as core from '@actions/core';
 import * as exec from '@actions/exec';
+import { resolve } from 'path';
 import {
   INSTALL_DIRECTORY,
   UBUNTU_INSTALL_PATH,
   WINDOWS_INSTALL_PATH,
 } from './constants';
 
-export function isWindows() {
+export function isWindows(): boolean {
   return process.platform === 'win32';
 }
 
-export function isMacOS() {
+export function isMacOS(): boolean {
   return process.platform === 'darwin';
 }
 
-export function isUbuntu() {
+export function isUbuntu(): boolean {
   return process.platform === 'linux';
 }
 
@@ -51,7 +51,10 @@ export function getDownloadLink(): string {
   }
 }
 
-export async function gcloud(args: string[], options: any = undefined) {
+export async function gcloud(
+  args: string[],
+  options: any = undefined,
+): Promise<void> {
   const gcloudPath = resolve(
     getCloudSDKFolder(),
     'bin',

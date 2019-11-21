@@ -1,10 +1,13 @@
 import * as core from '@actions/core';
+import { authenticate } from './authenticate';
 import { download } from './download';
 import { setup } from './setup';
-import { authenticate } from './authenticate';
 import { isWindows } from './utils';
 
-export async function install() {
+/**
+ * Install the Google Cloud SDK.
+ */
+export async function install(): Promise<void> {
   try {
     // Currently, Windows is disabled because the installer does not work properly
     if (isWindows()) {

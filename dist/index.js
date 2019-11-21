@@ -928,6 +928,13 @@ module.exports = require("tls");
 
 /***/ }),
 
+/***/ 34:
+/***/ (function(module) {
+
+module.exports = require("https");
+
+/***/ }),
+
 /***/ 87:
 /***/ (function(module) {
 
@@ -966,7 +973,7 @@ module.exports = function nodeRNG() {
 var net = __webpack_require__(631);
 var tls = __webpack_require__(16);
 var http = __webpack_require__(605);
-var https = __webpack_require__(211);
+var https = __webpack_require__(34);
 var events = __webpack_require__(614);
 var assert = __webpack_require__(357);
 var util = __webpack_require__(669);
@@ -1234,10 +1241,10 @@ var __importStar = (this && this.__importStar) || function (mod) {
     return result;
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-const path_1 = __webpack_require__(622);
 const core = __importStar(__webpack_require__(470));
 const exec = __importStar(__webpack_require__(986));
-const constants_1 = __webpack_require__(694);
+const path_1 = __webpack_require__(622);
+const constants_1 = __webpack_require__(211);
 function isWindows() {
     return process.platform === 'win32';
 }
@@ -1297,9 +1304,15 @@ exports.gcloud = gcloud;
 /***/ }),
 
 /***/ 211:
-/***/ (function(module) {
+/***/ (function(__unusedmodule, exports) {
 
-module.exports = require("https");
+"use strict";
+
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.INSTALL_DIRECTORY = 'google-cloud-sdk';
+exports.WINDOWS_INSTALL_PATH = `C:\\${exports.INSTALL_DIRECTORY}`;
+exports.UBUNTU_INSTALL_PATH = `/home/runner/${exports.INSTALL_DIRECTORY}`;
+
 
 /***/ }),
 
@@ -3225,11 +3238,14 @@ var __importStar = (this && this.__importStar) || function (mod) {
     return result;
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-const utils_1 = __webpack_require__(163);
-const path_1 = __webpack_require__(622);
 const core = __importStar(__webpack_require__(470));
 const exec = __importStar(__webpack_require__(986));
 const child_process_1 = __webpack_require__(129);
+const path_1 = __webpack_require__(622);
+const utils_1 = __webpack_require__(163);
+/**
+ * Setup the Google Cloud SDK.
+ */
 function setup() {
     return __awaiter(this, void 0, void 0, function* () {
         const installScriptExtension = utils_1.isWindows() ? 'bat' : 'sh';
@@ -3748,9 +3764,9 @@ var __importStar = (this && this.__importStar) || function (mod) {
     return result;
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-const path_1 = __webpack_require__(622);
-const fs_1 = __webpack_require__(747);
 const core = __importStar(__webpack_require__(470));
+const fs_1 = __webpack_require__(747);
+const path_1 = __webpack_require__(622);
 const utils_1 = __webpack_require__(163);
 /**
  * Authenticate the Google Cloud SDK.
@@ -3811,10 +3827,13 @@ var __importStar = (this && this.__importStar) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const core = __importStar(__webpack_require__(470));
+const authenticate_1 = __webpack_require__(629);
 const download_1 = __webpack_require__(725);
 const setup_1 = __webpack_require__(526);
-const authenticate_1 = __webpack_require__(629);
 const utils_1 = __webpack_require__(163);
+/**
+ * Install the Google Cloud SDK.
+ */
 function install() {
     return __awaiter(this, void 0, void 0, function* () {
         try {
@@ -4052,19 +4071,6 @@ function isUnixExecutable(stats) {
 
 /***/ }),
 
-/***/ 694:
-/***/ (function(__unusedmodule, exports) {
-
-"use strict";
-
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.INSTALL_DIRECTORY = 'google-cloud-sdk';
-exports.WINDOWS_INSTALL_PATH = `C:\\${exports.INSTALL_DIRECTORY}`;
-exports.UBUNTU_INSTALL_PATH = `/home/runner/${exports.INSTALL_DIRECTORY}`;
-
-
-/***/ }),
-
 /***/ 722:
 /***/ (function(module) {
 
@@ -4212,7 +4218,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 Object.defineProperty(exports, "__esModule", { value: true });
 const url = __webpack_require__(835);
 const http = __webpack_require__(605);
-const https = __webpack_require__(211);
+const https = __webpack_require__(34);
 let fs;
 let tunnel;
 var HttpCodes;

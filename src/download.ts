@@ -6,7 +6,7 @@ import { resolve } from 'path';
 /**
  * Download the Google Cloud SDK archive.
  */
-export async function download() {
+export async function download(): Promise<void> {
   const downloadLink = getDownloadLink();
   const downloadPath = await tc.downloadTool(downloadLink);
   const extractionPath = resolve(getCloudSDKFolder(), '..');

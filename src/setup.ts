@@ -1,16 +1,19 @@
-import { getCloudSDKFolder, isWindows } from './utils';
-import { resolve } from 'path';
 import * as core from '@actions/core';
 import * as exec from '@actions/exec';
 import { execSync } from 'child_process';
-import { readdirSync } from 'fs';
+import { resolve } from 'path';
+import { getCloudSDKFolder, isWindows } from './utils';
 
-export async function setup() {
+/**
+ * Setup the Google Cloud SDK.
+ */
+export async function setup(): Promise<void> {
   const installScriptExtension = isWindows() ? 'bat' : 'sh';
   const installScript = resolve(
     getCloudSDKFolder(),
     `install.${installScriptExtension}`,
   );
+
   const args = [
     '--usage-reporting=false',
     '--command-completion=false',
