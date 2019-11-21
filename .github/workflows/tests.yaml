@@ -19,6 +19,7 @@ jobs:
         run: node dist/index.js
         env:
           INPUT_VERSION: ${{ matrix.version }}
+          INPUT_PROJECT: ${{ secrets.GCLOUD_PROJECT }}
           INPUT_COMPONENTS: beta
           INPUT_SERVICE-ACCOUNT-KEY: ${{ secrets.GCLOUD_AUTH }}
       - name: Test Google Cloud SDK CLI

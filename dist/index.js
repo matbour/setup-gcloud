@@ -1295,6 +1295,7 @@ exports.getDownloadLink = getDownloadLink;
 function gcloud(args, options = undefined) {
     return __awaiter(this, void 0, void 0, function* () {
         const gcloudPath = path_1.resolve(getCloudSDKFolder(), 'bin', 'gcloud' + (isWindows() ? '.cmd' : ''));
+        args.unshift('--quiet');
         yield exec.exec(gcloudPath, args, options);
     });
 }
@@ -3266,6 +3267,9 @@ function setup() {
         }
         else {
             yield exec.exec(installScript, args);
+        }
+        if (core.getInput('project')) {
+            yield utils_1.gcloud(['config', 'set', 'project', core.getInput('project')]);
         }
         const binPath = path_1.resolve(utils_1.getCloudSDKFolder(), 'bin');
         core.addPath(binPath);
