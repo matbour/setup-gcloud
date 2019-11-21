@@ -1,4 +1,4 @@
-name: @mathrix-education/gcloud
+name: mathrix-education/gcloud
 author: Mathrix Education SA
 description: Setup Google Cloud SDK on Github Actions.
 branding:
