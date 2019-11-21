@@ -1,16 +1,17 @@
-name: Test
+name: Tests
 on: push
 jobs:
   test:
     strategy:
       matrix:
         os: [ubuntu-latest, macos-latest]
+        version: [latest, 245.0.0]
       fail-fast: false
     runs-on: ${{ matrix.os }}
     steps:
       - uses: mathrix-education/actions-gcloud@dev
         with:
-          version: latest
+          version: ${{ matrix.version }}
           components: beta
           service-account-key: ${{ secrets.GCLOUD_AUTH }}
       - run: |
