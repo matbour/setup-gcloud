@@ -3254,7 +3254,7 @@ function setup() {
         const args = [
             '--usage-reporting=false',
             '--command-completion=false',
-            '--path-update=true',
+            '--path-update=false',
             '--usage-reporting=false',
             '--quiet',
         ];
@@ -3268,7 +3268,17 @@ function setup() {
         else {
             yield exec.exec(installScript, args);
         }
-        if (core.getInput('project')) {
+        if (core.getInput('project') === 'auto' &&
+            core.getInput('service-account-key')) {
+            // Project will be read from the service account key
+            const buffer = new Buffer(core.getInput('service-account-key'), 'base64');
+            const serviceAccountKey = JSON.parse(buffer.toString());
+            if (serviceAccountKey.hasOwnProperty('project_id')) {
+                yield utils_1.gcloud(['config', 'set', 'project', serviceAccountKey.project_id]);
+            }
+        }
+        else if (core.getInput('project') !== 'none') {
+            // Project was passed as input
             yield utils_1.gcloud(['config', 'set', 'project', core.getInput('project')]);
         }
         const binPath = path_1.resolve(utils_1.getCloudSDKFolder(), 'bin');
@@ -3779,6 +3789,8 @@ function authenticate() {
     return __awaiter(this, void 0, void 0, function* () {
         // If service account key is not provided, skip the authentication
         if (!core.getInput('service-account-key')) {
+            core.warning('No service-account-key input was passed.' +
+                'If it is intentional, you can safely ignore this warning.');
             return;
         }
         // Write the service account key

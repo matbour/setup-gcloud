@@ -17,7 +17,7 @@ export async function setup(): Promise<void> {
   const args = [
     '--usage-reporting=false',
     '--command-completion=false',
-    '--path-update=true',
+    '--path-update=false',
     '--usage-reporting=false',
     '--quiet',
   ];
@@ -33,7 +33,21 @@ export async function setup(): Promise<void> {
     await exec.exec(installScript, args);
   }
 
-  if (core.getInput('project')) {
+  if (
+    core.getInput('project') === 'auto' &&
+    core.getInput('service-account-key')
+  ) {
+    // Project will be read from the service account key
+    const buffer = new Buffer(core.getInput('service-account-key'), 'base64');
+    const serviceAccountKey: { project_id: string } = JSON.parse(
+      buffer.toString(),
+    );
+
+    if (serviceAccountKey.hasOwnProperty('project_id')) {
+      await gcloud(['config', 'set', 'project', serviceAccountKey.project_id]);
+    }
+  } else if (core.getInput('project') !== 'none') {
+    // Project was passed as input
     await gcloud(['config', 'set', 'project', core.getInput('project')]);
   }
 

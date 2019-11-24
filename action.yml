@@ -14,6 +14,7 @@ inputs:
   project:
     description: The default Google Cloud project. You can change it later.
     required: false
+    default: auto
   version:
     description: Google Cloud SDK to use. If left null, will use the latest one.
     required: false
