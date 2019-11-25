@@ -3997,6 +3997,9 @@ async function authenticate() {
 // EXTERNAL MODULE: ./node_modules/@actions/tool-cache/lib/tool-cache.js
 var tool_cache = __webpack_require__(533);
 
+// EXTERNAL MODULE: ./node_modules/@actions/io/lib/io.js
+var io = __webpack_require__(1);
+
 // CONCATENATED MODULE: ./src/download.ts
 
 
@@ -4009,7 +4012,7 @@ async function download() {
     const downloadLink = getDownloadLink();
     const downloadPath = await Object(tool_cache.downloadTool)(downloadLink);
     const extractionPath = Object(external_path_.resolve)(getCloudSDKFolder(), '..');
-    Object(external_fs_.mkdirSync)(getCloudSDKFolder());
+    await Object(io.mkdirP)(getCloudSDKFolder());
     if (downloadLink.endsWith('.zip')) {
         await Object(tool_cache.extractZip)(downloadPath, extractionPath);
     }
