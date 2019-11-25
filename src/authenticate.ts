@@ -9,6 +9,10 @@ import { gcloud } from './utils';
 export async function authenticate(): Promise<void> {
   // If service account key is not provided, skip the authentication
   if (!core.getInput('service-account-key')) {
+    core.warning(
+      'No service-account-key input was passed.' +
+        'If it is intentional, you can safely ignore this warning.',
+    );
     return;
   }
 
