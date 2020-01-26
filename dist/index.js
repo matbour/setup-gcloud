@@ -3905,7 +3905,7 @@ var exec = __webpack_require__(986);
 // CONCATENATED MODULE: ./src/constants.ts
 const INSTALL_DIRECTORY = 'google-cloud-sdk';
 const WINDOWS_INSTALL_PATH = `C:\\${INSTALL_DIRECTORY}`;
-const UBUNTU_INSTALL_PATH = `/home/runner/${INSTALL_DIRECTORY}`;
+const UBUNTU_INSTALL_PATH = `/usr/lib/${INSTALL_DIRECTORY}`;
 
 // CONCATENATED MODULE: ./src/utils.ts
 
@@ -3971,13 +3971,12 @@ async function gcloud(args, options = undefined) {
 async function authenticate() {
     // If service account key is not provided, skip the authentication
     if (!Object(core.getInput)('service-account-key')) {
-        Object(core.warning)('No service-account-key input was passed.' +
-            'If it is intentional, you can safely ignore this warning.');
+        Object(core.warning)('No service-account-key input was passed. If it is intentional, you can safely ignore this warning.');
         return;
     }
     // Write the service account key
     const serviceAccountKeyBase64 = Object(core.getInput)('service-account-key');
-    const serviceAccountKeyJson = Buffer.from(serviceAccountKeyBase64, 'base64');
+    const serviceAccountKeyJson = Buffer.from(serviceAccountKeyBase64, 'base64').toString();
     const serviceAccountKeyPath = Object(external_path_.resolve)(process.cwd(), 'gcloud.json');
     Object(external_fs_.writeFileSync)(serviceAccountKeyPath, serviceAccountKeyJson);
     // Activate the service account
@@ -3986,21 +3985,41 @@ async function authenticate() {
         'activate-service-account',
         `--key-file=${serviceAccountKeyPath}`,
     ]);
-    // Configure Docker if necessary
-    if (Object(core.getInput)('configure-docker')) {
-        await gcloud(['--quiet', 'auth', 'configure-docker']);
-    }
     // Remove the service account key
     Object(external_fs_.unlinkSync)(serviceAccountKeyPath);
+    // Configure the default project
+    if (Object(core.getInput)('project') === 'auto' &&
+        Object(core.getInput)('service-account-key') !== '') {
+        // Project will be read from the service account key
+        const serviceAccountKey = JSON.parse(serviceAccountKeyJson.toString());
+        if (serviceAccountKey.hasOwnProperty('project_id')) {
+            // If key has a project_id field, use it to set the default project
+            await gcloud(['config', 'set', 'project', serviceAccountKey.project_id]);
+        }
+        else {
+            Object(core.warning)('You gave a service account key, but it does not have the "project_id" key. Thus, the default project ' +
+                'cannot be configured. Your service account key might malformed.');
+        }
+    }
+    else if (Object(core.getInput)('project') !== 'none') {
+        // Project was passed as input
+        await gcloud(['config', 'set', 'project', Object(core.getInput)('project')]);
+    }
+    // Configure Docker if necessary
+    if (Object(core.getInput)('configure-docker') === 'true') {
+        await gcloud(['--quiet', 'auth', 'configure-docker']);
+    }
 }
-
-// EXTERNAL MODULE: ./node_modules/@actions/tool-cache/lib/tool-cache.js
-var tool_cache = __webpack_require__(533);
 
 // EXTERNAL MODULE: ./node_modules/@actions/io/lib/io.js
 var io = __webpack_require__(1);
 
+// EXTERNAL MODULE: ./node_modules/@actions/tool-cache/lib/tool-cache.js
+var tool_cache = __webpack_require__(533);
+
 // CONCATENATED MODULE: ./src/download.ts
+
+
 
 
 
@@ -4017,7 +4036,19 @@ async function download() {
         await Object(tool_cache.extractZip)(downloadPath, extractionPath);
     }
     else if (downloadLink.endsWith('.tar.gz')) {
-        await Object(tool_cache.extractTar)(downloadPath, extractionPath);
+        // Remove the existing installation of Google Cloud SDK on Ubuntu Runners
+        if (isUbuntu()) {
+            const cleanupScript = [
+                `sudo rm -rf ${UBUNTU_INSTALL_PATH}`,
+                `sudo tar -xf ${downloadPath} -C ${Object(external_path_.resolve)(UBUNTU_INSTALL_PATH, '..')}`,
+            ];
+            for (const line of cleanupScript) {
+                await Object(exec.exec)(line);
+            }
+        }
+        else {
+            await Object(tool_cache.extractTar)(downloadPath, extractionPath);
+        }
     }
 }
 
@@ -4050,21 +4081,18 @@ async function setup() {
         // @actions/exec does not exit on windows
         Object(external_child_process_.execSync)(`"${installScript}" ${args.join(' ')}`, { stdio: 'inherit' });
     }
+    else if (isUbuntu()) {
+        /*
+         * Since we extracted the SDK to a procted directory, we have also to run the installer as root, which has
+         * side-effects on the user $HOME folder.
+         */
+        await Object(exec.exec)(`sudo ${installScript}`, args);
+        const user = process.env.USER || '';
+        const home = process.env.HOME || '';
+        await Object(exec.exec)(`sudo chown -R ${user} ${home}`);
+    }
     else {
         await Object(exec.exec)(installScript, args);
-    }
-    if (Object(core.getInput)('project') === 'auto' &&
-        Object(core.getInput)('service-account-key')) {
-        // Project will be read from the service account key
-        const buffer = new Buffer(Object(core.getInput)('service-account-key'), 'base64');
-        const serviceAccountKey = JSON.parse(buffer.toString());
-        if (serviceAccountKey.hasOwnProperty('project_id')) {
-            await gcloud(['config', 'set', 'project', serviceAccountKey.project_id]);
-        }
-    }
-    else if (Object(core.getInput)('project') !== 'none') {
-        // Project was passed as input
-        await gcloud(['config', 'set', 'project', Object(core.getInput)('project')]);
     }
     const binPath = Object(external_path_.resolve)(getCloudSDKFolder(), 'bin');
     Object(core.addPath)(binPath);

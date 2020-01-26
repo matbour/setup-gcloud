@@ -4,13 +4,15 @@ jobs:
   test:
     strategy:
       matrix:
-        os: [ubuntu-latest, macos-latest]
-        version: [latest, 245.0.0]
+        #os: [ubuntu-latest, macos-latest]
+        #version: [latest, 245.0.0]
+        os: [ubuntu-latest]
+        version: [latest]
       fail-fast: false
     runs-on: ${{ matrix.os }}
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v1
+        uses: actions/checkout@v2
       - name: Setup Node.js 12
         uses: actions/setup-node@v1.2.0
         with:
@@ -19,7 +21,8 @@ jobs:
         run: node dist/index.js
         env:
           INPUT_VERSION: ${{ matrix.version }}
-          INPUT_PROJECT: ${{ secrets.GCLOUD_PROJECT }}
+          INPUT_PROJECT: auto
+          # INPUT_PROJECT: ${{ secrets.GCLOUD_PROJECT }}
           INPUT_COMPONENTS: beta
           INPUT_SERVICE-ACCOUNT-KEY: ${{ secrets.GCLOUD_AUTH }}
       - name: Test Google Cloud SDK CLI
