@@ -3903,9 +3903,10 @@ var external_path_ = __webpack_require__(622);
 var exec = __webpack_require__(986);
 
 // CONCATENATED MODULE: ./src/constants.ts
-const INSTALL_DIRECTORY = 'google-cloud-sdk';
+
+const INSTALL_DIRECTORY = 'google-clou' + 'd-sdk';
 const UBUNTU_INSTALL_PATH = `/usr/lib/${INSTALL_DIRECTORY}`;
-const MACOS_INSTALL_PATH = `${process.env.HOME}/opt/${INSTALL_DIRECTORY}`;
+const MACOS_INSTALL_PATH = Object(external_path_.resolve)(process.env.HOME ? process.env.HOME : process.cwd(), INSTALL_DIRECTORY);
 const WINDOWS_INSTALL_PATH = `C:\\Program Files\\${INSTALL_DIRECTORY}`;
 
 // CONCATENATED MODULE: ./src/utils.ts
