@@ -1,10 +1,12 @@
 name: Tests
-on: push
+on:
+  push:
+    branches: ['**']
 jobs:
   test:
     strategy:
       matrix:
-        os: [ubuntu-latest, macos-latest]
+        os: [ubuntu-latest, macos-latest, windows-latest]
         version: [latest, 245.0.0]
         project: [auto, matrix-education]
         exclude:
@@ -18,6 +20,15 @@ jobs:
             version: 245.0.0
             project: auto
           - os: macos-latest
+            version: 245.0.0
+            project: matrix-education
+          - os: windows-latest
+            version: latest
+            project: matrix-education
+          - os: windows-latest
+            version: 245.0.0
+            project: auto
+          - os: windows-latest
             version: 245.0.0
             project: matrix-education
       fail-fast: false

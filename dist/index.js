@@ -3903,25 +3903,40 @@ var external_path_ = __webpack_require__(622);
 var exec = __webpack_require__(986);
 
 // CONCATENATED MODULE: ./src/constants.ts
+var _a;
+
 const INSTALL_DIRECTORY = 'google-cloud-sdk';
-const WINDOWS_INSTALL_PATH = `C:\\${INSTALL_DIRECTORY}`;
 const UBUNTU_INSTALL_PATH = `/usr/lib/${INSTALL_DIRECTORY}`;
+const MACOS_INSTALL_PATH = Object(external_path_.resolve)((_a = process.env.HOME, (_a !== null && _a !== void 0 ? _a : process.cwd())), INSTALL_DIRECTORY);
+const WINDOWS_INSTALL_PATH = `C:\\Program Files\\${INSTALL_DIRECTORY}`;
 
 // CONCATENATED MODULE: ./src/utils.ts
 
 
 
 
+/**
+ * Check if the runner is Windows-based.
+ */
 function isWindows() {
     return process.platform === 'win32';
 }
+/**
+ * Check if the runner is MacOS-based.
+ */
 function isMacOS() {
     return process.platform === 'darwin';
 }
+/**
+ * Check if the runner is Ubuntu-based.
+ */
 function isUbuntu() {
     return process.platform === 'linux';
 }
-function getCloudSDKFolder() {
+/**
+ * Get the Google Cloud SDK installation directory.
+ */
+function getCloudSDKDirectory() {
     if (isWindows()) {
         return WINDOWS_INSTALL_PATH;
     }
@@ -3929,10 +3944,12 @@ function getCloudSDKFolder() {
         return UBUNTU_INSTALL_PATH;
     }
     else {
-        const home = process.env.HOME ? process.env.HOME : process.cwd();
-        return Object(external_path_.resolve)(home, INSTALL_DIRECTORY);
+        return MACOS_INSTALL_PATH;
     }
 }
+/**
+ * Get the Google Cloud SDK download link
+ */
 function getDownloadLink() {
     const baseUrl = 'https://dl.google.com/dl/cloudsdk/channels/rapid';
     const version = Object(core.getInput)('version');
@@ -3954,9 +3971,18 @@ function getDownloadLink() {
         return `${baseUrl}/downloads/google-cloud-sdk-${version}-linux-x86_64.tar.gz`;
     }
 }
+/**
+ * Execute a gcloud command
+ * @param args The gcloud args
+ * @param options The command options
+ */
 async function gcloud(args, options = undefined) {
-    const gcloudPath = Object(external_path_.resolve)(getCloudSDKFolder(), 'bin', 'gcloud' + (isWindows() ? '.cmd' : ''));
-    args.unshift('--quiet');
+    let gcloudPath = Object(external_path_.resolve)(getCloudSDKDirectory(), 'bin', 'gcloud' + (isWindows() ? '.cmd' : ''));
+    if (isWindows()) {
+        // Windows installation directory is C:\Program Files and thus need to be escaped
+        gcloudPath = gcloudPath.replace(getCloudSDKDirectory(), `"${getCloudSDKDirectory()}"`);
+    }
+    args.unshift('--quiet'); // Add quiet to all commands
     await Object(exec.exec)(gcloudPath, args, options);
 }
 
@@ -4011,9 +4037,6 @@ async function authenticate() {
     }
 }
 
-// EXTERNAL MODULE: ./node_modules/@actions/io/lib/io.js
-var io = __webpack_require__(1);
-
 // EXTERNAL MODULE: ./node_modules/@actions/tool-cache/lib/tool-cache.js
 var tool_cache = __webpack_require__(533);
 
@@ -4030,25 +4053,25 @@ var tool_cache = __webpack_require__(533);
 async function download() {
     const downloadLink = getDownloadLink();
     const downloadPath = await Object(tool_cache.downloadTool)(downloadLink);
-    const extractionPath = Object(external_path_.resolve)(getCloudSDKFolder(), '..');
-    await Object(io.mkdirP)(getCloudSDKFolder());
+    const extractionPath = Object(external_path_.resolve)(getCloudSDKDirectory(), '..');
     if (downloadLink.endsWith('.zip')) {
+        // Windows: simply extract zip file
         await Object(tool_cache.extractZip)(downloadPath, extractionPath);
     }
     else if (downloadLink.endsWith('.tar.gz')) {
-        // Remove the existing installation of Google Cloud SDK on Ubuntu Runners
         if (isUbuntu()) {
-            const cleanupScript = [
-                `sudo rm -rf ${UBUNTU_INSTALL_PATH}`,
-                `sudo tar -xf ${downloadPath} -C ${Object(external_path_.resolve)(UBUNTU_INSTALL_PATH, '..')}`,
-            ];
-            for (const line of cleanupScript) {
-                await Object(exec.exec)(line);
-            }
+            // Ubuntu: Remove the existing installation of Google Cloud SDK
+            await Object(exec.exec)(`sudo rm -rf ${UBUNTU_INSTALL_PATH}`);
+            await Object(exec.exec)(`sudo tar -xf ${downloadPath} -C ${extractionPath}`);
         }
         else {
+            // MacOS: simply extract tar.gz file
             await Object(tool_cache.extractTar)(downloadPath, extractionPath);
         }
+    }
+    else {
+        // Should never be reached
+        Object(core.setFailed)(`Unexpected extension (expected zip or tar.gz), but got ${downloadLink}`);
     }
 }
 
@@ -4062,11 +4085,11 @@ var external_child_process_ = __webpack_require__(129);
 
 
 /**
- * Setup the Google Cloud SDK.
+ * Setup the Google Cloud SDK by running the install script.
  */
 async function setup() {
     const installScriptExtension = isWindows() ? 'bat' : 'sh';
-    const installScript = Object(external_path_.resolve)(getCloudSDKFolder(), `install.${installScriptExtension}`);
+    const installScript = Object(external_path_.resolve)(getCloudSDKDirectory(), `install.${installScriptExtension}`);
     const args = [
         '--usage-reporting=false',
         '--command-completion=false',
@@ -4074,27 +4097,32 @@ async function setup() {
         '--usage-reporting=false',
         '--quiet',
     ];
-    if (Object(core.getInput)('components')) {
+    if (Object(core.getInput)('components') !== '') {
         args.push('--additional-components=' + Object(core.getInput)('components'));
     }
-    if (isWindows()) {
-        // @actions/exec does not exit on windows
-        Object(external_child_process_.execSync)(`"${installScript}" ${args.join(' ')}`, { stdio: 'inherit' });
-    }
-    else if (isUbuntu()) {
+    if (isUbuntu()) {
         /*
-         * Since we extracted the SDK to a procted directory, we have also to run the installer as root, which has
-         * side-effects on the user $HOME folder.
+         * On Ubuntu, since we extracted the SDK to a protected directory, we have also to run the installer as root, which
+         * has side-effects on the user $HOME folder.
          */
         await Object(exec.exec)(`sudo ${installScript}`, args);
         const user = process.env.USER || '';
         const home = process.env.HOME || '';
         await Object(exec.exec)(`sudo chown -R ${user} ${home}`);
     }
-    else {
+    else if (isMacOS()) {
+        // On MacOS, we simply have to run the install script
         await Object(exec.exec)(installScript, args);
     }
-    const binPath = Object(external_path_.resolve)(getCloudSDKFolder(), 'bin');
+    else if (isWindows()) {
+        // @actions/exec does not exit on windows
+        Object(external_child_process_.execSync)(`"${installScript}" ${args.join(' ')}`, { stdio: 'inherit' });
+    }
+    else {
+        // Should never be reached
+        Object(core.setFailed)(`Unexpected os platform, got: ${process.platform}`);
+    }
+    const binPath = Object(external_path_.resolve)(getCloudSDKDirectory(), 'bin');
     Object(core.addPath)(binPath);
 }
 
@@ -4104,16 +4132,11 @@ async function setup() {
 
 
 
-
 /**
  * Install the Google Cloud SDK.
  */
 async function install() {
     try {
-        // Currently, Windows is disabled because the installer does not work properly
-        if (isWindows()) {
-            Object(core.error)('This action does not support Windows for now. PR are welcome!');
-        }
         await download();
         await setup();
         await authenticate();

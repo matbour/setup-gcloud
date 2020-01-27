@@ -1,5 +1,4 @@
 import * as core from '@actions/core';
-import * as exec from '@actions/exec';
 import { unlinkSync, writeFileSync } from 'fs';
 import { resolve } from 'path';
 import { gcloud } from './utils';
