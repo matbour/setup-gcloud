@@ -4027,7 +4027,7 @@ async function authenticate() {
                 'cannot be configured. Your service account key might malformed.');
         }
     }
-    else if (Object(core.getInput)('project') !== 'none') {
+    else if (!['', 'none', 'auto'].includes(Object(core.getInput)('project'))) {
         // Project was passed as input
         await gcloud(['config', 'set', 'project', Object(core.getInput)('project')]);
     }

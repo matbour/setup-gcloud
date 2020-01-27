@@ -31,20 +31,16 @@ guessing and automatic Docker Configuration.
 
 ## Usage
 ### Supported operating systems
-This action currently supports only Mac-OS and Ubuntu based systems.
-Indeed, despite our efforts, we have not been able to launch the
-installation of the Google Cloud SDK on Windows.
-
-The supported operating systems matrix is the following:
+This action currently supports Ubuntu, Mac-OS and Windows based systems. The supported operating systems matrix is
+the following:
 
 | Operating system | Status |
 |------------------|-------|
 | `ubuntu-latest`  | ![3.1] |
 | `macos-latest`   | ![3.1] |
-| `windows-latest` | ![3.2] |
+| `windows-latest` | ![3.1] |
 
 [3.1]: https://img.shields.io/badge/status-supported-brightgreen
-[3.2]: https://img.shields.io/badge/status-unsupported-red
 
 ### Inputs
 | Name                  | Type                           | Default value |

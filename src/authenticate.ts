@@ -53,7 +53,7 @@ export async function authenticate(): Promise<void> {
           'cannot be configured. Your service account key might malformed.',
       );
     }
-  } else if (core.getInput('project') !== 'none') {
+  } else if (!['', 'none', 'auto'].includes(core.getInput('project'))) {
     // Project was passed as input
     await gcloud(['config', 'set', 'project', core.getInput('project')]);
   }
