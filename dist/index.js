@@ -4035,10 +4035,14 @@ async function authenticate() {
     }
 }
 
+// EXTERNAL MODULE: ./node_modules/@actions/io/lib/io.js
+var io = __webpack_require__(1);
+
 // EXTERNAL MODULE: ./node_modules/@actions/tool-cache/lib/tool-cache.js
 var tool_cache = __webpack_require__(533);
 
 // CONCATENATED MODULE: ./src/download.ts
+
 
 
 
@@ -4065,6 +4069,7 @@ async function download() {
         }
         else {
             // MacOS: simply extract tar.gz file
+            await Object(io.mkdirP)(MACOS_INSTALL_PATH);
             await Object(tool_cache.extractTar)(downloadPath, MACOS_INSTALL_PATH);
         }
     }
