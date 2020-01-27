@@ -3906,7 +3906,7 @@ var exec = __webpack_require__(986);
 const INSTALL_DIRECTORY = 'google-cloud-sdk';
 const WINDOWS_INSTALL_PATH = `C:\\Program Files\\${INSTALL_DIRECTORY}`;
 const MACOS_INSTALL_PATH = `/usr/lib/${INSTALL_DIRECTORY}`;
-const UBUNTU_INSTALL_PATH = `/usr/lib/${INSTALL_DIRECTORY}`;
+const UBUNTU_INSTALL_PATH = `${process.env.HOME}/opt/${INSTALL_DIRECTORY}`;
 
 // CONCATENATED MODULE: ./src/utils.ts
 
@@ -3942,8 +3942,7 @@ function getCloudSDKDirectory() {
         return UBUNTU_INSTALL_PATH;
     }
     else {
-        const home = process.env.HOME ? process.env.HOME : process.cwd();
-        return Object(external_path_.resolve)(home, INSTALL_DIRECTORY);
+        return MACOS_INSTALL_PATH;
     }
 }
 /**
@@ -4036,14 +4035,10 @@ async function authenticate() {
     }
 }
 
-// EXTERNAL MODULE: ./node_modules/@actions/io/lib/io.js
-var io = __webpack_require__(1);
-
 // EXTERNAL MODULE: ./node_modules/@actions/tool-cache/lib/tool-cache.js
 var tool_cache = __webpack_require__(533);
 
 // CONCATENATED MODULE: ./src/download.ts
-
 
 
 
@@ -4057,21 +4052,20 @@ async function download() {
     const downloadLink = getDownloadLink();
     const downloadPath = await Object(tool_cache.downloadTool)(downloadLink);
     const extractionPath = Object(external_path_.resolve)(getCloudSDKDirectory(), '..');
-    await Object(io.mkdirP)(getCloudSDKDirectory());
     if (downloadLink.endsWith('.zip')) {
-        // Extract .zip (Windows).
+        // Windows: simply extract zip file
         await Object(tool_cache.extractZip)(downloadPath, extractionPath);
     }
     else if (downloadLink.endsWith('.tar.gz')) {
         if (isUbuntu()) {
-            // Remove the existing installation of Google Cloud SDK on Ubuntu Runners
+            // Ubuntu: Remove the existing installation of Google Cloud SDK
             const parentInstallDir = Object(external_path_.resolve)(UBUNTU_INSTALL_PATH, '..');
             await Object(exec.exec)(`sudo rm -rf ${UBUNTU_INSTALL_PATH}`);
             await Object(exec.exec)(`sudo tar -xf ${downloadPath} -C ${parentInstallDir}`);
         }
         else {
-            // Simply extract the tar.gz archive
-            await Object(tool_cache.extractTar)(downloadPath, extractionPath);
+            // MacOS: simply extract tar.gz file
+            await Object(tool_cache.extractTar)(downloadPath, MACOS_INSTALL_PATH);
         }
     }
     else {
@@ -4090,7 +4084,7 @@ var external_child_process_ = __webpack_require__(129);
 
 
 /**
- * Setup the Google Cloud SDK.
+ * Setup the Google Cloud SDK by running the install script.
  */
 async function setup() {
     const installScriptExtension = isWindows() ? 'bat' : 'sh';
@@ -4109,9 +4103,9 @@ async function setup() {
         // @actions/exec does not exit on windows
         Object(external_child_process_.execSync)(`"${installScript}" ${args.join(' ')}`, { stdio: 'inherit' });
     }
-    else if (isUbuntu()) {
+    else if (isUbuntu() || isMacOS()) {
         /*
-         * Since we extracted the SDK to a procted directory, we have also to run the installer as root, which has
+         * Since we extracted the SDK to a protected directory, we have also to run the installer as root, which has
          * side-effects on the user $HOME folder.
          */
         await Object(exec.exec)(`sudo ${installScript}`, args);
@@ -4120,7 +4114,8 @@ async function setup() {
         await Object(exec.exec)(`sudo chown -R ${user} ${home}`);
     }
     else {
-        await Object(exec.exec)(installScript, args);
+        // Should never be reached
+        Object(core.setFailed)(`Unexpected os platform, got: ${process.platform}`);
     }
     const binPath = Object(external_path_.resolve)(getCloudSDKDirectory(), 'bin');
     Object(core.addPath)(binPath);

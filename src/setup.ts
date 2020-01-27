@@ -2,10 +2,10 @@ import * as core from '@actions/core';
 import * as exec from '@actions/exec';
 import { execSync } from 'child_process';
 import { resolve } from 'path';
-import { getCloudSDKDirectory, isUbuntu, isWindows } from './utils';
+import { getCloudSDKDirectory, isMacOS, isUbuntu, isWindows } from './utils';
 
 /**
- * Setup the Google Cloud SDK.
+ * Setup the Google Cloud SDK by running the install script.
  */
 export async function setup(): Promise<void> {
   const installScriptExtension = isWindows() ? 'bat' : 'sh';
@@ -29,9 +29,9 @@ export async function setup(): Promise<void> {
   if (isWindows()) {
     // @actions/exec does not exit on windows
     execSync(`"${installScript}" ${args.join(' ')}`, { stdio: 'inherit' });
-  } else if (isUbuntu()) {
+  } else if (isUbuntu() || isMacOS()) {
     /*
-     * Since we extracted the SDK to a procted directory, we have also to run the installer as root, which has
+     * Since we extracted the SDK to a protected directory, we have also to run the installer as root, which has
      * side-effects on the user $HOME folder.
      */
     await exec.exec(`sudo ${installScript}`, args);
@@ -40,7 +40,8 @@ export async function setup(): Promise<void> {
     const home = process.env.HOME || '';
     await exec.exec(`sudo chown -R ${user} ${home}`);
   } else {
-    await exec.exec(installScript, args);
+    // Should never be reached
+    core.setFailed(`Unexpected os platform, got: ${process.platform}`);
   }
 
   const binPath = resolve(getCloudSDKDirectory(), 'bin');

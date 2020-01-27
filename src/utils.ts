@@ -4,6 +4,7 @@ import { ExecOptions } from '@actions/exec/lib/interfaces';
 import { resolve } from 'path';
 import {
   INSTALL_DIRECTORY,
+  MACOS_INSTALL_PATH,
   UBUNTU_INSTALL_PATH,
   WINDOWS_INSTALL_PATH,
 } from './constants';
@@ -38,8 +39,7 @@ export function getCloudSDKDirectory(): string {
   } else if (isUbuntu()) {
     return UBUNTU_INSTALL_PATH;
   } else {
-    const home = process.env.HOME ? process.env.HOME : process.cwd();
-    return resolve(home, INSTALL_DIRECTORY);
+    return MACOS_INSTALL_PATH;
   }
 }
 
