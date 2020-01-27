@@ -3904,7 +3904,8 @@ var exec = __webpack_require__(986);
 
 // CONCATENATED MODULE: ./src/constants.ts
 const INSTALL_DIRECTORY = 'google-cloud-sdk';
-const WINDOWS_INSTALL_PATH = `C:\\${INSTALL_DIRECTORY}`;
+const WINDOWS_INSTALL_PATH = `C:\\Program Files\\${INSTALL_DIRECTORY}`;
+const MACOS_INSTALL_PATH = `/usr/lib/${INSTALL_DIRECTORY}`;
 const UBUNTU_INSTALL_PATH = `/usr/lib/${INSTALL_DIRECTORY}`;
 
 // CONCATENATED MODULE: ./src/utils.ts
@@ -4033,22 +4034,23 @@ async function download() {
     const extractionPath = Object(external_path_.resolve)(getCloudSDKFolder(), '..');
     await Object(io.mkdirP)(getCloudSDKFolder());
     if (downloadLink.endsWith('.zip')) {
+        // Extract .zip (Windows).
         await Object(tool_cache.extractZip)(downloadPath, extractionPath);
     }
     else if (downloadLink.endsWith('.tar.gz')) {
-        // Remove the existing installation of Google Cloud SDK on Ubuntu Runners
         if (isUbuntu()) {
-            const cleanupScript = [
-                `sudo rm -rf ${UBUNTU_INSTALL_PATH}`,
-                `sudo tar -xf ${downloadPath} -C ${Object(external_path_.resolve)(UBUNTU_INSTALL_PATH, '..')}`,
-            ];
-            for (const line of cleanupScript) {
-                await Object(exec.exec)(line);
-            }
+            // Remove the existing installation of Google Cloud SDK on Ubuntu Runners
+            const parentInstallDir = Object(external_path_.resolve)(UBUNTU_INSTALL_PATH, '..');
+            await Object(exec.exec)(`sudo rm -rf ${UBUNTU_INSTALL_PATH}`);
+            await Object(exec.exec)(`sudo tar -xf ${downloadPath} -C ${parentInstallDir}`);
         }
         else {
+            // Simply extract the tar.gz archive
             await Object(tool_cache.extractTar)(downloadPath, extractionPath);
         }
+    }
+    else {
+        // Should never be reached
     }
 }
 
@@ -4104,16 +4106,11 @@ async function setup() {
 
 
 
-
 /**
  * Install the Google Cloud SDK.
  */
 async function install() {
     try {
-        // Currently, Windows is disabled because the installer does not work properly
-        if (isWindows()) {
-            Object(core.error)('This action does not support Windows for now. PR are welcome!');
-        }
         await download();
         await setup();
         await authenticate();

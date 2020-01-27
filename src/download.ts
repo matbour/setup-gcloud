@@ -16,20 +16,20 @@ export async function download(): Promise<void> {
   await io.mkdirP(getCloudSDKFolder());
 
   if (downloadLink.endsWith('.zip')) {
+    // Extract .zip (Windows).
     await tc.extractZip(downloadPath, extractionPath);
   } else if (downloadLink.endsWith('.tar.gz')) {
-    // Remove the existing installation of Google Cloud SDK on Ubuntu Runners
     if (isUbuntu()) {
-      const cleanupScript = [
-        `sudo rm -rf ${UBUNTU_INSTALL_PATH}`,
-        `sudo tar -xf ${downloadPath} -C ${resolve(UBUNTU_INSTALL_PATH, '..')}`,
-      ];
+      // Remove the existing installation of Google Cloud SDK on Ubuntu Runners
+      const parentInstallDir = resolve(UBUNTU_INSTALL_PATH, '..');
 
-      for (const line of cleanupScript) {
-        await exec.exec(line);
-      }
+      await exec.exec(`sudo rm -rf ${UBUNTU_INSTALL_PATH}`);
+      await exec.exec(`sudo tar -xf ${downloadPath} -C ${parentInstallDir}`);
     } else {
+      // Simply extract the tar.gz archive
       await tc.extractTar(downloadPath, extractionPath);
     }
+  } else {
+    // Should never be reached
   }
 }
