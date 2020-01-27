@@ -55,13 +55,21 @@ export async function gcloud(
   args: string[],
   options: any = undefined,
 ): Promise<void> {
-  const gcloudPath = resolve(
+  let gcloudPath = resolve(
     getCloudSDKFolder(),
     'bin',
     'gcloud' + (isWindows() ? '.cmd' : ''),
   );
 
-  args.unshift('--quiet');
+  if (isWindows()) {
+    // Windows installation directory is C:\Program Files and thus need to be escaped
+    gcloudPath = gcloudPath.replace(
+      getCloudSDKFolder(),
+      `"${getCloudSDKFolder()}"`,
+    );
+  }
+
+  args.unshift('--quiet'); // Add quiet to all commands
 
   await exec.exec(gcloudPath, args, options);
 }

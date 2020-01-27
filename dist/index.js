@@ -3956,8 +3956,12 @@ function getDownloadLink() {
     }
 }
 async function gcloud(args, options = undefined) {
-    const gcloudPath = Object(external_path_.resolve)(getCloudSDKFolder(), 'bin', 'gcloud' + (isWindows() ? '.cmd' : ''));
-    args.unshift('--quiet');
+    let gcloudPath = Object(external_path_.resolve)(getCloudSDKFolder(), 'bin', 'gcloud' + (isWindows() ? '.cmd' : ''));
+    if (isWindows()) {
+        // Windows installation directory is C:\Program Files and thus need to be escaped
+        gcloudPath = gcloudPath.replace(getCloudSDKFolder(), `"${getCloudSDKFolder()}"`);
+    }
+    args.unshift('--quiet'); // Add quiet to all commands
     await Object(exec.exec)(gcloudPath, args, options);
 }
 
