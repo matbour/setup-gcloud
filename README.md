@@ -1,4 +1,4 @@
-# @mathrix-education/setup-gcloud
+# mathrix-education/setup-gcloud
 Install the Google Cloud SDK in your GitHub Actions workflow.
 
 **This action is not supported by Google Cloud.**
