@@ -2,15 +2,15 @@ import * as core from '@actions/core';
 import * as exec from '@actions/exec';
 import { execSync } from 'child_process';
 import { resolve } from 'path';
-import { gcloud, getCloudSDKFolder, isWindows } from './utils';
+import { getCloudSDKDirectory, isMacOS, isUbuntu, isWindows } from './utils';
 
 /**
- * Setup the Google Cloud SDK.
+ * Setup the Google Cloud SDK by running the install script.
  */
 export async function setup(): Promise<void> {
   const installScriptExtension = isWindows() ? 'bat' : 'sh';
   const installScript = resolve(
-    getCloudSDKFolder(),
+    getCloudSDKDirectory(),
     `install.${installScriptExtension}`,
   );
 
@@ -22,35 +22,31 @@ export async function setup(): Promise<void> {
     '--quiet',
   ];
 
-  if (core.getInput('components')) {
+  if (core.getInput('components') !== '') {
     args.push('--additional-components=' + core.getInput('components'));
   }
 
-  if (isWindows()) {
+  if (isUbuntu()) {
+    /*
+     * On Ubuntu, since we extracted the SDK to a protected directory, we have also to run the installer as root, which
+     * has side-effects on the user $HOME folder.
+     */
+    await exec.exec(`sudo ${installScript}`, args);
+
+    const user = process.env.USER || '';
+    const home = process.env.HOME || '';
+    await exec.exec(`sudo chown -R ${user} ${home}`);
+  } else if (isMacOS()) {
+    // On MacOS, we simply have to run the install script
+    await exec.exec(installScript, args);
+  } else if (isWindows()) {
     // @actions/exec does not exit on windows
     execSync(`"${installScript}" ${args.join(' ')}`, { stdio: 'inherit' });
   } else {
-    await exec.exec(installScript, args);
+    // Should never be reached
+    core.setFailed(`Unexpected os platform, got: ${process.platform}`);
   }
 
-  if (
-    core.getInput('project') === 'auto' &&
-    core.getInput('service-account-key')
-  ) {
-    // Project will be read from the service account key
-    const buffer = new Buffer(core.getInput('service-account-key'), 'base64');
-    const serviceAccountKey: { project_id: string } = JSON.parse(
-      buffer.toString(),
-    );
-
-    if (serviceAccountKey.hasOwnProperty('project_id')) {
-      await gcloud(['config', 'set', 'project', serviceAccountKey.project_id]);
-    }
-  } else if (core.getInput('project') !== 'none') {
-    // Project was passed as input
-    await gcloud(['config', 'set', 'project', core.getInput('project')]);
-  }
-
-  const binPath = resolve(getCloudSDKFolder(), 'bin');
+  const binPath = resolve(getCloudSDKDirectory(), 'bin');
   core.addPath(binPath);
 }

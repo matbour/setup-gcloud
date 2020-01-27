@@ -11,18 +11,18 @@ inputs:
   version:
     description: Google Cloud SDK to use. If left null, will use the latest one.
     required: false
-    default: latest
+    default: 'latest'
   service-account-key:
     description: The service account key to use, base64-encoded.
     required: false
   project:
     description: The default Google Cloud project. You can change it later.
     required: false
-    default: auto
+    default: 'auto'
   components:
-    description: Install additional components (e.g. beta, gsutils, etc.)
+    description: Install additional components (e.g. beta, gsutil, etc.)
     required: false
   configure-docker:
     description: Configure Docker to interact with Google Cloud Container Registry.
     required: false
-    default: false
+    default: 'false'

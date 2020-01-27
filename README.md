@@ -1,4 +1,11 @@
-# @mathrix-education/setup-gcloud
+# mathrix-education/setup-gcloud
+
+![Workflow status][workflow]
+![Latest release][latest-release]
+
+[workflow]: https://img.shields.io/github/workflow/status/mathrix-education/setup-gcloud/Tests?style=flat-square
+[latest-release]: https://img.shields.io/github/v/release/mathrix-education/setup-gcloud?label=latest%20release&style=flat-square
+
 Install the Google Cloud SDK in your GitHub Actions workflow.
 
 **This action is not supported by Google Cloud.**
@@ -18,27 +25,29 @@ If the official [@actions/gcloud][2.1] action works perfectly, the fact that it 
 So we chose to create a JavaScript action to fix this problem, also adding additional features, such as Docker
 authentication with Google Cloud Container Registry.
 
+Update [2019/01/27]: The [GoogleCloudPlatform official GitHub organization][2.4] has released an official
+[setup-gcloud][2.5] action. Compared to Mathrix's one, we provide some additional automation tasks, such as project
+guessing and automatic Docker Configuration.
+
 [2.1]: https://github.com/actions/gcloud
 [2.2]: https://github.com/actions/gcloud/tree/master/auth
 [2.3]: https://github.com/actions/gcloud/tree/master/cli
+[2.4]: https://github.com/GoogleCloudPlatform
+[2.5]: https://github.com/GoogleCloudPlatform/github-actions/tree/master/setup-gcloud
 
 
 ## Usage
 ### Supported operating systems
-This action currently supports only Mac-OS and Ubuntu based systems.
-Indeed, despite our efforts, we have not been able to launch the
-installation of the Google Cloud SDK on Windows.
-
-The supported operating systems matrix is the following:
+This action currently supports Ubuntu, Mac-OS and Windows based systems. The supported operating systems matrix is
+the following:
 
 | Operating system | Status |
 |------------------|-------|
 | `ubuntu-latest`  | ![3.1] |
 | `macos-latest`   | ![3.1] |
-| `windows-latest` | ![3.2] |
+| `windows-latest` | ![3.1] |
 
 [3.1]: https://img.shields.io/badge/status-supported-brightgreen
-[3.2]: https://img.shields.io/badge/status-unsupported-red
 
 ### Inputs
 | Name                  | Type                           | Default value |
