@@ -4104,19 +4104,24 @@ async function setup() {
     if (Object(core.getInput)('components') !== '') {
         args.push('--additional-components=' + Object(core.getInput)('components'));
     }
-    if (isWindows()) {
-        // @actions/exec does not exit on windows
-        Object(external_child_process_.execSync)(`"${installScript}" ${args.join(' ')}`, { stdio: 'inherit' });
-    }
-    else if (isUbuntu() || isMacOS()) {
+    if (isUbuntu()) {
         /*
-         * Since we extracted the SDK to a protected directory, we have also to run the installer as root, which has
-         * side-effects on the user $HOME folder.
+         * On Ubuntu, since we extracted the SDK to a protected directory, we have also to run the installer as root, which
+         * has side-effects on the user $HOME folder.
          */
         await Object(exec.exec)(`sudo ${installScript}`, args);
         const user = process.env.USER || '';
         const home = process.env.HOME || '';
         await Object(exec.exec)(`sudo chown -R ${user} ${home}`);
+    }
+    else if (isMacOS()) {
+        // On MacOS, we simply have to run the install script
+        await Object(exec.exec)(`ls -l ${getCloudSDKDirectory()}`);
+        await Object(exec.exec)(installScript, args);
+    }
+    else if (isWindows()) {
+        // @actions/exec does not exit on windows
+        Object(external_child_process_.execSync)(`"${installScript}" ${args.join(' ')}`, { stdio: 'inherit' });
     }
     else {
         // Should never be reached

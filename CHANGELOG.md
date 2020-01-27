@@ -1,6 +1,7 @@
 # Changelog
 
 ## Version 1.0.0 - Stable release
+- **feat**: added support for Windows
 - **fixed**: inputs are now compared to strings
 - **fixed**: project guess using the `service-account-key` input
 - **changed**: new install directories
