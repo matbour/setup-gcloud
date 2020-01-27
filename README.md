@@ -18,9 +18,15 @@ If the official [@actions/gcloud][2.1] action works perfectly, the fact that it 
 So we chose to create a JavaScript action to fix this problem, also adding additional features, such as Docker
 authentication with Google Cloud Container Registry.
 
+Update [2019/01/27]: The [GoogleCloudPlatform official GitHub organization][2.4] has released an official
+[setup-gcloud][2.5] action. Compared to Mathrix's one, we provide some additional automation tasks, such as project
+guessing and automatic Docker Configuration.
+
 [2.1]: https://github.com/actions/gcloud
 [2.2]: https://github.com/actions/gcloud/tree/master/auth
 [2.3]: https://github.com/actions/gcloud/tree/master/cli
+[2.4]: https://github.com/GoogleCloudPlatform
+[2.5]: https://github.com/GoogleCloudPlatform/github-actions/tree/master/setup-gcloud
 
 
 ## Usage
