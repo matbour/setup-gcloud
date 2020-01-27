@@ -6,17 +6,20 @@ jobs:
       matrix:
         os: [ubuntu-latest, macos-latest]
         version: [latest, 245.0.0]
-        project: [auto, 'matrix-education']
+        project: [auto, matrix-education]
         exclude:
+          - os: ubuntu-latest
+            version: 245.0.0
+            project: matrix-education
           - os: macos-latest
             version: latest
-            project: 'matrix-education'
+            project: matrix-education
           - os: macos-latest
             version: 245.0.0
             project: auto
           - os: macos-latest
             version: 245.0.0
-            project: 'matrix-education'
+            project: matrix-education
       fail-fast: false
     runs-on: ${{ matrix.os }}
     steps:
