@@ -38,7 +38,6 @@ export async function setup(): Promise<void> {
     await exec.exec(`sudo chown -R ${user} ${home}`);
   } else if (isMacOS()) {
     // On MacOS, we simply have to run the install script
-    await exec.exec(`ls -l ${getCloudSDKDirectory()}`);
     await exec.exec(installScript, args);
   } else if (isWindows()) {
     // @actions/exec does not exit on windows

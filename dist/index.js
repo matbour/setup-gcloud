@@ -3903,10 +3903,11 @@ var external_path_ = __webpack_require__(622);
 var exec = __webpack_require__(986);
 
 // CONCATENATED MODULE: ./src/constants.ts
+var _a;
 
-const INSTALL_DIRECTORY = 'google-clou' + 'd-sdk';
+const INSTALL_DIRECTORY = 'google-cloud-sdk';
 const UBUNTU_INSTALL_PATH = `/usr/lib/${INSTALL_DIRECTORY}`;
-const MACOS_INSTALL_PATH = Object(external_path_.resolve)(process.env.HOME ? process.env.HOME : process.cwd(), INSTALL_DIRECTORY);
+const MACOS_INSTALL_PATH = Object(external_path_.resolve)((_a = process.env.HOME, (_a !== null && _a !== void 0 ? _a : process.cwd())), INSTALL_DIRECTORY);
 const WINDOWS_INSTALL_PATH = `C:\\Program Files\\${INSTALL_DIRECTORY}`;
 
 // CONCATENATED MODULE: ./src/utils.ts
@@ -4036,14 +4037,10 @@ async function authenticate() {
     }
 }
 
-// EXTERNAL MODULE: ./node_modules/@actions/io/lib/io.js
-var io = __webpack_require__(1);
-
 // EXTERNAL MODULE: ./node_modules/@actions/tool-cache/lib/tool-cache.js
 var tool_cache = __webpack_require__(533);
 
 // CONCATENATED MODULE: ./src/download.ts
-
 
 
 
@@ -4064,14 +4061,12 @@ async function download() {
     else if (downloadLink.endsWith('.tar.gz')) {
         if (isUbuntu()) {
             // Ubuntu: Remove the existing installation of Google Cloud SDK
-            const parentInstallDir = Object(external_path_.resolve)(UBUNTU_INSTALL_PATH, '..');
             await Object(exec.exec)(`sudo rm -rf ${UBUNTU_INSTALL_PATH}`);
-            await Object(exec.exec)(`sudo tar -xf ${downloadPath} -C ${parentInstallDir}`);
+            await Object(exec.exec)(`sudo tar -xf ${downloadPath} -C ${extractionPath}`);
         }
         else {
             // MacOS: simply extract tar.gz file
-            await Object(io.mkdirP)(MACOS_INSTALL_PATH);
-            await Object(tool_cache.extractTar)(downloadPath, MACOS_INSTALL_PATH);
+            await Object(tool_cache.extractTar)(downloadPath, extractionPath);
         }
     }
     else {
@@ -4117,7 +4112,6 @@ async function setup() {
     }
     else if (isMacOS()) {
         // On MacOS, we simply have to run the install script
-        await Object(exec.exec)(`ls -l ${getCloudSDKDirectory()}`);
         await Object(exec.exec)(installScript, args);
     }
     else if (isWindows()) {

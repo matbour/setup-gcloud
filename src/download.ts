@@ -20,14 +20,11 @@ export async function download(): Promise<void> {
   } else if (downloadLink.endsWith('.tar.gz')) {
     if (isUbuntu()) {
       // Ubuntu: Remove the existing installation of Google Cloud SDK
-      const parentInstallDir = resolve(UBUNTU_INSTALL_PATH, '..');
-
       await exec.exec(`sudo rm -rf ${UBUNTU_INSTALL_PATH}`);
-      await exec.exec(`sudo tar -xf ${downloadPath} -C ${parentInstallDir}`);
+      await exec.exec(`sudo tar -xf ${downloadPath} -C ${extractionPath}`);
     } else {
       // MacOS: simply extract tar.gz file
-      await io.mkdirP(MACOS_INSTALL_PATH);
-      await tc.extractTar(downloadPath, MACOS_INSTALL_PATH);
+      await tc.extractTar(downloadPath, extractionPath);
     }
   } else {
     // Should never be reached
