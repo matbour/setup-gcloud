@@ -1,4 +1,11 @@
 # mathrix-education/setup-gcloud
+
+![Workflow status][workflow]
+![Latest release][latest-release]
+
+[workflow]: https://img.shields.io/github/workflow/status/mathrix-education/setup-gcloud/Tests?style=flat-square
+[latest-release]: https://img.shields.io/github/v/release/mathrix-education/setup-gcloud?label=latest%20release&style=flat-square
+
 Install the Google Cloud SDK in your GitHub Actions workflow.
 
 **This action is not supported by Google Cloud.**
