@@ -3913,16 +3913,28 @@ const UBUNTU_INSTALL_PATH = `/usr/lib/${INSTALL_DIRECTORY}`;
 
 
 
+/**
+ * Check if the runner is Windows-based.
+ */
 function isWindows() {
     return process.platform === 'win32';
 }
+/**
+ * Check if the runner is MacOS-based.
+ */
 function isMacOS() {
     return process.platform === 'darwin';
 }
+/**
+ * Check if the runner is Ubuntu-based.
+ */
 function isUbuntu() {
     return process.platform === 'linux';
 }
-function getCloudSDKFolder() {
+/**
+ * Get the Google Cloud SDK installation directory.
+ */
+function getCloudSDKDirectory() {
     if (isWindows()) {
         return WINDOWS_INSTALL_PATH;
     }
@@ -3934,6 +3946,9 @@ function getCloudSDKFolder() {
         return Object(external_path_.resolve)(home, INSTALL_DIRECTORY);
     }
 }
+/**
+ * Get the Google Cloud SDK download link
+ */
 function getDownloadLink() {
     const baseUrl = 'https://dl.google.com/dl/cloudsdk/channels/rapid';
     const version = Object(core.getInput)('version');
@@ -3955,11 +3970,16 @@ function getDownloadLink() {
         return `${baseUrl}/downloads/google-cloud-sdk-${version}-linux-x86_64.tar.gz`;
     }
 }
+/**
+ * Execute a gcloud command
+ * @param args The gcloud args
+ * @param options The command options
+ */
 async function gcloud(args, options = undefined) {
-    let gcloudPath = Object(external_path_.resolve)(getCloudSDKFolder(), 'bin', 'gcloud' + (isWindows() ? '.cmd' : ''));
+    let gcloudPath = Object(external_path_.resolve)(getCloudSDKDirectory(), 'bin', 'gcloud' + (isWindows() ? '.cmd' : ''));
     if (isWindows()) {
         // Windows installation directory is C:\Program Files and thus need to be escaped
-        gcloudPath = gcloudPath.replace(getCloudSDKFolder(), `"${getCloudSDKFolder()}"`);
+        gcloudPath = gcloudPath.replace(getCloudSDKDirectory(), `"${getCloudSDKDirectory()}"`);
     }
     args.unshift('--quiet'); // Add quiet to all commands
     await Object(exec.exec)(gcloudPath, args, options);
@@ -4029,14 +4049,15 @@ var tool_cache = __webpack_require__(533);
 
 
 
+
 /**
  * Download the Google Cloud SDK archive.
  */
 async function download() {
     const downloadLink = getDownloadLink();
     const downloadPath = await Object(tool_cache.downloadTool)(downloadLink);
-    const extractionPath = Object(external_path_.resolve)(getCloudSDKFolder(), '..');
-    await Object(io.mkdirP)(getCloudSDKFolder());
+    const extractionPath = Object(external_path_.resolve)(getCloudSDKDirectory(), '..');
+    await Object(io.mkdirP)(getCloudSDKDirectory());
     if (downloadLink.endsWith('.zip')) {
         // Extract .zip (Windows).
         await Object(tool_cache.extractZip)(downloadPath, extractionPath);
@@ -4055,6 +4076,7 @@ async function download() {
     }
     else {
         // Should never be reached
+        Object(core.setFailed)(`Unexpected extension (expected zip or tar.gz), but got ${downloadLink}`);
     }
 }
 
@@ -4072,7 +4094,7 @@ var external_child_process_ = __webpack_require__(129);
  */
 async function setup() {
     const installScriptExtension = isWindows() ? 'bat' : 'sh';
-    const installScript = Object(external_path_.resolve)(getCloudSDKFolder(), `install.${installScriptExtension}`);
+    const installScript = Object(external_path_.resolve)(getCloudSDKDirectory(), `install.${installScriptExtension}`);
     const args = [
         '--usage-reporting=false',
         '--command-completion=false',
@@ -4080,7 +4102,7 @@ async function setup() {
         '--usage-reporting=false',
         '--quiet',
     ];
-    if (Object(core.getInput)('components')) {
+    if (Object(core.getInput)('components') !== '') {
         args.push('--additional-components=' + Object(core.getInput)('components'));
     }
     if (isWindows()) {
@@ -4100,7 +4122,7 @@ async function setup() {
     else {
         await Object(exec.exec)(installScript, args);
     }
-    const binPath = Object(external_path_.resolve)(getCloudSDKFolder(), 'bin');
+    const binPath = Object(external_path_.resolve)(getCloudSDKDirectory(), 'bin');
     Object(core.addPath)(binPath);
 }
 

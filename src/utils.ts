@@ -1,5 +1,6 @@
 import * as core from '@actions/core';
 import * as exec from '@actions/exec';
+import { ExecOptions } from '@actions/exec/lib/interfaces';
 import { resolve } from 'path';
 import {
   INSTALL_DIRECTORY,
@@ -7,19 +8,31 @@ import {
   WINDOWS_INSTALL_PATH,
 } from './constants';
 
+/**
+ * Check if the runner is Windows-based.
+ */
 export function isWindows(): boolean {
   return process.platform === 'win32';
 }
 
+/**
+ * Check if the runner is MacOS-based.
+ */
 export function isMacOS(): boolean {
   return process.platform === 'darwin';
 }
 
+/**
+ * Check if the runner is Ubuntu-based.
+ */
 export function isUbuntu(): boolean {
   return process.platform === 'linux';
 }
 
-export function getCloudSDKFolder(): string {
+/**
+ * Get the Google Cloud SDK installation directory.
+ */
+export function getCloudSDKDirectory(): string {
   if (isWindows()) {
     return WINDOWS_INSTALL_PATH;
   } else if (isUbuntu()) {
@@ -30,6 +43,9 @@ export function getCloudSDKFolder(): string {
   }
 }
 
+/**
+ * Get the Google Cloud SDK download link
+ */
 export function getDownloadLink(): string {
   const baseUrl = 'https://dl.google.com/dl/cloudsdk/channels/rapid';
   const version = core.getInput('version');
@@ -51,12 +67,17 @@ export function getDownloadLink(): string {
   }
 }
 
+/**
+ * Execute a gcloud command
+ * @param args The gcloud args
+ * @param options The command options
+ */
 export async function gcloud(
   args: string[],
-  options: any = undefined,
+  options: ExecOptions | undefined = undefined,
 ): Promise<void> {
   let gcloudPath = resolve(
-    getCloudSDKFolder(),
+    getCloudSDKDirectory(),
     'bin',
     'gcloud' + (isWindows() ? '.cmd' : ''),
   );
@@ -64,8 +85,8 @@ export async function gcloud(
   if (isWindows()) {
     // Windows installation directory is C:\Program Files and thus need to be escaped
     gcloudPath = gcloudPath.replace(
-      getCloudSDKFolder(),
-      `"${getCloudSDKFolder()}"`,
+      getCloudSDKDirectory(),
+      `"${getCloudSDKDirectory()}"`,
     );
   }
 

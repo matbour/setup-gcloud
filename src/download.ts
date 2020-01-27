@@ -1,9 +1,10 @@
+import * as core from '@actions/core';
 import * as exec from '@actions/exec';
 import * as io from '@actions/io';
 import * as tc from '@actions/tool-cache';
 import { resolve } from 'path';
 import { UBUNTU_INSTALL_PATH } from './constants';
-import { getCloudSDKFolder, getDownloadLink, isUbuntu } from './utils';
+import { getCloudSDKDirectory, getDownloadLink, isUbuntu } from './utils';
 
 /**
  * Download the Google Cloud SDK archive.
@@ -11,9 +12,9 @@ import { getCloudSDKFolder, getDownloadLink, isUbuntu } from './utils';
 export async function download(): Promise<void> {
   const downloadLink = getDownloadLink();
   const downloadPath = await tc.downloadTool(downloadLink);
-  const extractionPath = resolve(getCloudSDKFolder(), '..');
+  const extractionPath = resolve(getCloudSDKDirectory(), '..');
 
-  await io.mkdirP(getCloudSDKFolder());
+  await io.mkdirP(getCloudSDKDirectory());
 
   if (downloadLink.endsWith('.zip')) {
     // Extract .zip (Windows).
@@ -31,5 +32,8 @@ export async function download(): Promise<void> {
     }
   } else {
     // Should never be reached
+    core.setFailed(
+      `Unexpected extension (expected zip or tar.gz), but got ${downloadLink}`,
+    );
   }
 }

@@ -2,7 +2,7 @@ import * as core from '@actions/core';
 import * as exec from '@actions/exec';
 import { execSync } from 'child_process';
 import { resolve } from 'path';
-import { getCloudSDKFolder, isUbuntu, isWindows } from './utils';
+import { getCloudSDKDirectory, isUbuntu, isWindows } from './utils';
 
 /**
  * Setup the Google Cloud SDK.
@@ -10,7 +10,7 @@ import { getCloudSDKFolder, isUbuntu, isWindows } from './utils';
 export async function setup(): Promise<void> {
   const installScriptExtension = isWindows() ? 'bat' : 'sh';
   const installScript = resolve(
-    getCloudSDKFolder(),
+    getCloudSDKDirectory(),
     `install.${installScriptExtension}`,
   );
 
@@ -22,7 +22,7 @@ export async function setup(): Promise<void> {
     '--quiet',
   ];
 
-  if (core.getInput('components')) {
+  if (core.getInput('components') !== '') {
     args.push('--additional-components=' + core.getInput('components'));
   }
 
@@ -43,6 +43,6 @@ export async function setup(): Promise<void> {
     await exec.exec(installScript, args);
   }
 
-  const binPath = resolve(getCloudSDKFolder(), 'bin');
+  const binPath = resolve(getCloudSDKDirectory(), 'bin');
   core.addPath(binPath);
 }
