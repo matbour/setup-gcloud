@@ -6,35 +6,31 @@ jobs:
   test:
     strategy:
       matrix:
-        #os: [ubuntu-latest, macos-latest, windows-latest]
-        os: [macos-latest]
-        version: [latest]
-        project: [auto]
-#        os: [ubuntu-latest, macos-latest]
-#        version: [latest, 245.0.0]
-#        project: [auto, matrix-education]
-#        exclude:
-#          - os: ubuntu-latest
-#            version: 245.0.0
-#            project: matrix-education
-#          - os: macos-latest
-#            version: latest
-#            project: matrix-education
-#          - os: macos-latest
-#            version: 245.0.0
-#            project: auto
-#          - os: macos-latest
-#            version: 245.0.0
-#            project: matrix-education
-#          - os: windows-latest
-#            version: latest
-#            project: matrix-education
-#          - os: windows-latest
-#            version: 245.0.0
-#            project: auto
-#          - os: windows-latest
-#            version: 245.0.0
-#            project: matrix-education
+        os: [ubuntu-latest, macos-latest, windows-latest]
+        version: [latest, 245.0.0]
+        project: [auto, matrix-education]
+        exclude:
+          - os: ubuntu-latest
+            version: 245.0.0
+            project: matrix-education
+          - os: macos-latest
+            version: latest
+            project: matrix-education
+          - os: macos-latest
+            version: 245.0.0
+            project: auto
+          - os: macos-latest
+            version: 245.0.0
+            project: matrix-education
+          - os: windows-latest
+            version: latest
+            project: matrix-education
+          - os: windows-latest
+            version: 245.0.0
+            project: auto
+          - os: windows-latest
+            version: 245.0.0
+            project: matrix-education
       fail-fast: false
     runs-on: ${{ matrix.os }}
     steps:
