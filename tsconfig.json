@@ -1,5 +1,6 @@
 {
   "compilerOptions": {
+    "module": "system",
     "target": "es2018",
     "moduleResolution": "node",
     "strict": true,
