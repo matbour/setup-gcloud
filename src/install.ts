@@ -10,6 +10,6 @@ try {
   await download();
   await setup();
   await authenticate();
-} catch (e) {
-  core.setFailed(e.message);
+} catch (exception) {
+  core.setFailed(exception.message);
 }

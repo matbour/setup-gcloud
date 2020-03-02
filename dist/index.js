@@ -74,8 +74,8 @@ System.register(["@actions/core", "./authenticate", "./download", "./setup"], fu
                 await setup_1.setup();
                 await authenticate_1.authenticate();
             }
-            catch (e) {
-                core.setFailed(e.message);
+            catch (exception) {
+                core.setFailed(exception.message);
             }
         }
     };
