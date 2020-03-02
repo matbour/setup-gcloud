@@ -1,6 +1,6 @@
 {
   "compilerOptions": {
-    "module": "system",
+    "module": "esnext",
     "target": "es2018",
     "moduleResolution": "node",
     "strict": true,

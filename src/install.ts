@@ -7,9 +7,11 @@ import { setup } from './setup';
  * Install the Google Cloud SDK.
  */
 try {
-  await download();
-  await setup();
-  await authenticate();
+  (async () => {
+    await download();
+    await setup();
+    await authenticate();
+  })();
 } catch (exception) {
   core.setFailed(exception.message);
 }
