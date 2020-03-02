@@ -6,20 +6,12 @@ import { setup } from './setup';
 /**
  * Install the Google Cloud SDK.
  */
-export async function install(): Promise<void> {
-  try {
+try {
+  (async () => {
     await download();
     await setup();
     await authenticate();
-  } catch (e) {
-    core.setFailed(e.message);
-  }
+  })();
+} catch (exception) {
+  core.setFailed(exception.message);
 }
-
-install()
-  .then(() => {
-    core.info('Installation succeeded');
-  })
-  .catch(() => {
-    core.error('Installation failed');
-  });

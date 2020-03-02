@@ -10,9 +10,11 @@ export async function authenticate(): Promise<void> {
   // If service account key is not provided, skip the authentication
   if (!core.getInput('service-account-key')) {
     core.warning(
-      'No service-account-key input was passed. If it is intentional, you can safely ignore this warning.',
+      'No service-account-key input was passed. If it is intentional, you can ' +
+        'safely ignore this warning.',
     );
-    return;
+
+    await configureProjectFromInput();
   }
 
   // Write the service account key
@@ -46,20 +48,45 @@ export async function authenticate(): Promise<void> {
 
     if (serviceAccountKey.hasOwnProperty('project_id')) {
       // If key has a project_id field, use it to set the default project
-      await gcloud(['config', 'set', 'project', serviceAccountKey.project_id]);
+      await configureProject(serviceAccountKey.project_id);
     } else {
       core.warning(
         'You gave a service account key, but it does not have the "project_id" key. Thus, the default project ' +
           'cannot be configured. Your service account key might malformed.',
       );
     }
-  } else if (!['', 'none', 'auto'].includes(core.getInput('project'))) {
-    // Project was passed as input
-    await gcloud(['config', 'set', 'project', core.getInput('project')]);
+  } else {
+    await configureProjectFromInput();
   }
 
   // Configure Docker if necessary
   if (core.getInput('configure-docker') === 'true') {
-    await gcloud(['--quiet', 'auth', 'configure-docker']);
+    await configureDocker();
   }
+}
+
+/**
+ * Configure the default Google Cloud project.
+ * @param projectId
+ */
+function configureProject(projectId: string): Promise<void> {
+  return gcloud(['config', 'set', 'project', projectId]);
+}
+
+/**
+ * Configure the default Google Cloud project from the GitHub inputs.
+ */
+async function configureProjectFromInput(): Promise<void> {
+  if (!['', 'none', 'auto'].includes(core.getInput('project'))) {
+    return await configureProject(core.getInput('project'));
+  } else {
+    return;
+  }
+}
+
+/**
+ * Configure Docker credentials for Google Cloud Registry
+ */
+async function configureDocker() {
+  await gcloud(['auth', 'configure-docker']);
 }
