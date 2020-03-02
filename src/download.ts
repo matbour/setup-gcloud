@@ -1,9 +1,8 @@
 import * as core from '@actions/core';
 import * as exec from '@actions/exec';
-import * as io from '@actions/io';
 import * as tc from '@actions/tool-cache';
 import { resolve } from 'path';
-import { MACOS_INSTALL_PATH, UBUNTU_INSTALL_PATH } from './constants';
+import { UBUNTU_INSTALL_PATH } from './constants';
 import { getCloudSDKDirectory, getDownloadLink, isUbuntu } from './utils';
 
 /**
