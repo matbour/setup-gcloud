@@ -2,12 +2,7 @@ import * as core from '@actions/core';
 import * as exec from '@actions/exec';
 import { ExecOptions } from '@actions/exec/lib/interfaces';
 import { resolve } from 'path';
-import {
-  INSTALL_DIRECTORY,
-  MACOS_INSTALL_PATH,
-  UBUNTU_INSTALL_PATH,
-  WINDOWS_INSTALL_PATH,
-} from './constants';
+import { MACOS_INSTALL_PATH, UBUNTU_INSTALL_PATH, WINDOWS_INSTALL_PATH } from './constants';
 
 /**
  * Check if the runner is Windows-based.
@@ -72,22 +67,12 @@ export function getDownloadLink(): string {
  * @param args The gcloud args
  * @param options The command options
  */
-export async function gcloud(
-  args: string[],
-  options: ExecOptions | undefined = undefined,
-): Promise<void> {
-  let gcloudPath = resolve(
-    getCloudSDKDirectory(),
-    'bin',
-    'gcloud' + (isWindows() ? '.cmd' : ''),
-  );
+export async function gcloud(args: string[], options: ExecOptions | undefined = undefined): Promise<void> {
+  let gcloudPath = resolve(getCloudSDKDirectory(), 'bin', 'gcloud' + (isWindows() ? '.cmd' : ''));
 
   if (isWindows()) {
     // Windows installation directory is C:\Program Files and thus need to be escaped
-    gcloudPath = gcloudPath.replace(
-      getCloudSDKDirectory(),
-      `"${getCloudSDKDirectory()}"`,
-    );
+    gcloudPath = gcloudPath.replace(getCloudSDKDirectory(), `"${getCloudSDKDirectory()}"`);
   }
 
   args.unshift('--quiet'); // Add quiet to all commands

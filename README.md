@@ -26,8 +26,9 @@ So we chose to create a JavaScript action to fix this problem, also adding addit
 authentication with Google Cloud Container Registry.
 
 Update [2019/01/27]: The [GoogleCloudPlatform official GitHub organization][2.4] has released an official
-[setup-gcloud][2.5] action. Compared to Mathrix's one, we provide some additional automation tasks, such as project
-guessing and automatic Docker Configuration.
+[setup-gcloud][2.5] action.
+Compared to Mathrix's one, we provide some additional automation tasks, such as project id discovery and automatic
+Docker Configuration.
 
 [2.1]: https://github.com/actions/gcloud
 [2.2]: https://github.com/actions/gcloud/tree/master/auth
@@ -38,8 +39,8 @@ guessing and automatic Docker Configuration.
 
 ## Usage
 ### Supported operating systems
-This action currently supports Ubuntu, Mac-OS and Windows based systems. The supported operating systems matrix is
-the following:
+This action currently supports Ubuntu, Mac-OS and Windows based systems.
+The supported operating system matrix is the following:
 
 | Operating system | Status |
 |------------------|-------|
@@ -56,15 +57,16 @@ the following:
 | `service-account-key` | `string` (base64)              | `''`          |
 | `project`             | `'auto'` / `'none'` / `string` | `'auto'`      |
 | `components`          | `string`                       | `''`          |
-| `configure-docker`    | `true` / `false`               | `false`       |
+| `configure-docker`    | `'true'` / `'false'`           | `'false'`       |
 
 #### `version`
-If you need a precise version of the Google Cloud SDK, you may provide this input. We strongly advise you to do so
-since using the latest version may break your workflow if Google release a breaking version.
+If you need a precise version of the Google Cloud SDK, you may provide this input.
+We strongly advise you to do so since using the latest version may break your workflow if Google release a breaking
+version.
 
 #### `service-account-key`
-To authenticate the SDK, you may provide a **base64-encoded** service account JSON key. In order to secure you workflow,
-use GitHub Actions [secrets][3.3].
+To authenticate the SDK, you may provide a **base64-encoded** service account JSON key.
+In order to secure you workflow, use GitHub Actions [secrets][3.3].
 
 [3.3]: https://help.github.com/en/actions/automating-your-workflow-with-github-actions/creating-and-using-encrypted-secrets
 
@@ -74,14 +76,14 @@ By default, if you provide a `service-account-key`, the action will use it to de
 - If you want to specify a different project (for example, in case of cross-project interaction), you may explicitly
 specify your project ID here.
 - If you want to disable the project configuration and provide your project ID later in your workflow, set this input
-to `none`.
+to `'none'`.
 
 #### `components`
 If you want to install additional SDK components, you may provide them in this input.
 
 #### `configure-docker`
 If you want to push an image to the Google Container Registry, you may authenticate the Docker agent by setting the
-input to true. 
+input to `'true'`. 
 
 
 ## Examples
@@ -91,8 +93,9 @@ See [action.yml](action.yml) for details.
 ```yaml
 - uses: mathrix-education/setup-gcloud@master
 ```
-By default, the minimal example will install the latest Google Cloud SDK. Because no service account key was provided
-you will have to authenticate the SDK yourself (for example, with [`gcloud auth activate-service-account`][4.1]).
+By default, the minimal example will install the latest Google Cloud SDK.
+Because no service account key was provided you will have to authenticate the SDK yourself (for example, with
+[`gcloud auth activate-service-account`][4.1]).
 
 [4.1]: https://cloud.google.com/sdk/gcloud/reference/auth/activate-service-account
 
@@ -105,14 +108,14 @@ you will have to authenticate the SDK yourself (for example, with [`gcloud auth 
     service-account-key: ${{ secrets.GCLOUD_AUTH }} # base64-encoded service account JSON key
     confgure-docker: true
 ```
-In this example, you provide a service account key. The action automatically download the latest version of the SDK and
-authenticate using your key.
+In this example, you provide a service account key.
+The action automatically download the latest version of the SDK and authenticates using your key.
 
 Then using the field `"project_id"` of your key, we will set the default project using
 `gcloud config set project {project}`, so you do not have to do it later.
 
 Finally, because you may want to build a Docker image and upload it to the [Google Container Registry][4.2], the action
-will configure Docker to allow the upload of your image. Make sure that the service account has the correct rights to
-write on the bucket linked to the registry.
+will configure Docker to allow the upload of your image.
+Make sure the service account has the correct rights to write on the bucket linked to the registry.
 
 [4.2]: https://cloud.google.com/container-registry/

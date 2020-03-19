@@ -9,10 +9,7 @@ import { getCloudSDKDirectory, isMacOS, isUbuntu, isWindows } from './utils';
  */
 export async function setup(): Promise<void> {
   const installScriptExtension = isWindows() ? 'bat' : 'sh';
-  const installScript = resolve(
-    getCloudSDKDirectory(),
-    `install.${installScriptExtension}`,
-  );
+  const installScript = resolve(getCloudSDKDirectory(), `install.${installScriptExtension}`);
 
   const args = [
     '--usage-reporting=false',

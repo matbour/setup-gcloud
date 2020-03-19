@@ -27,8 +27,6 @@ export async function download(): Promise<void> {
     }
   } else {
     // Should never be reached
-    core.setFailed(
-      `Unexpected extension (expected zip or tar.gz), but got ${downloadLink}`,
-    );
+    core.setFailed(`Unexpected extension (expected zip or tar.gz), but got ${downloadLink}`);
   }
 }
