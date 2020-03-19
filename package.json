@@ -24,7 +24,8 @@
     "url": "git+https://github.com/mathrix-education/setup-gcloud.git"
   },
   "scripts": {
-    "format": "prettier --write \"src/**/*.ts\" \"*.js\"",
+    "lint": "eslint \"src/**\"",
+    "lint:fix": "eslint --fix \"src/**\"",
     "build": "ncc build src/install.ts"
   },
   "dependencies": {

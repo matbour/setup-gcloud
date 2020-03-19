@@ -7,7 +7,7 @@ import { setup } from './setup';
  * Install the Google Cloud SDK.
  */
 try {
-  (async () => {
+  (async (): Promise<void> => {
     await download();
     await setup();
     await authenticate();

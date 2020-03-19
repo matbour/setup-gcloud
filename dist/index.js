@@ -4627,51 +4627,6 @@ async function gcloud(args, options = undefined) {
 
 
 /**
- * Authenticate the Google Cloud SDK.
- */
-async function authenticate() {
-    // If service account key is not provided, skip the authentication
-    if (!Object(core.getInput)('service-account-key')) {
-        Object(core.warning)('No service-account-key input was passed. If it is intentional, you can ' +
-            'safely ignore this warning.');
-        await configureProjectFromInput();
-    }
-    // Write the service account key
-    const serviceAccountKeyBase64 = Object(core.getInput)('service-account-key');
-    const serviceAccountKeyJson = Buffer.from(serviceAccountKeyBase64, 'base64').toString();
-    const serviceAccountKeyPath = Object(external_path_.resolve)(process.cwd(), 'gcloud.json');
-    Object(external_fs_.writeFileSync)(serviceAccountKeyPath, serviceAccountKeyJson);
-    // Activate the service account
-    await gcloud([
-        'auth',
-        'activate-service-account',
-        `--key-file=${serviceAccountKeyPath}`,
-    ]);
-    // Remove the service account key
-    Object(external_fs_.unlinkSync)(serviceAccountKeyPath);
-    // Configure the default project
-    if (Object(core.getInput)('project') === 'auto' &&
-        Object(core.getInput)('service-account-key') !== '') {
-        // Project will be read from the service account key
-        const serviceAccountKey = JSON.parse(serviceAccountKeyJson.toString());
-        if (serviceAccountKey.hasOwnProperty('project_id')) {
-            // If key has a project_id field, use it to set the default project
-            await configureProject(serviceAccountKey.project_id);
-        }
-        else {
-            Object(core.warning)('You gave a service account key, but it does not have the "project_id" key. Thus, the default project ' +
-                'cannot be configured. Your service account key might malformed.');
-        }
-    }
-    else {
-        await configureProjectFromInput();
-    }
-    // Configure Docker if necessary
-    if (Object(core.getInput)('configure-docker') === 'true') {
-        await configureDocker();
-    }
-}
-/**
  * Configure the default Google Cloud project.
  * @param projectId
  */
@@ -4694,6 +4649,45 @@ async function configureProjectFromInput() {
  */
 async function configureDocker() {
     await gcloud(['auth', 'configure-docker']);
+}
+/**
+ * Authenticate the Google Cloud SDK.
+ */
+async function authenticate() {
+    // If service account key is not provided, skip the authentication
+    if (!Object(core.getInput)('service-account-key')) {
+        Object(core.warning)('No service-account-key input was passed. If it is intentional, you can safely ignore this warning.');
+        await configureProjectFromInput();
+    }
+    // Write the service account key
+    const serviceAccountKeyBase64 = Object(core.getInput)('service-account-key');
+    const serviceAccountKeyJson = Buffer.from(serviceAccountKeyBase64, 'base64').toString();
+    const serviceAccountKeyPath = Object(external_path_.resolve)(process.cwd(), 'gcloud.json');
+    Object(external_fs_.writeFileSync)(serviceAccountKeyPath, serviceAccountKeyJson);
+    // Activate the service account
+    await gcloud(['auth', 'activate-service-account', `--key-file=${serviceAccountKeyPath}`]);
+    // Remove the service account key
+    Object(external_fs_.unlinkSync)(serviceAccountKeyPath);
+    // Configure the default project
+    if (Object(core.getInput)('project') === 'auto' && Object(core.getInput)('service-account-key') !== '') {
+        // Project will be read from the service account key
+        const serviceAccountKey = JSON.parse(serviceAccountKeyJson.toString());
+        if (serviceAccountKey.hasOwnProperty('project_id')) {
+            // If key has a project_id field, use it to set the default project
+            await configureProject(serviceAccountKey.project_id);
+        }
+        else {
+            Object(core.warning)('You gave a service account key, but it does not have the "project_id" key. Thus, the default project ' +
+                'cannot be configured. Your service account key might malformed.');
+        }
+    }
+    else {
+        await configureProjectFromInput();
+    }
+    // Configure Docker if necessary
+    if (Object(core.getInput)('configure-docker') === 'true') {
+        await configureDocker();
+    }
 }
 
 // EXTERNAL MODULE: ./node_modules/@actions/tool-cache/lib/tool-cache.js
