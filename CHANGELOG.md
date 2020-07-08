@@ -1,6 +1,6 @@
 # Changelog
 
-## [Version 1.2.0 - ](https://github.com/mathrix-education/setup-gcloud/releases/tag/1.2.0)
+## [Version 1.2.0 - Local SDK](https://github.com/mathrix-education/setup-gcloud/releases/tag/1.2.0)
 - **feat**: add `local` for `version` input which will use the locally provided Google Cloud SDK if available
 - **chore**(deps): upgrade dependencies
 - **chore**: update license
