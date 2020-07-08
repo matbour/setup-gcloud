@@ -9,7 +9,7 @@ runs:
   main: 'dist/index.js'
 inputs:
   version:
-    description: Google Cloud SDK to use. If left null, will use the latest one.
+    description: Google Cloud SDK to use. If left empty, will use the latest one.
     required: false
     default: 'latest'
   service-account-key:
