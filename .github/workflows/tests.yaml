@@ -20,47 +20,26 @@ jobs:
   test:
     strategy:
       matrix:
-        os: [ubuntu-latest, macos-latest, windows-latest]
-        version: [latest, 245.0.0]
+        os: [ubuntu-16.04, ubuntu-18.04, ubuntu-20.04, macos-10.15, windows-2019]
+        version: [latest, local, 245.0.0]
         project: [auto, matrix-education]
         exclude:
-          - os: ubuntu-latest
-            version: 245.0.0
-            project: matrix-education
-          - os: macos-latest
-            version: latest
-            project: matrix-education
-          - os: macos-latest
-            version: 245.0.0
-            project: auto
-          - os: macos-latest
-            version: 245.0.0
-            project: matrix-education
-          - os: windows-latest
-            version: latest
-            project: matrix-education
-          - os: windows-latest
-            version: 245.0.0
-            project: auto
-          - os: windows-latest
-            version: 245.0.0
-            project: matrix-education
+          - os: macos-10.15
+            version: local
+          - os: windows-2019
+            version: local
       fail-fast: false
     runs-on: ${{ matrix.os }}
     steps:
       - name: Checkout repository
         uses: actions/checkout@v2
-      - name: Setup Node.js 12
-        uses: actions/setup-node@v1.2.0
-        with:
-          node-version: 12.x
       - name: Install Google Cloud SDK
-        run: node dist/index.js
-        env:
-          INPUT_VERSION: ${{ matrix.version }}
-          INPUT_PROJECT: ${{ matrix.project }}
-          INPUT_COMPONENTS: beta
-          INPUT_SERVICE-ACCOUNT-KEY: ${{ secrets.GCLOUD_AUTH }}
+        uses: ./
+        with:
+          version: ${{ matrix.version }}
+          project: ${{ matrix.project }}
+          components: beta
+          service-account-key: ${{ secrets.GCLOUD_AUTH }}
       - name: Test Google Cloud SDK CLI
         run: |
           gcloud version

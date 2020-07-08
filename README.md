@@ -16,7 +16,7 @@ Proudly maintained by [Mathieu Bour][1.1], Vice-CTO [@mathrix-education][1.2].
 [1.2]: https://github.com/mathrix-education
 
 ## Motivations
-Since the advent of GitHub Actions, Mathrix Education SA has chosen to migrate from Google Cloud Build to this new
+Since the advent of GitHub Actions, Edutech Media SA has chosen to migrate from Google Cloud Build to this new
 compilation system.
 
 If the official [@actions/gcloud][2.1] action works perfectly, the fact that it is in two parts ([auth][2.2] and
@@ -27,7 +27,7 @@ authentication with Google Cloud Container Registry.
 
 Update [2019/01/27]: The [GoogleCloudPlatform official GitHub organization][2.4] has released an official
 [setup-gcloud][2.5] action.
-Compared to Mathrix's one, we provide some additional automation tasks, such as project id discovery and automatic
+Compared to Edutech's one, we provide some additional automation tasks, such as project id discovery and automatic
 Docker Configuration.
 
 [2.1]: https://github.com/actions/gcloud
@@ -42,27 +42,31 @@ Docker Configuration.
 This action currently supports Ubuntu, Mac-OS and Windows based systems.
 The supported operating system matrix is the following:
 
-| Operating system | Status |
-|------------------|-------|
-| `ubuntu-latest`  | ![3.1] |
-| `macos-latest`   | ![3.1] |
-| `windows-latest` | ![3.1] |
+| Operating system                  | Status |
+|-----------------------------------|--------|
+| `ubuntu-16.04`                    | ![3.1] |
+| `ubuntu-18.04` (`ubuntu-latest`)  | ![3.1] |
+| `ubuntu-20.04`                    | ![3.1] |
+| `macos-10.15` (`macos-latest`)    | ![3.1] |
+| `windows-2019` (`windows-latest`) | ![3.1] |
 
 [3.1]: https://img.shields.io/badge/status-supported-brightgreen
 
 ### Inputs
-| Name                  | Type                           | Default value |
-|-----------------------|--------------------------------|---------------|
-| `version`             | `'latest'` / `string`          | `'latest'`    |
-| `service-account-key` | `string` (base64)              | `''`          |
-| `project`             | `'auto'` / `'none'` / `string` | `'auto'`      |
-| `components`          | `string`                       | `''`          |
-| `configure-docker`    | `'true'` / `'false'`           | `'false'`       |
+| Name                  | Type                            | Default value |
+|-----------------------|---------------------------------|---------------|
+| `version`             | `'latest'` / `local` / `string` | `'latest'`    |
+| `service-account-key` | `string` (base64)               | `''`          |
+| `project`             | `'auto'` / `'none'` / `string`  | `'auto'`      |
+| `components`          | `string`                        | `''`          |
+| `configure-docker`    | `'true'` / `'false'`            | `'false'`       |
 
 #### `version`
 If you need a precise version of the Google Cloud SDK, you may provide this input.
+By default, the latest version of the Google Cloud SDK will be downloaded.
 We strongly advise you to do so since using the latest version may break your workflow if Google release a breaking
 version.
+If you prefer using the pre-installed Google Cloud SDK (ubuntu only), you may use `local`.
 
 #### `service-account-key`
 To authenticate the SDK, you may provide a **base64-encoded** service account JSON key.
