@@ -1,5 +1,9 @@
 # Changelog
 
+## [Version 1.2.1](https://github.com/mathrix-education/setup-gcloud/releases/tag/1.2.1)
+- **chore**(deps): bumps lodash from 4.17.15 to 4.17.19 (fixes GHSA-p6mc-m468-83gw)
+- **chore**(repo): rename `master` branch to `main`
+
 ## [Version 1.2.0 - Local SDK](https://github.com/mathrix-education/setup-gcloud/releases/tag/1.2.0)
 - **feat**: add `local` for `version` input which will use the locally provided Google Cloud SDK if available
 - **chore**(deps): upgrade dependencies

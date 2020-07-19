@@ -1,6 +1,6 @@
 {
   "name": "@mathrix-education/setup-gcloud",
-  "version": "1.2.0",
+  "version": "1.2.1",
   "description": "Install the Google Cloud SDK in your GitHub Actions workflow.",
   "keywords": [
     "github-actions",
@@ -31,12 +31,12 @@
   "dependencies": {
     "@actions/core": "^1.2.4",
     "@actions/exec": "^1.0.4",
-    "@actions/tool-cache": "^1.5.5",
+    "@actions/tool-cache": "^1.6.0",
     "original-fs": "^1.1.0",
-    "typescript": "^3.9.6"
+    "typescript": "^3.9.7"
   },
   "devDependencies": {
-    "@types/node": "^12.12.48",
+    "@types/node": "^12.12.50",
     "@typescript-eslint/eslint-plugin": "^2.34.0",
     "@typescript-eslint/parser": "^2.34.0",
     "@zeit/ncc": "^0.22.3",
