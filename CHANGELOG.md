@@ -1,5 +1,9 @@
 # Changelog
 
+## [Version 1.2.2](https://github.com/mathrix-education/setup-gcloud/releases/tag/1.2.2)
+- **security**(deps): bump [@actions/core](https://github.com/actions/toolkit/tree/main/packages/core) from 1.2.4 to 1.2.6 (fixes [GHSA-mfwh-5m23-j46w](https://github.com/actions/toolkit/security/advisories/GHSA-mfwh-5m23-j46w))
+- **fix**(ci): set setup-node version to @v1
+
 ## [Version 1.2.1](https://github.com/mathrix-education/setup-gcloud/releases/tag/1.2.1)
 - **chore**(deps): bumps lodash from 4.17.15 to 4.17.19 (fixes GHSA-p6mc-m468-83gw)
 - **chore**(repo): rename `master` branch to `main`
