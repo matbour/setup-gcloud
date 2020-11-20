@@ -3,6 +3,7 @@ import { authenticate } from './authenticate';
 import { download } from './download';
 import { setup } from './setup';
 import { isUbuntu } from './utils';
+import 'source-map-support/register';
 
 /**
  * Install the Google Cloud SDK.

@@ -24,27 +24,32 @@
     "url": "git+https://github.com/mathrix-education/setup-gcloud.git"
   },
   "scripts": {
+    "clean": "rimraf dist",
+    "format": "prettier --write \"src/**/*.ts\"",
     "lint": "eslint \"src/**\"",
     "lint:fix": "eslint --fix \"src/**\"",
-    "build": "ncc build src/install.ts"
+    "build": "npm run clean && ncc build --source-map --no-source-map-register ./src/install.ts"
   },
   "dependencies": {
-    "@actions/core": "^1.2.4",
+    "@actions/core": "^1.2.6",
     "@actions/exec": "^1.0.4",
-    "@actions/tool-cache": "^1.6.0",
+    "@actions/tool-cache": "^1.6.1",
     "original-fs": "^1.1.0",
-    "typescript": "^3.9.7"
+    "source-map-support": "^0.5.19"
   },
   "devDependencies": {
-    "@types/node": "^12.12.50",
-    "@typescript-eslint/eslint-plugin": "^2.34.0",
-    "@typescript-eslint/parser": "^2.34.0",
+    "@types/node": "^12.19.6",
+    "@typescript-eslint/eslint-plugin": "^4.5.0",
+    "@typescript-eslint/parser": "^4.5.0",
     "@zeit/ncc": "^0.22.3",
-    "eslint": "^6.8.0",
-    "eslint-config-prettier": "^6.11.0",
-    "eslint-plugin-prettier": "^3.1.4",
-    "husky": "^3.1.0",
-    "prettier": "^1.19.1"
+    "eslint": "^7.12.0",
+    "eslint-config-prettier": "^6.14.0",
+    "eslint-plugin-import": "^2.22.1",
+    "husky": "^4.3.0",
+    "lint-staged": "^10.5.0",
+    "prettier": "^2.2.0",
+    "rimraf": "^3.0.2",
+    "typescript": "^4.1.2"
   },
   "private": true
 }
