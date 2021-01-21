@@ -1,5 +1,11 @@
 # Changelog
 
+## [Version 1.3.0](https://github.com/mathrix-education/setup-gcloud/releases/tag/1.3.0)
+- **feat**(docker): artifact registries may now be specified independently
+- **ci**(sonarcloud): implement SonarCloud static analysis
+- **chore**(rebrand): the repository is now maintained by [mathieu-bour](https://github.com/mathieu-bour)
+- **chore**(deps): upgrade dependencies
+
 ## [Version 1.2.2](https://github.com/mathrix-education/setup-gcloud/releases/tag/1.2.2)
 - **security**(deps): bump [@actions/core](https://github.com/actions/toolkit/tree/main/packages/core) from 1.2.4 to 1.2.6 (fixes [GHSA-mfwh-5m23-j46w](https://github.com/actions/toolkit/security/advisories/GHSA-mfwh-5m23-j46w))
 - **fix**(ci): set setup-node version to @v1

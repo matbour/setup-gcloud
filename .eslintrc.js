@@ -4,6 +4,7 @@ module.exports = {
     project: 'tsconfig.json',
     sourceType: 'module',
   },
+  ignorePatterns: ['.*.js'], // Ignore JS dotfiles, as they are configurations
   plugins: ['@typescript-eslint/eslint-plugin'],
   extends: [
     'plugin:@typescript-eslint/eslint-recommended',

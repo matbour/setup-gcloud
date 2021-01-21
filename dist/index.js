@@ -8449,7 +8449,22 @@ async function configureProjectFromInput() {
  * Configure Docker credentials for Google Cloud Registry
  */
 async function configureDocker() {
-    await gcloud(['auth', 'configure-docker']);
+    const input = Object(core.getInput)('configure-docker');
+    if (input === 'false') {
+        return;
+    }
+    const registries = input === 'true'
+        ? null
+        : input
+            .split(',')
+            .map(r => r.trim())
+            .filter(r => r.length > 0)
+            .join(',');
+    const args = ['auth', 'configure-docker'];
+    if (registries) {
+        args.push(registries);
+    }
+    await gcloud(args);
 }
 /**
  * Authenticate the Google Cloud SDK.
@@ -8486,9 +8501,7 @@ async function authenticate() {
         await configureProjectFromInput();
     }
     // Configure Docker if necessary
-    if (Object(core.getInput)('configure-docker') === 'true') {
-        await configureDocker();
-    }
+    await configureDocker();
 }
 
 // EXTERNAL MODULE: ./node_modules/@actions/tool-cache/lib/tool-cache.js
