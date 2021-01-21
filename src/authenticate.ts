@@ -26,7 +26,28 @@ async function configureProjectFromInput(): Promise<void> {
  * Configure Docker credentials for Google Cloud Registry
  */
 async function configureDocker(): Promise<void> {
-  await gcloud(['auth', 'configure-docker']);
+  const input = core.getInput('configure-docker');
+
+  if (input === 'false') {
+    return;
+  }
+
+  const registries =
+    input === 'true'
+      ? null
+      : input
+          .split(',')
+          .map(r => r.trim())
+          .filter(r => r.length > 0)
+          .join(',');
+
+  const args = ['auth', 'configure-docker'];
+
+  if (registries) {
+    args.push(registries);
+  }
+
+  await gcloud(args);
 }
 
 /**
@@ -71,7 +92,5 @@ export async function authenticate(): Promise<void> {
   }
 
   // Configure Docker if necessary
-  if (core.getInput('configure-docker') === 'true') {
-    await configureDocker();
-  }
+  await configureDocker();
 }

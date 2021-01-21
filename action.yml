@@ -9,7 +9,7 @@ runs:
   main: 'dist/index.js'
 inputs:
   version:
-    description: Google Cloud SDK to use. If left empty, will use the latest one.
+    description: Google Cloud SDK to use. If left empty, will use the latest one. On Ubuntu runners, "local" allow to use the pre-installed version of gcloud.
     required: false
     default: 'latest'
   service-account-key:
@@ -23,6 +23,6 @@ inputs:
     description: Install additional components (e.g. beta, gsutil, etc.)
     required: false
   configure-docker:
-    description: Configure Docker to interact with Google Cloud Container Registry.
+    description: Configure Docker to interact with Google Cloud Container Registry. Use true for all repositories, or specify comma-separated registries.
     required: false
     default: 'false'

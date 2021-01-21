@@ -1,6 +1,6 @@
 {
-  "name": "@mathrix-education/setup-gcloud",
-  "version": "1.2.1",
+  "name": "@mathieu-bour/setup-gcloud",
+  "version": "1.3.0",
   "description": "Install the Google Cloud SDK in your GitHub Actions workflow.",
   "keywords": [
     "github-actions",
@@ -8,48 +8,47 @@
     "google-cloud-sdk",
     "gcloud "
   ],
-  "homepage": "https://github.com/mathrix-education/setup-gcloud#readme",
+  "homepage": "https://github.com/mathieu-bour/setup-gcloud#readme",
   "bugs": {
-    "url": "https://github.com/mathrix-education/setup-gcloud/issues",
-    "email": "mathieu@mathrix.fr"
+    "email": "mathieu.tin.bour@gmail.com",
+    "url": "https://github.com/mathieu-bour/setup-gcloud/issues"
   },
   "license": "MIT",
   "author": {
     "name": "Mathieu Bour",
-    "email": "mathieu@mathrix.fr",
+    "email": "mathieu.tin.bour@gmail.com",
     "url": "https://github.com/mathieu-bour"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/mathrix-education/setup-gcloud.git"
+    "url": "git+https://github.com/mathieu-bour/setup-gcloud.git"
   },
   "scripts": {
     "clean": "rimraf dist",
     "format": "prettier --write \"src/**/*.ts\"",
     "lint": "eslint \"src/**\"",
     "lint:fix": "eslint --fix \"src/**\"",
-    "build": "npm run clean && ncc build --source-map --no-source-map-register ./src/install.ts"
+    "prebuild": "npm run clean",
+    "build": "ncc build --source-map --no-source-map-register ./src/install.ts"
   },
   "dependencies": {
     "@actions/core": "^1.2.6",
     "@actions/exec": "^1.0.4",
     "@actions/tool-cache": "^1.6.1",
-    "original-fs": "^1.1.0",
     "source-map-support": "^0.5.19"
   },
   "devDependencies": {
-    "@types/node": "^12.19.6",
-    "@typescript-eslint/eslint-plugin": "^4.5.0",
-    "@typescript-eslint/parser": "^4.5.0",
+    "@types/node": "^12.19.15",
+    "@typescript-eslint/eslint-plugin": "^4.14.0",
+    "@typescript-eslint/parser": "^4.14.0",
     "@zeit/ncc": "^0.22.3",
-    "eslint": "^7.12.0",
+    "eslint": "^7.18.0",
     "eslint-config-prettier": "^6.14.0",
-    "eslint-plugin-import": "^2.22.1",
-    "husky": "^4.3.0",
-    "lint-staged": "^10.5.0",
-    "prettier": "^2.2.0",
+    "husky": "^4.3.8",
+    "lint-staged": "^10.5.3",
+    "prettier": "^2.2.1",
     "rimraf": "^3.0.2",
-    "typescript": "^4.1.2"
+    "typescript": "^4.1.3"
   },
   "private": true
 }
