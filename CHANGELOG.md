@@ -2,6 +2,7 @@
 
 ## [Version 1.3.0](https://github.com/mathrix-education/setup-gcloud/releases/tag/1.3.0)
 - **feat**(docker): artifact registries may now be specified independently
+- **ci**(sonarcloud): implement SonarCloud static analysis
 - **chore**(rebrand): the repository is now maintained by [mathieu-bour](https://github.com/mathieu-bour)
 - **chore**(deps): upgrade dependencies
 

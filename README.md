@@ -1,7 +1,9 @@
 # mathieu-bour/setup-gcloud
 
-![Workflow status][workflow]
+![License][license]
+![Stars][stars]
 ![Latest release][latest-release]
+![Workflow status][workflow]
 
 Install the Google Cloud SDK in your GitHub Actions workflow.
 
@@ -129,7 +131,9 @@ Make sure the service account has the correct rights to write on the bucket link
 [artifact-registry]: https://cloud.google.com/artifact-registry
 [container-registry]: https://cloud.google.com/container-registry
 
-[workflow]: https://img.shields.io/github/workflow/status/mathieu-bour/setup-gcloud/Tests?style=flat-square
+[license]: https://img.shields.io/github/license/mathieu-bour/setup-gcloud?style=flat-square
+[stars]: https://img.shields.io/github/stars/mathieu-bour/setup-gcloud?style=flat-square
 [latest-release]: https://img.shields.io/github/v/release/mathieu-bour/setup-gcloud?label=latest%20release&style=flat-square
-[supported]: https://img.shields.io/badge/status-supported-brightgreen
+[workflow]: https://img.shields.io/github/workflow/status/mathieu-bour/setup-gcloud/Tests?style=flat-square
+[supported]: https://img.shields.io/badge/status-supported-brightgreen?style=flat-square
 
