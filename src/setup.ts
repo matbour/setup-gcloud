@@ -38,7 +38,7 @@ export async function setup(): Promise<void> {
     await exec.exec(installScript, args);
   } else if (isWindows()) {
     // @actions/exec does not exit on windows
-    execSync(`"${installScript}" ${args.join(' ')}`, { stdio: 'inherit' });
+    await exec.exec(`"${installScript}" ${args.join(' ')}`);
   } else {
     // Should never be reached
     core.setFailed(`Unexpected os platform, got: ${process.platform}`);

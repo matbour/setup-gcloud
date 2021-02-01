@@ -8542,11 +8542,7 @@ async function download() {
     }
 }
 
-// EXTERNAL MODULE: external "child_process"
-var external_child_process_ = __webpack_require__(129);
-
 // CONCATENATED MODULE: ./src/setup.ts
-
 
 
 
@@ -8583,7 +8579,7 @@ async function setup() {
     }
     else if (isWindows()) {
         // @actions/exec does not exit on windows
-        Object(external_child_process_.execSync)(`"${installScript}" ${args.join(' ')}`, { stdio: 'inherit' });
+        await Object(exec.exec)(`"${installScript}" ${args.join(' ')}`);
     }
     else {
         // Should never be reached
