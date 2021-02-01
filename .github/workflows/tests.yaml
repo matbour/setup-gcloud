@@ -58,6 +58,7 @@ jobs:
           project: ${{ matrix.project }}
           components: beta
           service-account-key: ${{ secrets.GCLOUD_AUTH }}
+        timeout-minutes: 1
       - name: Test Google Cloud SDK CLI
         run: |
           gcloud version
