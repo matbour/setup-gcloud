@@ -4,6 +4,7 @@
 
 ### Internal
 
+- **ci**(format): use [`@csquare/prettier-config`](https://www.npmjs.com/package/@csquare/prettier-config) configuration
 - **ci**(actions): switch package manager to pnpm
 
 ## [Version 1.3.1](https://github.com/mathieu-bour/setup-gcloud/releases/tag/1.3.1)

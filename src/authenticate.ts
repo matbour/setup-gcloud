@@ -1,6 +1,6 @@
-import * as core from '@actions/core';
 import { unlinkSync, writeFileSync } from 'fs';
 import { resolve } from 'path';
+import * as core from '@actions/core';
 import { gcloud } from './utils';
 
 /**
@@ -37,8 +37,8 @@ async function configureDocker(): Promise<void> {
       ? null
       : input
           .split(',')
-          .map(r => r.trim())
-          .filter(r => r.length > 0)
+          .map((r) => r.trim())
+          .filter((r) => r.length > 0)
           .join(',');
 
   const args = ['auth', 'configure-docker'];

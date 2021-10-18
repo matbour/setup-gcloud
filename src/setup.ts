@@ -1,7 +1,7 @@
-import * as core from '@actions/core';
-import * as exec from '@actions/exec';
 import { execSync } from 'child_process';
 import { resolve } from 'path';
+import * as core from '@actions/core';
+import * as exec from '@actions/exec';
 import { getCloudSDKDirectory, isMacOS, isUbuntu, isWindows } from './utils';
 
 /**

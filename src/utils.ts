@@ -1,7 +1,7 @@
+import { resolve } from 'path';
 import * as core from '@actions/core';
 import * as exec from '@actions/exec';
 import { ExecOptions } from '@actions/exec/lib/interfaces';
-import { resolve } from 'path';
 import { MACOS_INSTALL_PATH, UBUNTU_INSTALL_PATH, WINDOWS_INSTALL_PATH } from './constants';
 
 /**

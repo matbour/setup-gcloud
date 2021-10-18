@@ -1,7 +1,7 @@
+import { resolve } from 'path';
 import * as core from '@actions/core';
 import * as exec from '@actions/exec';
 import * as tc from '@actions/tool-cache';
-import { resolve } from 'path';
 import { UBUNTU_INSTALL_PATH } from './constants';
 import { getCloudSDKDirectory, getDownloadLink, isUbuntu } from './utils';
 
