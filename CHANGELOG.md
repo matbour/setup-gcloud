@@ -4,8 +4,9 @@
 
 ### Internal
 
-- **ci**(format): use [`@csquare/prettier-config`](https://www.npmjs.com/package/@csquare/prettier-config) configuration
 - **ci**(actions): switch package manager to pnpm
+- **ci**(format): use [`@csquare/prettier-config`](https://www.npmjs.com/package/@csquare/prettier-config) configuration
+- **ci**(hooks): replace `husky` by `@arkweid/lefthook`
 
 ## [Version 1.3.1](https://github.com/mathieu-bour/setup-gcloud/releases/tag/1.3.1)
 - **ci**(actions): drop ubuntu-16.04 tests since it is deprecated
