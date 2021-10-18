@@ -38,7 +38,7 @@ jobs:
     name: Integration tests
     strategy:
       matrix:
-        os: [ ubuntu-16.04, ubuntu-18.04, ubuntu-20.04, macos-10.15, windows-2019 ]
+        os: [ ubuntu-18.04, ubuntu-20.04, macos-10.15, windows-2019 ]
         version: [ latest, local, 245.0.0 ]
         project: [ auto, windys-lab ]
         exclude:
