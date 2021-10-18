@@ -1,4 +1,5 @@
 import * as core from '@actions/core';
+import { types } from 'util';
 import { authenticate } from './authenticate';
 import { download } from './download';
 import { setup } from './setup';
@@ -22,5 +23,7 @@ try {
     await authenticate();
   })();
 } catch (exception) {
-  core.setFailed(exception.message);
+  if (types.isNativeError(exception)) {
+    core.setFailed(exception.message);
+  }
 }

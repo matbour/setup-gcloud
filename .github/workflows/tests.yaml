@@ -11,14 +11,12 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v2
-      - name: Setup node
-        uses: actions/setup-node@v1
+      - name: Setup environment
+        uses: ./.github/actions/setup
         with:
-          node-version: '12'
+          install: true
       - name: Run ESLint
-        run: |
-          npm install
-          npm run lint
+        run: pnpm run lint
   sonarcloud:
     name: SonarCloud
     runs-on: ubuntu-latest
