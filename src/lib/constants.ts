@@ -9,6 +9,9 @@ export const isMacOS = process.platform === 'darwin';
 /** @type {boolean} If we are running on Linux */
 export const isLinux = process.platform === 'linux';
 
+/** @type {string} The requested version. */
+export const version = getInput('version', { required: true });
+
 /** @type {string} The destination directory. */
 export const destination = resolve(getInput('destination', { required: true }).replace(/~/g, homedir()));
 

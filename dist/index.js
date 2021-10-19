@@ -1273,27 +1273,27 @@ Support boolean input list: \`true | True | TRUE | false | False | FALSE\``);
       process.stdout.write(message + os.EOL);
     }
     exports2.info = info;
-    function startGroup2(name) {
+    function startGroup(name) {
       command_1.issue("group", name);
     }
-    exports2.startGroup = startGroup2;
-    function endGroup2() {
+    exports2.startGroup = startGroup;
+    function endGroup() {
       command_1.issue("endgroup");
     }
-    exports2.endGroup = endGroup2;
-    function group(name, fn) {
+    exports2.endGroup = endGroup;
+    function group3(name, fn) {
       return __awaiter(this, void 0, void 0, function* () {
-        startGroup2(name);
+        startGroup(name);
         let result;
         try {
           result = yield fn();
         } finally {
-          endGroup2();
+          endGroup();
         }
         return result;
       });
     }
-    exports2.group = group;
+    exports2.group = group3;
     function saveState(name, value) {
       command_1.issueCommand("save-state", { name }, value);
     }
@@ -2477,73 +2477,73 @@ var require_semver = __commonJS({
     }
     var i;
     exports2.parse = parse;
-    function parse(version, options) {
+    function parse(version2, options) {
       if (!options || typeof options !== "object") {
         options = {
           loose: !!options,
           includePrerelease: false
         };
       }
-      if (version instanceof SemVer) {
-        return version;
+      if (version2 instanceof SemVer) {
+        return version2;
       }
-      if (typeof version !== "string") {
+      if (typeof version2 !== "string") {
         return null;
       }
-      if (version.length > MAX_LENGTH) {
+      if (version2.length > MAX_LENGTH) {
         return null;
       }
       var r = options.loose ? re[t.LOOSE] : re[t.FULL];
-      if (!r.test(version)) {
+      if (!r.test(version2)) {
         return null;
       }
       try {
-        return new SemVer(version, options);
+        return new SemVer(version2, options);
       } catch (er) {
         return null;
       }
     }
     exports2.valid = valid;
-    function valid(version, options) {
-      var v = parse(version, options);
+    function valid(version2, options) {
+      var v = parse(version2, options);
       return v ? v.version : null;
     }
     exports2.clean = clean;
-    function clean(version, options) {
-      var s = parse(version.trim().replace(/^[=v]+/, ""), options);
+    function clean(version2, options) {
+      var s = parse(version2.trim().replace(/^[=v]+/, ""), options);
       return s ? s.version : null;
     }
     exports2.SemVer = SemVer;
-    function SemVer(version, options) {
+    function SemVer(version2, options) {
       if (!options || typeof options !== "object") {
         options = {
           loose: !!options,
           includePrerelease: false
         };
       }
-      if (version instanceof SemVer) {
-        if (version.loose === options.loose) {
-          return version;
+      if (version2 instanceof SemVer) {
+        if (version2.loose === options.loose) {
+          return version2;
         } else {
-          version = version.version;
+          version2 = version2.version;
         }
-      } else if (typeof version !== "string") {
-        throw new TypeError("Invalid Version: " + version);
+      } else if (typeof version2 !== "string") {
+        throw new TypeError("Invalid Version: " + version2);
       }
-      if (version.length > MAX_LENGTH) {
+      if (version2.length > MAX_LENGTH) {
         throw new TypeError("version is longer than " + MAX_LENGTH + " characters");
       }
       if (!(this instanceof SemVer)) {
-        return new SemVer(version, options);
+        return new SemVer(version2, options);
       }
-      debug("SemVer", version, options);
+      debug("SemVer", version2, options);
       this.options = options;
       this.loose = !!options.loose;
-      var m = version.trim().match(options.loose ? re[t.LOOSE] : re[t.FULL]);
+      var m = version2.trim().match(options.loose ? re[t.LOOSE] : re[t.FULL]);
       if (!m) {
-        throw new TypeError("Invalid Version: " + version);
+        throw new TypeError("Invalid Version: " + version2);
       }
-      this.raw = version;
+      this.raw = version2;
       this.major = +m[1];
       this.minor = +m[2];
       this.patch = +m[3];
@@ -2726,13 +2726,13 @@ var require_semver = __commonJS({
       return this;
     };
     exports2.inc = inc;
-    function inc(version, release, loose, identifier) {
+    function inc(version2, release, loose, identifier) {
       if (typeof loose === "string") {
         identifier = loose;
         loose = void 0;
       }
       try {
-        return new SemVer(version, loose).inc(release, identifier).version;
+        return new SemVer(version2, loose).inc(release, identifier).version;
       } catch (er) {
         return null;
       }
@@ -2922,19 +2922,19 @@ var require_semver = __commonJS({
     Comparator.prototype.toString = function() {
       return this.value;
     };
-    Comparator.prototype.test = function(version) {
-      debug("Comparator.test", version, this.options.loose);
-      if (this.semver === ANY || version === ANY) {
+    Comparator.prototype.test = function(version2) {
+      debug("Comparator.test", version2, this.options.loose);
+      if (this.semver === ANY || version2 === ANY) {
         return true;
       }
-      if (typeof version === "string") {
+      if (typeof version2 === "string") {
         try {
-          version = new SemVer(version, this.options);
+          version2 = new SemVer(version2, this.options);
         } catch (er) {
           return false;
         }
       }
-      return cmp(version, this.operator, this.semver, this.options);
+      return cmp(version2, this.operator, this.semver, this.options);
     };
     Comparator.prototype.intersects = function(comp, options) {
       if (!(comp instanceof Comparator)) {
@@ -3245,31 +3245,31 @@ var require_semver = __commonJS({
       }
       return (from + " " + to).trim();
     }
-    Range.prototype.test = function(version) {
-      if (!version) {
+    Range.prototype.test = function(version2) {
+      if (!version2) {
         return false;
       }
-      if (typeof version === "string") {
+      if (typeof version2 === "string") {
         try {
-          version = new SemVer(version, this.options);
+          version2 = new SemVer(version2, this.options);
         } catch (er) {
           return false;
         }
       }
       for (var i2 = 0; i2 < this.set.length; i2++) {
-        if (testSet(this.set[i2], version, this.options)) {
+        if (testSet(this.set[i2], version2, this.options)) {
           return true;
         }
       }
       return false;
     };
-    function testSet(set, version, options) {
+    function testSet(set, version2, options) {
       for (var i2 = 0; i2 < set.length; i2++) {
-        if (!set[i2].test(version)) {
+        if (!set[i2].test(version2)) {
           return false;
         }
       }
-      if (version.prerelease.length && !options.includePrerelease) {
+      if (version2.prerelease.length && !options.includePrerelease) {
         for (i2 = 0; i2 < set.length; i2++) {
           debug(set[i2].semver);
           if (set[i2].semver === ANY) {
@@ -3277,7 +3277,7 @@ var require_semver = __commonJS({
           }
           if (set[i2].semver.prerelease.length > 0) {
             var allowed = set[i2].semver;
-            if (allowed.major === version.major && allowed.minor === version.minor && allowed.patch === version.patch) {
+            if (allowed.major === version2.major && allowed.minor === version2.minor && allowed.patch === version2.patch) {
               return true;
             }
           }
@@ -3287,13 +3287,13 @@ var require_semver = __commonJS({
       return true;
     }
     exports2.satisfies = satisfies;
-    function satisfies(version, range, options) {
+    function satisfies(version2, range, options) {
       try {
         range = new Range(range, options);
       } catch (er) {
         return false;
       }
-      return range.test(version);
+      return range.test(version2);
     }
     exports2.maxSatisfying = maxSatisfying;
     function maxSatisfying(versions, range, options) {
@@ -3385,16 +3385,16 @@ var require_semver = __commonJS({
       }
     }
     exports2.ltr = ltr;
-    function ltr(version, range, options) {
-      return outside(version, range, "<", options);
+    function ltr(version2, range, options) {
+      return outside(version2, range, "<", options);
     }
     exports2.gtr = gtr;
-    function gtr(version, range, options) {
-      return outside(version, range, ">", options);
+    function gtr(version2, range, options) {
+      return outside(version2, range, ">", options);
     }
     exports2.outside = outside;
-    function outside(version, range, hilo, options) {
-      version = new SemVer(version, options);
+    function outside(version2, range, hilo, options) {
+      version2 = new SemVer(version2, options);
       range = new Range(range, options);
       var gtfn, ltefn, ltfn, comp, ecomp;
       switch (hilo) {
@@ -3415,7 +3415,7 @@ var require_semver = __commonJS({
         default:
           throw new TypeError('Must provide a hilo val of "<" or ">"');
       }
-      if (satisfies(version, range, options)) {
+      if (satisfies(version2, range, options)) {
         return false;
       }
       for (var i2 = 0; i2 < range.set.length; ++i2) {
@@ -3437,17 +3437,17 @@ var require_semver = __commonJS({
         if (high.operator === comp || high.operator === ecomp) {
           return false;
         }
-        if ((!low.operator || low.operator === comp) && ltefn(version, low.semver)) {
+        if ((!low.operator || low.operator === comp) && ltefn(version2, low.semver)) {
           return false;
-        } else if (low.operator === ecomp && ltfn(version, low.semver)) {
+        } else if (low.operator === ecomp && ltfn(version2, low.semver)) {
           return false;
         }
       }
       return true;
     }
     exports2.prerelease = prerelease;
-    function prerelease(version, options) {
-      var parsed = parse(version, options);
+    function prerelease(version2, options) {
+      var parsed = parse(version2, options);
       return parsed && parsed.prerelease.length ? parsed.prerelease : null;
     }
     exports2.intersects = intersects;
@@ -3457,23 +3457,23 @@ var require_semver = __commonJS({
       return r1.intersects(r2);
     }
     exports2.coerce = coerce;
-    function coerce(version, options) {
-      if (version instanceof SemVer) {
-        return version;
+    function coerce(version2, options) {
+      if (version2 instanceof SemVer) {
+        return version2;
       }
-      if (typeof version === "number") {
-        version = String(version);
+      if (typeof version2 === "number") {
+        version2 = String(version2);
       }
-      if (typeof version !== "string") {
+      if (typeof version2 !== "string") {
         return null;
       }
       options = options || {};
       var match = null;
       if (!options.rtl) {
-        match = version.match(re[t.COERCE]);
+        match = version2.match(re[t.COERCE]);
       } else {
         var next;
-        while ((next = re[t.COERCERTL].exec(version)) && (!match || match.index + match[0].length !== version.length)) {
+        while ((next = re[t.COERCERTL].exec(version2)) && (!match || match.index + match[0].length !== version2.length)) {
           if (!match || next.index + next[0].length !== match.index + match[0].length) {
             match = next;
           }
@@ -3562,9 +3562,9 @@ var require_manifest = __commonJS({
         let match;
         let file;
         for (const candidate of candidates) {
-          const version = candidate.version;
-          core_1.debug(`check ${version} satisfies ${versionSpec}`);
-          if (semver.satisfies(version, versionSpec) && (!stable || candidate.stable === stable)) {
+          const version2 = candidate.version;
+          core_1.debug(`check ${version2} satisfies ${versionSpec}`);
+          if (semver.satisfies(version2, versionSpec) && (!stable || candidate.stable === stable)) {
             file = candidate.files.find((item) => {
               core_1.debug(`${item.arch}===${archFilter} && ${item.platform}===${platFilter}`);
               let chk = item.arch === archFilter && item.platform === platFilter;
@@ -3595,9 +3595,9 @@ var require_manifest = __commonJS({
     exports2._findMatch = _findMatch;
     function _getOsVersion() {
       const plat = os.platform();
-      let version = "";
+      let version2 = "";
       if (plat === "darwin") {
-        version = cp.execSync("sw_vers -productVersion").toString();
+        version2 = cp.execSync("sw_vers -productVersion").toString();
       } else if (plat === "linux") {
         const lsbContents = module2.exports._readLinuxVersionFile();
         if (lsbContents) {
@@ -3605,13 +3605,13 @@ var require_manifest = __commonJS({
           for (const line of lines) {
             const parts = line.split("=");
             if (parts.length === 2 && (parts[0].trim() === "VERSION_ID" || parts[0].trim() === "DISTRIB_RELEASE")) {
-              version = parts[1].trim().replace(/^"/, "").replace(/"$/, "");
+              version2 = parts[1].trim().replace(/^"/, "").replace(/"$/, "");
               break;
             }
           }
         }
       }
-      return version;
+      return version2;
     }
     exports2._getOsVersion = _getOsVersion;
     function _readLinuxVersionFile() {
@@ -4154,39 +4154,39 @@ var require_tool_cache = __commonJS({
         yield exec_1.exec(`"${unzipPath}"`, args, { cwd: dest });
       });
     }
-    function cacheDir2(sourceDir, tool, version, arch) {
+    function cacheDir2(sourceDir, tool, version2, arch) {
       return __awaiter(this, void 0, void 0, function* () {
-        version = semver.clean(version) || version;
+        version2 = semver.clean(version2) || version2;
         arch = arch || os.arch();
-        core.debug(`Caching tool ${tool} ${version} ${arch}`);
+        core.debug(`Caching tool ${tool} ${version2} ${arch}`);
         core.debug(`source dir: ${sourceDir}`);
         if (!fs.statSync(sourceDir).isDirectory()) {
           throw new Error("sourceDir is not a directory");
         }
-        const destPath = yield _createToolPath(tool, version, arch);
+        const destPath = yield _createToolPath(tool, version2, arch);
         for (const itemName of fs.readdirSync(sourceDir)) {
           const s = path.join(sourceDir, itemName);
           yield io.cp(s, destPath, { recursive: true });
         }
-        _completeToolPath(tool, version, arch);
+        _completeToolPath(tool, version2, arch);
         return destPath;
       });
     }
     exports2.cacheDir = cacheDir2;
-    function cacheFile(sourceFile, targetFile, tool, version, arch) {
+    function cacheFile(sourceFile, targetFile, tool, version2, arch) {
       return __awaiter(this, void 0, void 0, function* () {
-        version = semver.clean(version) || version;
+        version2 = semver.clean(version2) || version2;
         arch = arch || os.arch();
-        core.debug(`Caching tool ${tool} ${version} ${arch}`);
+        core.debug(`Caching tool ${tool} ${version2} ${arch}`);
         core.debug(`source file: ${sourceFile}`);
         if (!fs.statSync(sourceFile).isFile()) {
           throw new Error("sourceFile is not a file");
         }
-        const destFolder = yield _createToolPath(tool, version, arch);
+        const destFolder = yield _createToolPath(tool, version2, arch);
         const destPath = path.join(destFolder, targetFile);
         core.debug(`destination file ${destPath}`);
         yield io.cp(sourceFile, destPath);
-        _completeToolPath(tool, version, arch);
+        _completeToolPath(tool, version2, arch);
         return destFolder;
       });
     }
@@ -4288,9 +4288,9 @@ var require_tool_cache = __commonJS({
         return dest;
       });
     }
-    function _createToolPath(tool, version, arch) {
+    function _createToolPath(tool, version2, arch) {
       return __awaiter(this, void 0, void 0, function* () {
-        const folderPath = path.join(_getCacheDirectory(), tool, semver.clean(version) || version, arch || "");
+        const folderPath = path.join(_getCacheDirectory(), tool, semver.clean(version2) || version2, arch || "");
         core.debug(`destination ${folderPath}`);
         const markerPath = `${folderPath}.complete`;
         yield io.rmRF(folderPath);
@@ -4299,8 +4299,8 @@ var require_tool_cache = __commonJS({
         return folderPath;
       });
     }
-    function _completeToolPath(tool, version, arch) {
-      const folderPath = path.join(_getCacheDirectory(), tool, semver.clean(version) || version, arch || "");
+    function _completeToolPath(tool, version2, arch) {
+      const folderPath = path.join(_getCacheDirectory(), tool, semver.clean(version2) || version2, arch || "");
       const markerPath = `${folderPath}.complete`;
       fs.writeFileSync(markerPath, "");
       core.debug("finished caching tool");
@@ -4314,7 +4314,7 @@ var require_tool_cache = __commonJS({
     }
     exports2.isExplicitVersion = isExplicitVersion;
     function evaluateVersions(versions, versionSpec) {
-      let version = "";
+      let version2 = "";
       core.debug(`evaluating ${versions.length} versions`);
       versions = versions.sort((a, b) => {
         if (semver.gt(a, b)) {
@@ -4326,16 +4326,16 @@ var require_tool_cache = __commonJS({
         const potential = versions[i];
         const satisfied = semver.satisfies(potential, versionSpec);
         if (satisfied) {
-          version = potential;
+          version2 = potential;
           break;
         }
       }
-      if (version) {
-        core.debug(`matched: ${version}`);
+      if (version2) {
+        core.debug(`matched: ${version2}`);
       } else {
         core.debug("match not found");
       }
-      return version;
+      return version2;
     }
     exports2.evaluateVersions = evaluateVersions;
     function _getCacheDirectory() {
@@ -4443,6 +4443,7 @@ async function configureDocker() {
 }
 
 // src/tasks/download.ts
+var import_child_process = __toModule(require("child_process"));
 var import_fs2 = __toModule(require("fs"));
 var import_path3 = __toModule(require("path"));
 var import_core5 = __toModule(require_core());
@@ -4456,11 +4457,12 @@ var import_core4 = __toModule(require_core());
 var isWindows = process.platform === "win32";
 var isMacOS = process.platform === "darwin";
 var isLinux = process.platform === "linux";
+var version = (0, import_core4.getInput)("version", { required: true });
 var destination = (0, import_path2.resolve)((0, import_core4.getInput)("destination", { required: true }).replace(/~/g, (0, import_os2.homedir)()));
 var downloadLink = (() => {
   const baseUrl = "https://dl.google.com/dl/cloudsdk/channels/rapid";
-  const version = (0, import_core4.getInput)("version", { required: true });
-  if (version === "latest") {
+  const version2 = (0, import_core4.getInput)("version", { required: true });
+  if (version2 === "latest") {
     if (isWindows) {
       return `${baseUrl}/google-cloud-sdk.zip`;
     } else {
@@ -4468,34 +4470,57 @@ var downloadLink = (() => {
     }
   }
   if (isWindows) {
-    return `${baseUrl}/downloads/google-cloud-sdk-${version}-windows-x86_64.zip`;
+    return `${baseUrl}/downloads/google-cloud-sdk-${version2}-windows-x86_64.zip`;
   } else if (isMacOS) {
-    return `${baseUrl}/downloads/google-cloud-sdk-${version}-darwin-x86_64.tar.gz`;
+    return `${baseUrl}/downloads/google-cloud-sdk-${version2}-darwin-x86_64.tar.gz`;
   } else {
-    return `${baseUrl}/downloads/google-cloud-sdk-${version}-linux-x86_64.tar.gz`;
+    return `${baseUrl}/downloads/google-cloud-sdk-${version2}-linux-x86_64.tar.gz`;
   }
 })();
 
 // src/tasks/download.ts
 async function download() {
-  const downloadPath = await (0, import_tool_cache.downloadTool)(downloadLink);
-  let extractionPath;
-  if (downloadLink.endsWith(".zip")) {
-    extractionPath = await (0, import_tool_cache.extractZip)(downloadPath);
-  } else if (downloadLink.endsWith(".tar.gz")) {
-    extractionPath = await (0, import_tool_cache.extractTar)(downloadPath);
-  } else {
-    throw new Error("Unknown extension");
+  if (version === "local") {
+    let found;
+    const notFound = new Error("Unable to locate the gcloud executable on your machine, please specify a version.");
+    if (isLinux || isMacOS) {
+      try {
+        found = (0, import_child_process.execSync)("which gcloud").toString("utf-8").trim();
+      } catch (_) {
+        throw notFound;
+      }
+    } else if (isWindows) {
+      try {
+        found = (0, import_child_process.execSync)("where gcloud").toString("utf-8").trim();
+      } catch (_) {
+        throw notFound;
+      }
+    } else {
+      throw notFound;
+    }
+    setPath(found);
+    return null;
   }
-  const version = (0, import_fs2.readFileSync)((0, import_path3.join)(extractionPath, "google-cloud-sdk", "VERSION"), { encoding: "utf-8" }).trim();
-  const final = destination.replace("{version}", version);
-  await (0, import_io.mkdirP)((0, import_path3.join)(final, ".."));
-  await (0, import_io.mv)((0, import_path3.join)(extractionPath, "google-cloud-sdk"), final);
-  await (0, import_tool_cache.cacheDir)(final, "google-cloud-sdk", version, process.arch);
-  (0, import_core5.addPath)((0, import_path3.join)(final, "bin"));
-  await Promise.all([(0, import_io.rmRF)(downloadPath), (0, import_io.rmRF)(extractionPath)]);
-  setPath((0, import_path3.join)(final, "bin", "gcloud" + (isWindows ? ".cmd" : "")));
-  return final;
+  return (0, import_core5.group)("Download Google Cloud SDK", async () => {
+    const downloadPath = await (0, import_tool_cache.downloadTool)(downloadLink);
+    let extractionPath;
+    if (downloadLink.endsWith(".zip")) {
+      extractionPath = await (0, import_tool_cache.extractZip)(downloadPath);
+    } else if (downloadLink.endsWith(".tar.gz")) {
+      extractionPath = await (0, import_tool_cache.extractTar)(downloadPath);
+    } else {
+      throw new Error("Unknown extension");
+    }
+    const version2 = (0, import_fs2.readFileSync)((0, import_path3.join)(extractionPath, "google-cloud-sdk", "VERSION"), { encoding: "utf-8" }).trim();
+    const final = destination.replace("{version}", version2);
+    await (0, import_io.mkdirP)((0, import_path3.join)(final, ".."));
+    await (0, import_io.mv)((0, import_path3.join)(extractionPath, "google-cloud-sdk"), final);
+    await (0, import_tool_cache.cacheDir)(final, "google-cloud-sdk", version2, process.arch);
+    (0, import_core5.addPath)((0, import_path3.join)(final, "bin"));
+    await Promise.all([(0, import_io.rmRF)(downloadPath), (0, import_io.rmRF)(extractionPath)]);
+    setPath((0, import_path3.join)(final, "bin", "gcloud" + (isWindows ? ".cmd" : "")));
+    return final;
+  });
 }
 
 // src/tasks/install.ts
@@ -4503,22 +4528,23 @@ var import_path4 = __toModule(require("path"));
 var import_core6 = __toModule(require_core());
 var import_exec2 = __toModule(require_exec());
 async function install(directory) {
-  const args = ["--usage-reporting=false", "--command-completion=false", "--path-update=false"];
-  const components = (0, import_core6.getInput)("components");
-  if (components.length > 0) {
-    args.push(`--additional-components=${components}`);
-  }
-  const script = isWindows ? "install.bat" : "install.sh";
-  (0, import_core6.startGroup)("Install Google Cloud SDK");
-  const exit = await (0, import_exec2.exec)((0, import_path4.join)(directory, script), args);
-  (0, import_core6.endGroup)();
-  return exit;
+  return (0, import_core6.group)("Install Google Cloud SDK", async () => {
+    const args = ["--usage-reporting=false", "--command-completion=false", "--path-update=false"];
+    const components = (0, import_core6.getInput)("components");
+    if (components.length > 0) {
+      args.push(`--additional-components=${components}`);
+    }
+    const script = isWindows ? "install.bat" : "install.sh";
+    return await (0, import_exec2.exec)((0, import_path4.join)(directory, script), args);
+  });
 }
 
 // src/main.ts
 async function main() {
-  const dir = await download();
-  await install(dir);
+  const installDir = await download();
+  if (installDir) {
+    await install(installDir);
+  }
   await auth();
   await configureDocker();
 }

@@ -5,8 +5,12 @@ import download from './tasks/download';
 import install from './tasks/install';
 
 async function main(): Promise<void> {
-  const dir = await download();
-  await install(dir);
+  const installDir = await download();
+
+  if (installDir) {
+    await install(installDir);
+  }
+
   await auth();
   await configureDocker();
 }
