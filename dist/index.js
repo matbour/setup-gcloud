@@ -37,2215 +37,6 @@ var __toModule = (module2) => {
   return __reExport(__markAsModule(__defProp(module2 != null ? __create(__getProtoOf(module2)) : {}, "default", module2 && module2.__esModule && "default" in module2 ? { get: () => module2.default, enumerable: true } : { value: module2, enumerable: true })), module2);
 };
 
-// node_modules/.pnpm/source-map@0.6.1/node_modules/source-map/lib/base64.js
-var require_base64 = __commonJS({
-  "node_modules/.pnpm/source-map@0.6.1/node_modules/source-map/lib/base64.js"(exports2) {
-    var intToCharMap = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/".split("");
-    exports2.encode = function(number) {
-      if (0 <= number && number < intToCharMap.length) {
-        return intToCharMap[number];
-      }
-      throw new TypeError("Must be between 0 and 63: " + number);
-    };
-    exports2.decode = function(charCode) {
-      var bigA = 65;
-      var bigZ = 90;
-      var littleA = 97;
-      var littleZ = 122;
-      var zero = 48;
-      var nine = 57;
-      var plus = 43;
-      var slash = 47;
-      var littleOffset = 26;
-      var numberOffset = 52;
-      if (bigA <= charCode && charCode <= bigZ) {
-        return charCode - bigA;
-      }
-      if (littleA <= charCode && charCode <= littleZ) {
-        return charCode - littleA + littleOffset;
-      }
-      if (zero <= charCode && charCode <= nine) {
-        return charCode - zero + numberOffset;
-      }
-      if (charCode == plus) {
-        return 62;
-      }
-      if (charCode == slash) {
-        return 63;
-      }
-      return -1;
-    };
-  }
-});
-
-// node_modules/.pnpm/source-map@0.6.1/node_modules/source-map/lib/base64-vlq.js
-var require_base64_vlq = __commonJS({
-  "node_modules/.pnpm/source-map@0.6.1/node_modules/source-map/lib/base64-vlq.js"(exports2) {
-    var base64 = require_base64();
-    var VLQ_BASE_SHIFT = 5;
-    var VLQ_BASE = 1 << VLQ_BASE_SHIFT;
-    var VLQ_BASE_MASK = VLQ_BASE - 1;
-    var VLQ_CONTINUATION_BIT = VLQ_BASE;
-    function toVLQSigned(aValue) {
-      return aValue < 0 ? (-aValue << 1) + 1 : (aValue << 1) + 0;
-    }
-    function fromVLQSigned(aValue) {
-      var isNegative = (aValue & 1) === 1;
-      var shifted = aValue >> 1;
-      return isNegative ? -shifted : shifted;
-    }
-    exports2.encode = function base64VLQ_encode(aValue) {
-      var encoded = "";
-      var digit;
-      var vlq = toVLQSigned(aValue);
-      do {
-        digit = vlq & VLQ_BASE_MASK;
-        vlq >>>= VLQ_BASE_SHIFT;
-        if (vlq > 0) {
-          digit |= VLQ_CONTINUATION_BIT;
-        }
-        encoded += base64.encode(digit);
-      } while (vlq > 0);
-      return encoded;
-    };
-    exports2.decode = function base64VLQ_decode(aStr, aIndex, aOutParam) {
-      var strLen = aStr.length;
-      var result = 0;
-      var shift = 0;
-      var continuation, digit;
-      do {
-        if (aIndex >= strLen) {
-          throw new Error("Expected more digits in base 64 VLQ value.");
-        }
-        digit = base64.decode(aStr.charCodeAt(aIndex++));
-        if (digit === -1) {
-          throw new Error("Invalid base64 digit: " + aStr.charAt(aIndex - 1));
-        }
-        continuation = !!(digit & VLQ_CONTINUATION_BIT);
-        digit &= VLQ_BASE_MASK;
-        result = result + (digit << shift);
-        shift += VLQ_BASE_SHIFT;
-      } while (continuation);
-      aOutParam.value = fromVLQSigned(result);
-      aOutParam.rest = aIndex;
-    };
-  }
-});
-
-// node_modules/.pnpm/source-map@0.6.1/node_modules/source-map/lib/util.js
-var require_util = __commonJS({
-  "node_modules/.pnpm/source-map@0.6.1/node_modules/source-map/lib/util.js"(exports2) {
-    function getArg(aArgs, aName, aDefaultValue) {
-      if (aName in aArgs) {
-        return aArgs[aName];
-      } else if (arguments.length === 3) {
-        return aDefaultValue;
-      } else {
-        throw new Error('"' + aName + '" is a required argument.');
-      }
-    }
-    exports2.getArg = getArg;
-    var urlRegexp = /^(?:([\w+\-.]+):)?\/\/(?:(\w+:\w+)@)?([\w.-]*)(?::(\d+))?(.*)$/;
-    var dataUrlRegexp = /^data:.+\,.+$/;
-    function urlParse(aUrl) {
-      var match = aUrl.match(urlRegexp);
-      if (!match) {
-        return null;
-      }
-      return {
-        scheme: match[1],
-        auth: match[2],
-        host: match[3],
-        port: match[4],
-        path: match[5]
-      };
-    }
-    exports2.urlParse = urlParse;
-    function urlGenerate(aParsedUrl) {
-      var url = "";
-      if (aParsedUrl.scheme) {
-        url += aParsedUrl.scheme + ":";
-      }
-      url += "//";
-      if (aParsedUrl.auth) {
-        url += aParsedUrl.auth + "@";
-      }
-      if (aParsedUrl.host) {
-        url += aParsedUrl.host;
-      }
-      if (aParsedUrl.port) {
-        url += ":" + aParsedUrl.port;
-      }
-      if (aParsedUrl.path) {
-        url += aParsedUrl.path;
-      }
-      return url;
-    }
-    exports2.urlGenerate = urlGenerate;
-    function normalize(aPath) {
-      var path = aPath;
-      var url = urlParse(aPath);
-      if (url) {
-        if (!url.path) {
-          return aPath;
-        }
-        path = url.path;
-      }
-      var isAbsolute = exports2.isAbsolute(path);
-      var parts = path.split(/\/+/);
-      for (var part, up = 0, i = parts.length - 1; i >= 0; i--) {
-        part = parts[i];
-        if (part === ".") {
-          parts.splice(i, 1);
-        } else if (part === "..") {
-          up++;
-        } else if (up > 0) {
-          if (part === "") {
-            parts.splice(i + 1, up);
-            up = 0;
-          } else {
-            parts.splice(i, 2);
-            up--;
-          }
-        }
-      }
-      path = parts.join("/");
-      if (path === "") {
-        path = isAbsolute ? "/" : ".";
-      }
-      if (url) {
-        url.path = path;
-        return urlGenerate(url);
-      }
-      return path;
-    }
-    exports2.normalize = normalize;
-    function join(aRoot, aPath) {
-      if (aRoot === "") {
-        aRoot = ".";
-      }
-      if (aPath === "") {
-        aPath = ".";
-      }
-      var aPathUrl = urlParse(aPath);
-      var aRootUrl = urlParse(aRoot);
-      if (aRootUrl) {
-        aRoot = aRootUrl.path || "/";
-      }
-      if (aPathUrl && !aPathUrl.scheme) {
-        if (aRootUrl) {
-          aPathUrl.scheme = aRootUrl.scheme;
-        }
-        return urlGenerate(aPathUrl);
-      }
-      if (aPathUrl || aPath.match(dataUrlRegexp)) {
-        return aPath;
-      }
-      if (aRootUrl && !aRootUrl.host && !aRootUrl.path) {
-        aRootUrl.host = aPath;
-        return urlGenerate(aRootUrl);
-      }
-      var joined = aPath.charAt(0) === "/" ? aPath : normalize(aRoot.replace(/\/+$/, "") + "/" + aPath);
-      if (aRootUrl) {
-        aRootUrl.path = joined;
-        return urlGenerate(aRootUrl);
-      }
-      return joined;
-    }
-    exports2.join = join;
-    exports2.isAbsolute = function(aPath) {
-      return aPath.charAt(0) === "/" || urlRegexp.test(aPath);
-    };
-    function relative(aRoot, aPath) {
-      if (aRoot === "") {
-        aRoot = ".";
-      }
-      aRoot = aRoot.replace(/\/$/, "");
-      var level = 0;
-      while (aPath.indexOf(aRoot + "/") !== 0) {
-        var index = aRoot.lastIndexOf("/");
-        if (index < 0) {
-          return aPath;
-        }
-        aRoot = aRoot.slice(0, index);
-        if (aRoot.match(/^([^\/]+:\/)?\/*$/)) {
-          return aPath;
-        }
-        ++level;
-      }
-      return Array(level + 1).join("../") + aPath.substr(aRoot.length + 1);
-    }
-    exports2.relative = relative;
-    var supportsNullProto = function() {
-      var obj = Object.create(null);
-      return !("__proto__" in obj);
-    }();
-    function identity(s) {
-      return s;
-    }
-    function toSetString(aStr) {
-      if (isProtoString(aStr)) {
-        return "$" + aStr;
-      }
-      return aStr;
-    }
-    exports2.toSetString = supportsNullProto ? identity : toSetString;
-    function fromSetString(aStr) {
-      if (isProtoString(aStr)) {
-        return aStr.slice(1);
-      }
-      return aStr;
-    }
-    exports2.fromSetString = supportsNullProto ? identity : fromSetString;
-    function isProtoString(s) {
-      if (!s) {
-        return false;
-      }
-      var length = s.length;
-      if (length < 9) {
-        return false;
-      }
-      if (s.charCodeAt(length - 1) !== 95 || s.charCodeAt(length - 2) !== 95 || s.charCodeAt(length - 3) !== 111 || s.charCodeAt(length - 4) !== 116 || s.charCodeAt(length - 5) !== 111 || s.charCodeAt(length - 6) !== 114 || s.charCodeAt(length - 7) !== 112 || s.charCodeAt(length - 8) !== 95 || s.charCodeAt(length - 9) !== 95) {
-        return false;
-      }
-      for (var i = length - 10; i >= 0; i--) {
-        if (s.charCodeAt(i) !== 36) {
-          return false;
-        }
-      }
-      return true;
-    }
-    function compareByOriginalPositions(mappingA, mappingB, onlyCompareOriginal) {
-      var cmp = strcmp(mappingA.source, mappingB.source);
-      if (cmp !== 0) {
-        return cmp;
-      }
-      cmp = mappingA.originalLine - mappingB.originalLine;
-      if (cmp !== 0) {
-        return cmp;
-      }
-      cmp = mappingA.originalColumn - mappingB.originalColumn;
-      if (cmp !== 0 || onlyCompareOriginal) {
-        return cmp;
-      }
-      cmp = mappingA.generatedColumn - mappingB.generatedColumn;
-      if (cmp !== 0) {
-        return cmp;
-      }
-      cmp = mappingA.generatedLine - mappingB.generatedLine;
-      if (cmp !== 0) {
-        return cmp;
-      }
-      return strcmp(mappingA.name, mappingB.name);
-    }
-    exports2.compareByOriginalPositions = compareByOriginalPositions;
-    function compareByGeneratedPositionsDeflated(mappingA, mappingB, onlyCompareGenerated) {
-      var cmp = mappingA.generatedLine - mappingB.generatedLine;
-      if (cmp !== 0) {
-        return cmp;
-      }
-      cmp = mappingA.generatedColumn - mappingB.generatedColumn;
-      if (cmp !== 0 || onlyCompareGenerated) {
-        return cmp;
-      }
-      cmp = strcmp(mappingA.source, mappingB.source);
-      if (cmp !== 0) {
-        return cmp;
-      }
-      cmp = mappingA.originalLine - mappingB.originalLine;
-      if (cmp !== 0) {
-        return cmp;
-      }
-      cmp = mappingA.originalColumn - mappingB.originalColumn;
-      if (cmp !== 0) {
-        return cmp;
-      }
-      return strcmp(mappingA.name, mappingB.name);
-    }
-    exports2.compareByGeneratedPositionsDeflated = compareByGeneratedPositionsDeflated;
-    function strcmp(aStr1, aStr2) {
-      if (aStr1 === aStr2) {
-        return 0;
-      }
-      if (aStr1 === null) {
-        return 1;
-      }
-      if (aStr2 === null) {
-        return -1;
-      }
-      if (aStr1 > aStr2) {
-        return 1;
-      }
-      return -1;
-    }
-    function compareByGeneratedPositionsInflated(mappingA, mappingB) {
-      var cmp = mappingA.generatedLine - mappingB.generatedLine;
-      if (cmp !== 0) {
-        return cmp;
-      }
-      cmp = mappingA.generatedColumn - mappingB.generatedColumn;
-      if (cmp !== 0) {
-        return cmp;
-      }
-      cmp = strcmp(mappingA.source, mappingB.source);
-      if (cmp !== 0) {
-        return cmp;
-      }
-      cmp = mappingA.originalLine - mappingB.originalLine;
-      if (cmp !== 0) {
-        return cmp;
-      }
-      cmp = mappingA.originalColumn - mappingB.originalColumn;
-      if (cmp !== 0) {
-        return cmp;
-      }
-      return strcmp(mappingA.name, mappingB.name);
-    }
-    exports2.compareByGeneratedPositionsInflated = compareByGeneratedPositionsInflated;
-    function parseSourceMapInput(str) {
-      return JSON.parse(str.replace(/^\)]}'[^\n]*\n/, ""));
-    }
-    exports2.parseSourceMapInput = parseSourceMapInput;
-    function computeSourceURL(sourceRoot, sourceURL, sourceMapURL) {
-      sourceURL = sourceURL || "";
-      if (sourceRoot) {
-        if (sourceRoot[sourceRoot.length - 1] !== "/" && sourceURL[0] !== "/") {
-          sourceRoot += "/";
-        }
-        sourceURL = sourceRoot + sourceURL;
-      }
-      if (sourceMapURL) {
-        var parsed = urlParse(sourceMapURL);
-        if (!parsed) {
-          throw new Error("sourceMapURL could not be parsed");
-        }
-        if (parsed.path) {
-          var index = parsed.path.lastIndexOf("/");
-          if (index >= 0) {
-            parsed.path = parsed.path.substring(0, index + 1);
-          }
-        }
-        sourceURL = join(urlGenerate(parsed), sourceURL);
-      }
-      return normalize(sourceURL);
-    }
-    exports2.computeSourceURL = computeSourceURL;
-  }
-});
-
-// node_modules/.pnpm/source-map@0.6.1/node_modules/source-map/lib/array-set.js
-var require_array_set = __commonJS({
-  "node_modules/.pnpm/source-map@0.6.1/node_modules/source-map/lib/array-set.js"(exports2) {
-    var util = require_util();
-    var has = Object.prototype.hasOwnProperty;
-    var hasNativeMap = typeof Map !== "undefined";
-    function ArraySet() {
-      this._array = [];
-      this._set = hasNativeMap ? new Map() : Object.create(null);
-    }
-    ArraySet.fromArray = function ArraySet_fromArray(aArray, aAllowDuplicates) {
-      var set = new ArraySet();
-      for (var i = 0, len = aArray.length; i < len; i++) {
-        set.add(aArray[i], aAllowDuplicates);
-      }
-      return set;
-    };
-    ArraySet.prototype.size = function ArraySet_size() {
-      return hasNativeMap ? this._set.size : Object.getOwnPropertyNames(this._set).length;
-    };
-    ArraySet.prototype.add = function ArraySet_add(aStr, aAllowDuplicates) {
-      var sStr = hasNativeMap ? aStr : util.toSetString(aStr);
-      var isDuplicate = hasNativeMap ? this.has(aStr) : has.call(this._set, sStr);
-      var idx = this._array.length;
-      if (!isDuplicate || aAllowDuplicates) {
-        this._array.push(aStr);
-      }
-      if (!isDuplicate) {
-        if (hasNativeMap) {
-          this._set.set(aStr, idx);
-        } else {
-          this._set[sStr] = idx;
-        }
-      }
-    };
-    ArraySet.prototype.has = function ArraySet_has(aStr) {
-      if (hasNativeMap) {
-        return this._set.has(aStr);
-      } else {
-        var sStr = util.toSetString(aStr);
-        return has.call(this._set, sStr);
-      }
-    };
-    ArraySet.prototype.indexOf = function ArraySet_indexOf(aStr) {
-      if (hasNativeMap) {
-        var idx = this._set.get(aStr);
-        if (idx >= 0) {
-          return idx;
-        }
-      } else {
-        var sStr = util.toSetString(aStr);
-        if (has.call(this._set, sStr)) {
-          return this._set[sStr];
-        }
-      }
-      throw new Error('"' + aStr + '" is not in the set.');
-    };
-    ArraySet.prototype.at = function ArraySet_at(aIdx) {
-      if (aIdx >= 0 && aIdx < this._array.length) {
-        return this._array[aIdx];
-      }
-      throw new Error("No element indexed by " + aIdx);
-    };
-    ArraySet.prototype.toArray = function ArraySet_toArray() {
-      return this._array.slice();
-    };
-    exports2.ArraySet = ArraySet;
-  }
-});
-
-// node_modules/.pnpm/source-map@0.6.1/node_modules/source-map/lib/mapping-list.js
-var require_mapping_list = __commonJS({
-  "node_modules/.pnpm/source-map@0.6.1/node_modules/source-map/lib/mapping-list.js"(exports2) {
-    var util = require_util();
-    function generatedPositionAfter(mappingA, mappingB) {
-      var lineA = mappingA.generatedLine;
-      var lineB = mappingB.generatedLine;
-      var columnA = mappingA.generatedColumn;
-      var columnB = mappingB.generatedColumn;
-      return lineB > lineA || lineB == lineA && columnB >= columnA || util.compareByGeneratedPositionsInflated(mappingA, mappingB) <= 0;
-    }
-    function MappingList() {
-      this._array = [];
-      this._sorted = true;
-      this._last = { generatedLine: -1, generatedColumn: 0 };
-    }
-    MappingList.prototype.unsortedForEach = function MappingList_forEach(aCallback, aThisArg) {
-      this._array.forEach(aCallback, aThisArg);
-    };
-    MappingList.prototype.add = function MappingList_add(aMapping) {
-      if (generatedPositionAfter(this._last, aMapping)) {
-        this._last = aMapping;
-        this._array.push(aMapping);
-      } else {
-        this._sorted = false;
-        this._array.push(aMapping);
-      }
-    };
-    MappingList.prototype.toArray = function MappingList_toArray() {
-      if (!this._sorted) {
-        this._array.sort(util.compareByGeneratedPositionsInflated);
-        this._sorted = true;
-      }
-      return this._array;
-    };
-    exports2.MappingList = MappingList;
-  }
-});
-
-// node_modules/.pnpm/source-map@0.6.1/node_modules/source-map/lib/source-map-generator.js
-var require_source_map_generator = __commonJS({
-  "node_modules/.pnpm/source-map@0.6.1/node_modules/source-map/lib/source-map-generator.js"(exports2) {
-    var base64VLQ = require_base64_vlq();
-    var util = require_util();
-    var ArraySet = require_array_set().ArraySet;
-    var MappingList = require_mapping_list().MappingList;
-    function SourceMapGenerator(aArgs) {
-      if (!aArgs) {
-        aArgs = {};
-      }
-      this._file = util.getArg(aArgs, "file", null);
-      this._sourceRoot = util.getArg(aArgs, "sourceRoot", null);
-      this._skipValidation = util.getArg(aArgs, "skipValidation", false);
-      this._sources = new ArraySet();
-      this._names = new ArraySet();
-      this._mappings = new MappingList();
-      this._sourcesContents = null;
-    }
-    SourceMapGenerator.prototype._version = 3;
-    SourceMapGenerator.fromSourceMap = function SourceMapGenerator_fromSourceMap(aSourceMapConsumer) {
-      var sourceRoot = aSourceMapConsumer.sourceRoot;
-      var generator = new SourceMapGenerator({
-        file: aSourceMapConsumer.file,
-        sourceRoot
-      });
-      aSourceMapConsumer.eachMapping(function(mapping) {
-        var newMapping = {
-          generated: {
-            line: mapping.generatedLine,
-            column: mapping.generatedColumn
-          }
-        };
-        if (mapping.source != null) {
-          newMapping.source = mapping.source;
-          if (sourceRoot != null) {
-            newMapping.source = util.relative(sourceRoot, newMapping.source);
-          }
-          newMapping.original = {
-            line: mapping.originalLine,
-            column: mapping.originalColumn
-          };
-          if (mapping.name != null) {
-            newMapping.name = mapping.name;
-          }
-        }
-        generator.addMapping(newMapping);
-      });
-      aSourceMapConsumer.sources.forEach(function(sourceFile) {
-        var sourceRelative = sourceFile;
-        if (sourceRoot !== null) {
-          sourceRelative = util.relative(sourceRoot, sourceFile);
-        }
-        if (!generator._sources.has(sourceRelative)) {
-          generator._sources.add(sourceRelative);
-        }
-        var content = aSourceMapConsumer.sourceContentFor(sourceFile);
-        if (content != null) {
-          generator.setSourceContent(sourceFile, content);
-        }
-      });
-      return generator;
-    };
-    SourceMapGenerator.prototype.addMapping = function SourceMapGenerator_addMapping(aArgs) {
-      var generated = util.getArg(aArgs, "generated");
-      var original = util.getArg(aArgs, "original", null);
-      var source = util.getArg(aArgs, "source", null);
-      var name = util.getArg(aArgs, "name", null);
-      if (!this._skipValidation) {
-        this._validateMapping(generated, original, source, name);
-      }
-      if (source != null) {
-        source = String(source);
-        if (!this._sources.has(source)) {
-          this._sources.add(source);
-        }
-      }
-      if (name != null) {
-        name = String(name);
-        if (!this._names.has(name)) {
-          this._names.add(name);
-        }
-      }
-      this._mappings.add({
-        generatedLine: generated.line,
-        generatedColumn: generated.column,
-        originalLine: original != null && original.line,
-        originalColumn: original != null && original.column,
-        source,
-        name
-      });
-    };
-    SourceMapGenerator.prototype.setSourceContent = function SourceMapGenerator_setSourceContent(aSourceFile, aSourceContent) {
-      var source = aSourceFile;
-      if (this._sourceRoot != null) {
-        source = util.relative(this._sourceRoot, source);
-      }
-      if (aSourceContent != null) {
-        if (!this._sourcesContents) {
-          this._sourcesContents = Object.create(null);
-        }
-        this._sourcesContents[util.toSetString(source)] = aSourceContent;
-      } else if (this._sourcesContents) {
-        delete this._sourcesContents[util.toSetString(source)];
-        if (Object.keys(this._sourcesContents).length === 0) {
-          this._sourcesContents = null;
-        }
-      }
-    };
-    SourceMapGenerator.prototype.applySourceMap = function SourceMapGenerator_applySourceMap(aSourceMapConsumer, aSourceFile, aSourceMapPath) {
-      var sourceFile = aSourceFile;
-      if (aSourceFile == null) {
-        if (aSourceMapConsumer.file == null) {
-          throw new Error(`SourceMapGenerator.prototype.applySourceMap requires either an explicit source file, or the source map's "file" property. Both were omitted.`);
-        }
-        sourceFile = aSourceMapConsumer.file;
-      }
-      var sourceRoot = this._sourceRoot;
-      if (sourceRoot != null) {
-        sourceFile = util.relative(sourceRoot, sourceFile);
-      }
-      var newSources = new ArraySet();
-      var newNames = new ArraySet();
-      this._mappings.unsortedForEach(function(mapping) {
-        if (mapping.source === sourceFile && mapping.originalLine != null) {
-          var original = aSourceMapConsumer.originalPositionFor({
-            line: mapping.originalLine,
-            column: mapping.originalColumn
-          });
-          if (original.source != null) {
-            mapping.source = original.source;
-            if (aSourceMapPath != null) {
-              mapping.source = util.join(aSourceMapPath, mapping.source);
-            }
-            if (sourceRoot != null) {
-              mapping.source = util.relative(sourceRoot, mapping.source);
-            }
-            mapping.originalLine = original.line;
-            mapping.originalColumn = original.column;
-            if (original.name != null) {
-              mapping.name = original.name;
-            }
-          }
-        }
-        var source = mapping.source;
-        if (source != null && !newSources.has(source)) {
-          newSources.add(source);
-        }
-        var name = mapping.name;
-        if (name != null && !newNames.has(name)) {
-          newNames.add(name);
-        }
-      }, this);
-      this._sources = newSources;
-      this._names = newNames;
-      aSourceMapConsumer.sources.forEach(function(sourceFile2) {
-        var content = aSourceMapConsumer.sourceContentFor(sourceFile2);
-        if (content != null) {
-          if (aSourceMapPath != null) {
-            sourceFile2 = util.join(aSourceMapPath, sourceFile2);
-          }
-          if (sourceRoot != null) {
-            sourceFile2 = util.relative(sourceRoot, sourceFile2);
-          }
-          this.setSourceContent(sourceFile2, content);
-        }
-      }, this);
-    };
-    SourceMapGenerator.prototype._validateMapping = function SourceMapGenerator_validateMapping(aGenerated, aOriginal, aSource, aName) {
-      if (aOriginal && typeof aOriginal.line !== "number" && typeof aOriginal.column !== "number") {
-        throw new Error("original.line and original.column are not numbers -- you probably meant to omit the original mapping entirely and only map the generated position. If so, pass null for the original mapping instead of an object with empty or null values.");
-      }
-      if (aGenerated && "line" in aGenerated && "column" in aGenerated && aGenerated.line > 0 && aGenerated.column >= 0 && !aOriginal && !aSource && !aName) {
-        return;
-      } else if (aGenerated && "line" in aGenerated && "column" in aGenerated && aOriginal && "line" in aOriginal && "column" in aOriginal && aGenerated.line > 0 && aGenerated.column >= 0 && aOriginal.line > 0 && aOriginal.column >= 0 && aSource) {
-        return;
-      } else {
-        throw new Error("Invalid mapping: " + JSON.stringify({
-          generated: aGenerated,
-          source: aSource,
-          original: aOriginal,
-          name: aName
-        }));
-      }
-    };
-    SourceMapGenerator.prototype._serializeMappings = function SourceMapGenerator_serializeMappings() {
-      var previousGeneratedColumn = 0;
-      var previousGeneratedLine = 1;
-      var previousOriginalColumn = 0;
-      var previousOriginalLine = 0;
-      var previousName = 0;
-      var previousSource = 0;
-      var result = "";
-      var next;
-      var mapping;
-      var nameIdx;
-      var sourceIdx;
-      var mappings = this._mappings.toArray();
-      for (var i = 0, len = mappings.length; i < len; i++) {
-        mapping = mappings[i];
-        next = "";
-        if (mapping.generatedLine !== previousGeneratedLine) {
-          previousGeneratedColumn = 0;
-          while (mapping.generatedLine !== previousGeneratedLine) {
-            next += ";";
-            previousGeneratedLine++;
-          }
-        } else {
-          if (i > 0) {
-            if (!util.compareByGeneratedPositionsInflated(mapping, mappings[i - 1])) {
-              continue;
-            }
-            next += ",";
-          }
-        }
-        next += base64VLQ.encode(mapping.generatedColumn - previousGeneratedColumn);
-        previousGeneratedColumn = mapping.generatedColumn;
-        if (mapping.source != null) {
-          sourceIdx = this._sources.indexOf(mapping.source);
-          next += base64VLQ.encode(sourceIdx - previousSource);
-          previousSource = sourceIdx;
-          next += base64VLQ.encode(mapping.originalLine - 1 - previousOriginalLine);
-          previousOriginalLine = mapping.originalLine - 1;
-          next += base64VLQ.encode(mapping.originalColumn - previousOriginalColumn);
-          previousOriginalColumn = mapping.originalColumn;
-          if (mapping.name != null) {
-            nameIdx = this._names.indexOf(mapping.name);
-            next += base64VLQ.encode(nameIdx - previousName);
-            previousName = nameIdx;
-          }
-        }
-        result += next;
-      }
-      return result;
-    };
-    SourceMapGenerator.prototype._generateSourcesContent = function SourceMapGenerator_generateSourcesContent(aSources, aSourceRoot) {
-      return aSources.map(function(source) {
-        if (!this._sourcesContents) {
-          return null;
-        }
-        if (aSourceRoot != null) {
-          source = util.relative(aSourceRoot, source);
-        }
-        var key = util.toSetString(source);
-        return Object.prototype.hasOwnProperty.call(this._sourcesContents, key) ? this._sourcesContents[key] : null;
-      }, this);
-    };
-    SourceMapGenerator.prototype.toJSON = function SourceMapGenerator_toJSON() {
-      var map = {
-        version: this._version,
-        sources: this._sources.toArray(),
-        names: this._names.toArray(),
-        mappings: this._serializeMappings()
-      };
-      if (this._file != null) {
-        map.file = this._file;
-      }
-      if (this._sourceRoot != null) {
-        map.sourceRoot = this._sourceRoot;
-      }
-      if (this._sourcesContents) {
-        map.sourcesContent = this._generateSourcesContent(map.sources, map.sourceRoot);
-      }
-      return map;
-    };
-    SourceMapGenerator.prototype.toString = function SourceMapGenerator_toString() {
-      return JSON.stringify(this.toJSON());
-    };
-    exports2.SourceMapGenerator = SourceMapGenerator;
-  }
-});
-
-// node_modules/.pnpm/source-map@0.6.1/node_modules/source-map/lib/binary-search.js
-var require_binary_search = __commonJS({
-  "node_modules/.pnpm/source-map@0.6.1/node_modules/source-map/lib/binary-search.js"(exports2) {
-    exports2.GREATEST_LOWER_BOUND = 1;
-    exports2.LEAST_UPPER_BOUND = 2;
-    function recursiveSearch(aLow, aHigh, aNeedle, aHaystack, aCompare, aBias) {
-      var mid = Math.floor((aHigh - aLow) / 2) + aLow;
-      var cmp = aCompare(aNeedle, aHaystack[mid], true);
-      if (cmp === 0) {
-        return mid;
-      } else if (cmp > 0) {
-        if (aHigh - mid > 1) {
-          return recursiveSearch(mid, aHigh, aNeedle, aHaystack, aCompare, aBias);
-        }
-        if (aBias == exports2.LEAST_UPPER_BOUND) {
-          return aHigh < aHaystack.length ? aHigh : -1;
-        } else {
-          return mid;
-        }
-      } else {
-        if (mid - aLow > 1) {
-          return recursiveSearch(aLow, mid, aNeedle, aHaystack, aCompare, aBias);
-        }
-        if (aBias == exports2.LEAST_UPPER_BOUND) {
-          return mid;
-        } else {
-          return aLow < 0 ? -1 : aLow;
-        }
-      }
-    }
-    exports2.search = function search(aNeedle, aHaystack, aCompare, aBias) {
-      if (aHaystack.length === 0) {
-        return -1;
-      }
-      var index = recursiveSearch(-1, aHaystack.length, aNeedle, aHaystack, aCompare, aBias || exports2.GREATEST_LOWER_BOUND);
-      if (index < 0) {
-        return -1;
-      }
-      while (index - 1 >= 0) {
-        if (aCompare(aHaystack[index], aHaystack[index - 1], true) !== 0) {
-          break;
-        }
-        --index;
-      }
-      return index;
-    };
-  }
-});
-
-// node_modules/.pnpm/source-map@0.6.1/node_modules/source-map/lib/quick-sort.js
-var require_quick_sort = __commonJS({
-  "node_modules/.pnpm/source-map@0.6.1/node_modules/source-map/lib/quick-sort.js"(exports2) {
-    function swap(ary, x, y) {
-      var temp = ary[x];
-      ary[x] = ary[y];
-      ary[y] = temp;
-    }
-    function randomIntInRange(low, high) {
-      return Math.round(low + Math.random() * (high - low));
-    }
-    function doQuickSort(ary, comparator, p, r) {
-      if (p < r) {
-        var pivotIndex = randomIntInRange(p, r);
-        var i = p - 1;
-        swap(ary, pivotIndex, r);
-        var pivot = ary[r];
-        for (var j = p; j < r; j++) {
-          if (comparator(ary[j], pivot) <= 0) {
-            i += 1;
-            swap(ary, i, j);
-          }
-        }
-        swap(ary, i + 1, j);
-        var q = i + 1;
-        doQuickSort(ary, comparator, p, q - 1);
-        doQuickSort(ary, comparator, q + 1, r);
-      }
-    }
-    exports2.quickSort = function(ary, comparator) {
-      doQuickSort(ary, comparator, 0, ary.length - 1);
-    };
-  }
-});
-
-// node_modules/.pnpm/source-map@0.6.1/node_modules/source-map/lib/source-map-consumer.js
-var require_source_map_consumer = __commonJS({
-  "node_modules/.pnpm/source-map@0.6.1/node_modules/source-map/lib/source-map-consumer.js"(exports2) {
-    var util = require_util();
-    var binarySearch = require_binary_search();
-    var ArraySet = require_array_set().ArraySet;
-    var base64VLQ = require_base64_vlq();
-    var quickSort = require_quick_sort().quickSort;
-    function SourceMapConsumer(aSourceMap, aSourceMapURL) {
-      var sourceMap = aSourceMap;
-      if (typeof aSourceMap === "string") {
-        sourceMap = util.parseSourceMapInput(aSourceMap);
-      }
-      return sourceMap.sections != null ? new IndexedSourceMapConsumer(sourceMap, aSourceMapURL) : new BasicSourceMapConsumer(sourceMap, aSourceMapURL);
-    }
-    SourceMapConsumer.fromSourceMap = function(aSourceMap, aSourceMapURL) {
-      return BasicSourceMapConsumer.fromSourceMap(aSourceMap, aSourceMapURL);
-    };
-    SourceMapConsumer.prototype._version = 3;
-    SourceMapConsumer.prototype.__generatedMappings = null;
-    Object.defineProperty(SourceMapConsumer.prototype, "_generatedMappings", {
-      configurable: true,
-      enumerable: true,
-      get: function() {
-        if (!this.__generatedMappings) {
-          this._parseMappings(this._mappings, this.sourceRoot);
-        }
-        return this.__generatedMappings;
-      }
-    });
-    SourceMapConsumer.prototype.__originalMappings = null;
-    Object.defineProperty(SourceMapConsumer.prototype, "_originalMappings", {
-      configurable: true,
-      enumerable: true,
-      get: function() {
-        if (!this.__originalMappings) {
-          this._parseMappings(this._mappings, this.sourceRoot);
-        }
-        return this.__originalMappings;
-      }
-    });
-    SourceMapConsumer.prototype._charIsMappingSeparator = function SourceMapConsumer_charIsMappingSeparator(aStr, index) {
-      var c = aStr.charAt(index);
-      return c === ";" || c === ",";
-    };
-    SourceMapConsumer.prototype._parseMappings = function SourceMapConsumer_parseMappings(aStr, aSourceRoot) {
-      throw new Error("Subclasses must implement _parseMappings");
-    };
-    SourceMapConsumer.GENERATED_ORDER = 1;
-    SourceMapConsumer.ORIGINAL_ORDER = 2;
-    SourceMapConsumer.GREATEST_LOWER_BOUND = 1;
-    SourceMapConsumer.LEAST_UPPER_BOUND = 2;
-    SourceMapConsumer.prototype.eachMapping = function SourceMapConsumer_eachMapping(aCallback, aContext, aOrder) {
-      var context = aContext || null;
-      var order = aOrder || SourceMapConsumer.GENERATED_ORDER;
-      var mappings;
-      switch (order) {
-        case SourceMapConsumer.GENERATED_ORDER:
-          mappings = this._generatedMappings;
-          break;
-        case SourceMapConsumer.ORIGINAL_ORDER:
-          mappings = this._originalMappings;
-          break;
-        default:
-          throw new Error("Unknown order of iteration.");
-      }
-      var sourceRoot = this.sourceRoot;
-      mappings.map(function(mapping) {
-        var source = mapping.source === null ? null : this._sources.at(mapping.source);
-        source = util.computeSourceURL(sourceRoot, source, this._sourceMapURL);
-        return {
-          source,
-          generatedLine: mapping.generatedLine,
-          generatedColumn: mapping.generatedColumn,
-          originalLine: mapping.originalLine,
-          originalColumn: mapping.originalColumn,
-          name: mapping.name === null ? null : this._names.at(mapping.name)
-        };
-      }, this).forEach(aCallback, context);
-    };
-    SourceMapConsumer.prototype.allGeneratedPositionsFor = function SourceMapConsumer_allGeneratedPositionsFor(aArgs) {
-      var line = util.getArg(aArgs, "line");
-      var needle = {
-        source: util.getArg(aArgs, "source"),
-        originalLine: line,
-        originalColumn: util.getArg(aArgs, "column", 0)
-      };
-      needle.source = this._findSourceIndex(needle.source);
-      if (needle.source < 0) {
-        return [];
-      }
-      var mappings = [];
-      var index = this._findMapping(needle, this._originalMappings, "originalLine", "originalColumn", util.compareByOriginalPositions, binarySearch.LEAST_UPPER_BOUND);
-      if (index >= 0) {
-        var mapping = this._originalMappings[index];
-        if (aArgs.column === void 0) {
-          var originalLine = mapping.originalLine;
-          while (mapping && mapping.originalLine === originalLine) {
-            mappings.push({
-              line: util.getArg(mapping, "generatedLine", null),
-              column: util.getArg(mapping, "generatedColumn", null),
-              lastColumn: util.getArg(mapping, "lastGeneratedColumn", null)
-            });
-            mapping = this._originalMappings[++index];
-          }
-        } else {
-          var originalColumn = mapping.originalColumn;
-          while (mapping && mapping.originalLine === line && mapping.originalColumn == originalColumn) {
-            mappings.push({
-              line: util.getArg(mapping, "generatedLine", null),
-              column: util.getArg(mapping, "generatedColumn", null),
-              lastColumn: util.getArg(mapping, "lastGeneratedColumn", null)
-            });
-            mapping = this._originalMappings[++index];
-          }
-        }
-      }
-      return mappings;
-    };
-    exports2.SourceMapConsumer = SourceMapConsumer;
-    function BasicSourceMapConsumer(aSourceMap, aSourceMapURL) {
-      var sourceMap = aSourceMap;
-      if (typeof aSourceMap === "string") {
-        sourceMap = util.parseSourceMapInput(aSourceMap);
-      }
-      var version = util.getArg(sourceMap, "version");
-      var sources = util.getArg(sourceMap, "sources");
-      var names = util.getArg(sourceMap, "names", []);
-      var sourceRoot = util.getArg(sourceMap, "sourceRoot", null);
-      var sourcesContent = util.getArg(sourceMap, "sourcesContent", null);
-      var mappings = util.getArg(sourceMap, "mappings");
-      var file = util.getArg(sourceMap, "file", null);
-      if (version != this._version) {
-        throw new Error("Unsupported version: " + version);
-      }
-      if (sourceRoot) {
-        sourceRoot = util.normalize(sourceRoot);
-      }
-      sources = sources.map(String).map(util.normalize).map(function(source) {
-        return sourceRoot && util.isAbsolute(sourceRoot) && util.isAbsolute(source) ? util.relative(sourceRoot, source) : source;
-      });
-      this._names = ArraySet.fromArray(names.map(String), true);
-      this._sources = ArraySet.fromArray(sources, true);
-      this._absoluteSources = this._sources.toArray().map(function(s) {
-        return util.computeSourceURL(sourceRoot, s, aSourceMapURL);
-      });
-      this.sourceRoot = sourceRoot;
-      this.sourcesContent = sourcesContent;
-      this._mappings = mappings;
-      this._sourceMapURL = aSourceMapURL;
-      this.file = file;
-    }
-    BasicSourceMapConsumer.prototype = Object.create(SourceMapConsumer.prototype);
-    BasicSourceMapConsumer.prototype.consumer = SourceMapConsumer;
-    BasicSourceMapConsumer.prototype._findSourceIndex = function(aSource) {
-      var relativeSource = aSource;
-      if (this.sourceRoot != null) {
-        relativeSource = util.relative(this.sourceRoot, relativeSource);
-      }
-      if (this._sources.has(relativeSource)) {
-        return this._sources.indexOf(relativeSource);
-      }
-      var i;
-      for (i = 0; i < this._absoluteSources.length; ++i) {
-        if (this._absoluteSources[i] == aSource) {
-          return i;
-        }
-      }
-      return -1;
-    };
-    BasicSourceMapConsumer.fromSourceMap = function SourceMapConsumer_fromSourceMap(aSourceMap, aSourceMapURL) {
-      var smc = Object.create(BasicSourceMapConsumer.prototype);
-      var names = smc._names = ArraySet.fromArray(aSourceMap._names.toArray(), true);
-      var sources = smc._sources = ArraySet.fromArray(aSourceMap._sources.toArray(), true);
-      smc.sourceRoot = aSourceMap._sourceRoot;
-      smc.sourcesContent = aSourceMap._generateSourcesContent(smc._sources.toArray(), smc.sourceRoot);
-      smc.file = aSourceMap._file;
-      smc._sourceMapURL = aSourceMapURL;
-      smc._absoluteSources = smc._sources.toArray().map(function(s) {
-        return util.computeSourceURL(smc.sourceRoot, s, aSourceMapURL);
-      });
-      var generatedMappings = aSourceMap._mappings.toArray().slice();
-      var destGeneratedMappings = smc.__generatedMappings = [];
-      var destOriginalMappings = smc.__originalMappings = [];
-      for (var i = 0, length = generatedMappings.length; i < length; i++) {
-        var srcMapping = generatedMappings[i];
-        var destMapping = new Mapping();
-        destMapping.generatedLine = srcMapping.generatedLine;
-        destMapping.generatedColumn = srcMapping.generatedColumn;
-        if (srcMapping.source) {
-          destMapping.source = sources.indexOf(srcMapping.source);
-          destMapping.originalLine = srcMapping.originalLine;
-          destMapping.originalColumn = srcMapping.originalColumn;
-          if (srcMapping.name) {
-            destMapping.name = names.indexOf(srcMapping.name);
-          }
-          destOriginalMappings.push(destMapping);
-        }
-        destGeneratedMappings.push(destMapping);
-      }
-      quickSort(smc.__originalMappings, util.compareByOriginalPositions);
-      return smc;
-    };
-    BasicSourceMapConsumer.prototype._version = 3;
-    Object.defineProperty(BasicSourceMapConsumer.prototype, "sources", {
-      get: function() {
-        return this._absoluteSources.slice();
-      }
-    });
-    function Mapping() {
-      this.generatedLine = 0;
-      this.generatedColumn = 0;
-      this.source = null;
-      this.originalLine = null;
-      this.originalColumn = null;
-      this.name = null;
-    }
-    BasicSourceMapConsumer.prototype._parseMappings = function SourceMapConsumer_parseMappings(aStr, aSourceRoot) {
-      var generatedLine = 1;
-      var previousGeneratedColumn = 0;
-      var previousOriginalLine = 0;
-      var previousOriginalColumn = 0;
-      var previousSource = 0;
-      var previousName = 0;
-      var length = aStr.length;
-      var index = 0;
-      var cachedSegments = {};
-      var temp = {};
-      var originalMappings = [];
-      var generatedMappings = [];
-      var mapping, str, segment, end, value;
-      while (index < length) {
-        if (aStr.charAt(index) === ";") {
-          generatedLine++;
-          index++;
-          previousGeneratedColumn = 0;
-        } else if (aStr.charAt(index) === ",") {
-          index++;
-        } else {
-          mapping = new Mapping();
-          mapping.generatedLine = generatedLine;
-          for (end = index; end < length; end++) {
-            if (this._charIsMappingSeparator(aStr, end)) {
-              break;
-            }
-          }
-          str = aStr.slice(index, end);
-          segment = cachedSegments[str];
-          if (segment) {
-            index += str.length;
-          } else {
-            segment = [];
-            while (index < end) {
-              base64VLQ.decode(aStr, index, temp);
-              value = temp.value;
-              index = temp.rest;
-              segment.push(value);
-            }
-            if (segment.length === 2) {
-              throw new Error("Found a source, but no line and column");
-            }
-            if (segment.length === 3) {
-              throw new Error("Found a source and line, but no column");
-            }
-            cachedSegments[str] = segment;
-          }
-          mapping.generatedColumn = previousGeneratedColumn + segment[0];
-          previousGeneratedColumn = mapping.generatedColumn;
-          if (segment.length > 1) {
-            mapping.source = previousSource + segment[1];
-            previousSource += segment[1];
-            mapping.originalLine = previousOriginalLine + segment[2];
-            previousOriginalLine = mapping.originalLine;
-            mapping.originalLine += 1;
-            mapping.originalColumn = previousOriginalColumn + segment[3];
-            previousOriginalColumn = mapping.originalColumn;
-            if (segment.length > 4) {
-              mapping.name = previousName + segment[4];
-              previousName += segment[4];
-            }
-          }
-          generatedMappings.push(mapping);
-          if (typeof mapping.originalLine === "number") {
-            originalMappings.push(mapping);
-          }
-        }
-      }
-      quickSort(generatedMappings, util.compareByGeneratedPositionsDeflated);
-      this.__generatedMappings = generatedMappings;
-      quickSort(originalMappings, util.compareByOriginalPositions);
-      this.__originalMappings = originalMappings;
-    };
-    BasicSourceMapConsumer.prototype._findMapping = function SourceMapConsumer_findMapping(aNeedle, aMappings, aLineName, aColumnName, aComparator, aBias) {
-      if (aNeedle[aLineName] <= 0) {
-        throw new TypeError("Line must be greater than or equal to 1, got " + aNeedle[aLineName]);
-      }
-      if (aNeedle[aColumnName] < 0) {
-        throw new TypeError("Column must be greater than or equal to 0, got " + aNeedle[aColumnName]);
-      }
-      return binarySearch.search(aNeedle, aMappings, aComparator, aBias);
-    };
-    BasicSourceMapConsumer.prototype.computeColumnSpans = function SourceMapConsumer_computeColumnSpans() {
-      for (var index = 0; index < this._generatedMappings.length; ++index) {
-        var mapping = this._generatedMappings[index];
-        if (index + 1 < this._generatedMappings.length) {
-          var nextMapping = this._generatedMappings[index + 1];
-          if (mapping.generatedLine === nextMapping.generatedLine) {
-            mapping.lastGeneratedColumn = nextMapping.generatedColumn - 1;
-            continue;
-          }
-        }
-        mapping.lastGeneratedColumn = Infinity;
-      }
-    };
-    BasicSourceMapConsumer.prototype.originalPositionFor = function SourceMapConsumer_originalPositionFor(aArgs) {
-      var needle = {
-        generatedLine: util.getArg(aArgs, "line"),
-        generatedColumn: util.getArg(aArgs, "column")
-      };
-      var index = this._findMapping(needle, this._generatedMappings, "generatedLine", "generatedColumn", util.compareByGeneratedPositionsDeflated, util.getArg(aArgs, "bias", SourceMapConsumer.GREATEST_LOWER_BOUND));
-      if (index >= 0) {
-        var mapping = this._generatedMappings[index];
-        if (mapping.generatedLine === needle.generatedLine) {
-          var source = util.getArg(mapping, "source", null);
-          if (source !== null) {
-            source = this._sources.at(source);
-            source = util.computeSourceURL(this.sourceRoot, source, this._sourceMapURL);
-          }
-          var name = util.getArg(mapping, "name", null);
-          if (name !== null) {
-            name = this._names.at(name);
-          }
-          return {
-            source,
-            line: util.getArg(mapping, "originalLine", null),
-            column: util.getArg(mapping, "originalColumn", null),
-            name
-          };
-        }
-      }
-      return {
-        source: null,
-        line: null,
-        column: null,
-        name: null
-      };
-    };
-    BasicSourceMapConsumer.prototype.hasContentsOfAllSources = function BasicSourceMapConsumer_hasContentsOfAllSources() {
-      if (!this.sourcesContent) {
-        return false;
-      }
-      return this.sourcesContent.length >= this._sources.size() && !this.sourcesContent.some(function(sc) {
-        return sc == null;
-      });
-    };
-    BasicSourceMapConsumer.prototype.sourceContentFor = function SourceMapConsumer_sourceContentFor(aSource, nullOnMissing) {
-      if (!this.sourcesContent) {
-        return null;
-      }
-      var index = this._findSourceIndex(aSource);
-      if (index >= 0) {
-        return this.sourcesContent[index];
-      }
-      var relativeSource = aSource;
-      if (this.sourceRoot != null) {
-        relativeSource = util.relative(this.sourceRoot, relativeSource);
-      }
-      var url;
-      if (this.sourceRoot != null && (url = util.urlParse(this.sourceRoot))) {
-        var fileUriAbsPath = relativeSource.replace(/^file:\/\//, "");
-        if (url.scheme == "file" && this._sources.has(fileUriAbsPath)) {
-          return this.sourcesContent[this._sources.indexOf(fileUriAbsPath)];
-        }
-        if ((!url.path || url.path == "/") && this._sources.has("/" + relativeSource)) {
-          return this.sourcesContent[this._sources.indexOf("/" + relativeSource)];
-        }
-      }
-      if (nullOnMissing) {
-        return null;
-      } else {
-        throw new Error('"' + relativeSource + '" is not in the SourceMap.');
-      }
-    };
-    BasicSourceMapConsumer.prototype.generatedPositionFor = function SourceMapConsumer_generatedPositionFor(aArgs) {
-      var source = util.getArg(aArgs, "source");
-      source = this._findSourceIndex(source);
-      if (source < 0) {
-        return {
-          line: null,
-          column: null,
-          lastColumn: null
-        };
-      }
-      var needle = {
-        source,
-        originalLine: util.getArg(aArgs, "line"),
-        originalColumn: util.getArg(aArgs, "column")
-      };
-      var index = this._findMapping(needle, this._originalMappings, "originalLine", "originalColumn", util.compareByOriginalPositions, util.getArg(aArgs, "bias", SourceMapConsumer.GREATEST_LOWER_BOUND));
-      if (index >= 0) {
-        var mapping = this._originalMappings[index];
-        if (mapping.source === needle.source) {
-          return {
-            line: util.getArg(mapping, "generatedLine", null),
-            column: util.getArg(mapping, "generatedColumn", null),
-            lastColumn: util.getArg(mapping, "lastGeneratedColumn", null)
-          };
-        }
-      }
-      return {
-        line: null,
-        column: null,
-        lastColumn: null
-      };
-    };
-    exports2.BasicSourceMapConsumer = BasicSourceMapConsumer;
-    function IndexedSourceMapConsumer(aSourceMap, aSourceMapURL) {
-      var sourceMap = aSourceMap;
-      if (typeof aSourceMap === "string") {
-        sourceMap = util.parseSourceMapInput(aSourceMap);
-      }
-      var version = util.getArg(sourceMap, "version");
-      var sections = util.getArg(sourceMap, "sections");
-      if (version != this._version) {
-        throw new Error("Unsupported version: " + version);
-      }
-      this._sources = new ArraySet();
-      this._names = new ArraySet();
-      var lastOffset = {
-        line: -1,
-        column: 0
-      };
-      this._sections = sections.map(function(s) {
-        if (s.url) {
-          throw new Error("Support for url field in sections not implemented.");
-        }
-        var offset = util.getArg(s, "offset");
-        var offsetLine = util.getArg(offset, "line");
-        var offsetColumn = util.getArg(offset, "column");
-        if (offsetLine < lastOffset.line || offsetLine === lastOffset.line && offsetColumn < lastOffset.column) {
-          throw new Error("Section offsets must be ordered and non-overlapping.");
-        }
-        lastOffset = offset;
-        return {
-          generatedOffset: {
-            generatedLine: offsetLine + 1,
-            generatedColumn: offsetColumn + 1
-          },
-          consumer: new SourceMapConsumer(util.getArg(s, "map"), aSourceMapURL)
-        };
-      });
-    }
-    IndexedSourceMapConsumer.prototype = Object.create(SourceMapConsumer.prototype);
-    IndexedSourceMapConsumer.prototype.constructor = SourceMapConsumer;
-    IndexedSourceMapConsumer.prototype._version = 3;
-    Object.defineProperty(IndexedSourceMapConsumer.prototype, "sources", {
-      get: function() {
-        var sources = [];
-        for (var i = 0; i < this._sections.length; i++) {
-          for (var j = 0; j < this._sections[i].consumer.sources.length; j++) {
-            sources.push(this._sections[i].consumer.sources[j]);
-          }
-        }
-        return sources;
-      }
-    });
-    IndexedSourceMapConsumer.prototype.originalPositionFor = function IndexedSourceMapConsumer_originalPositionFor(aArgs) {
-      var needle = {
-        generatedLine: util.getArg(aArgs, "line"),
-        generatedColumn: util.getArg(aArgs, "column")
-      };
-      var sectionIndex = binarySearch.search(needle, this._sections, function(needle2, section2) {
-        var cmp = needle2.generatedLine - section2.generatedOffset.generatedLine;
-        if (cmp) {
-          return cmp;
-        }
-        return needle2.generatedColumn - section2.generatedOffset.generatedColumn;
-      });
-      var section = this._sections[sectionIndex];
-      if (!section) {
-        return {
-          source: null,
-          line: null,
-          column: null,
-          name: null
-        };
-      }
-      return section.consumer.originalPositionFor({
-        line: needle.generatedLine - (section.generatedOffset.generatedLine - 1),
-        column: needle.generatedColumn - (section.generatedOffset.generatedLine === needle.generatedLine ? section.generatedOffset.generatedColumn - 1 : 0),
-        bias: aArgs.bias
-      });
-    };
-    IndexedSourceMapConsumer.prototype.hasContentsOfAllSources = function IndexedSourceMapConsumer_hasContentsOfAllSources() {
-      return this._sections.every(function(s) {
-        return s.consumer.hasContentsOfAllSources();
-      });
-    };
-    IndexedSourceMapConsumer.prototype.sourceContentFor = function IndexedSourceMapConsumer_sourceContentFor(aSource, nullOnMissing) {
-      for (var i = 0; i < this._sections.length; i++) {
-        var section = this._sections[i];
-        var content = section.consumer.sourceContentFor(aSource, true);
-        if (content) {
-          return content;
-        }
-      }
-      if (nullOnMissing) {
-        return null;
-      } else {
-        throw new Error('"' + aSource + '" is not in the SourceMap.');
-      }
-    };
-    IndexedSourceMapConsumer.prototype.generatedPositionFor = function IndexedSourceMapConsumer_generatedPositionFor(aArgs) {
-      for (var i = 0; i < this._sections.length; i++) {
-        var section = this._sections[i];
-        if (section.consumer._findSourceIndex(util.getArg(aArgs, "source")) === -1) {
-          continue;
-        }
-        var generatedPosition = section.consumer.generatedPositionFor(aArgs);
-        if (generatedPosition) {
-          var ret = {
-            line: generatedPosition.line + (section.generatedOffset.generatedLine - 1),
-            column: generatedPosition.column + (section.generatedOffset.generatedLine === generatedPosition.line ? section.generatedOffset.generatedColumn - 1 : 0)
-          };
-          return ret;
-        }
-      }
-      return {
-        line: null,
-        column: null
-      };
-    };
-    IndexedSourceMapConsumer.prototype._parseMappings = function IndexedSourceMapConsumer_parseMappings(aStr, aSourceRoot) {
-      this.__generatedMappings = [];
-      this.__originalMappings = [];
-      for (var i = 0; i < this._sections.length; i++) {
-        var section = this._sections[i];
-        var sectionMappings = section.consumer._generatedMappings;
-        for (var j = 0; j < sectionMappings.length; j++) {
-          var mapping = sectionMappings[j];
-          var source = section.consumer._sources.at(mapping.source);
-          source = util.computeSourceURL(section.consumer.sourceRoot, source, this._sourceMapURL);
-          this._sources.add(source);
-          source = this._sources.indexOf(source);
-          var name = null;
-          if (mapping.name) {
-            name = section.consumer._names.at(mapping.name);
-            this._names.add(name);
-            name = this._names.indexOf(name);
-          }
-          var adjustedMapping = {
-            source,
-            generatedLine: mapping.generatedLine + (section.generatedOffset.generatedLine - 1),
-            generatedColumn: mapping.generatedColumn + (section.generatedOffset.generatedLine === mapping.generatedLine ? section.generatedOffset.generatedColumn - 1 : 0),
-            originalLine: mapping.originalLine,
-            originalColumn: mapping.originalColumn,
-            name
-          };
-          this.__generatedMappings.push(adjustedMapping);
-          if (typeof adjustedMapping.originalLine === "number") {
-            this.__originalMappings.push(adjustedMapping);
-          }
-        }
-      }
-      quickSort(this.__generatedMappings, util.compareByGeneratedPositionsDeflated);
-      quickSort(this.__originalMappings, util.compareByOriginalPositions);
-    };
-    exports2.IndexedSourceMapConsumer = IndexedSourceMapConsumer;
-  }
-});
-
-// node_modules/.pnpm/source-map@0.6.1/node_modules/source-map/lib/source-node.js
-var require_source_node = __commonJS({
-  "node_modules/.pnpm/source-map@0.6.1/node_modules/source-map/lib/source-node.js"(exports2) {
-    var SourceMapGenerator = require_source_map_generator().SourceMapGenerator;
-    var util = require_util();
-    var REGEX_NEWLINE = /(\r?\n)/;
-    var NEWLINE_CODE = 10;
-    var isSourceNode = "$$$isSourceNode$$$";
-    function SourceNode(aLine, aColumn, aSource, aChunks, aName) {
-      this.children = [];
-      this.sourceContents = {};
-      this.line = aLine == null ? null : aLine;
-      this.column = aColumn == null ? null : aColumn;
-      this.source = aSource == null ? null : aSource;
-      this.name = aName == null ? null : aName;
-      this[isSourceNode] = true;
-      if (aChunks != null)
-        this.add(aChunks);
-    }
-    SourceNode.fromStringWithSourceMap = function SourceNode_fromStringWithSourceMap(aGeneratedCode, aSourceMapConsumer, aRelativePath) {
-      var node = new SourceNode();
-      var remainingLines = aGeneratedCode.split(REGEX_NEWLINE);
-      var remainingLinesIndex = 0;
-      var shiftNextLine = function() {
-        var lineContents = getNextLine();
-        var newLine = getNextLine() || "";
-        return lineContents + newLine;
-        function getNextLine() {
-          return remainingLinesIndex < remainingLines.length ? remainingLines[remainingLinesIndex++] : void 0;
-        }
-      };
-      var lastGeneratedLine = 1, lastGeneratedColumn = 0;
-      var lastMapping = null;
-      aSourceMapConsumer.eachMapping(function(mapping) {
-        if (lastMapping !== null) {
-          if (lastGeneratedLine < mapping.generatedLine) {
-            addMappingWithCode(lastMapping, shiftNextLine());
-            lastGeneratedLine++;
-            lastGeneratedColumn = 0;
-          } else {
-            var nextLine = remainingLines[remainingLinesIndex] || "";
-            var code = nextLine.substr(0, mapping.generatedColumn - lastGeneratedColumn);
-            remainingLines[remainingLinesIndex] = nextLine.substr(mapping.generatedColumn - lastGeneratedColumn);
-            lastGeneratedColumn = mapping.generatedColumn;
-            addMappingWithCode(lastMapping, code);
-            lastMapping = mapping;
-            return;
-          }
-        }
-        while (lastGeneratedLine < mapping.generatedLine) {
-          node.add(shiftNextLine());
-          lastGeneratedLine++;
-        }
-        if (lastGeneratedColumn < mapping.generatedColumn) {
-          var nextLine = remainingLines[remainingLinesIndex] || "";
-          node.add(nextLine.substr(0, mapping.generatedColumn));
-          remainingLines[remainingLinesIndex] = nextLine.substr(mapping.generatedColumn);
-          lastGeneratedColumn = mapping.generatedColumn;
-        }
-        lastMapping = mapping;
-      }, this);
-      if (remainingLinesIndex < remainingLines.length) {
-        if (lastMapping) {
-          addMappingWithCode(lastMapping, shiftNextLine());
-        }
-        node.add(remainingLines.splice(remainingLinesIndex).join(""));
-      }
-      aSourceMapConsumer.sources.forEach(function(sourceFile) {
-        var content = aSourceMapConsumer.sourceContentFor(sourceFile);
-        if (content != null) {
-          if (aRelativePath != null) {
-            sourceFile = util.join(aRelativePath, sourceFile);
-          }
-          node.setSourceContent(sourceFile, content);
-        }
-      });
-      return node;
-      function addMappingWithCode(mapping, code) {
-        if (mapping === null || mapping.source === void 0) {
-          node.add(code);
-        } else {
-          var source = aRelativePath ? util.join(aRelativePath, mapping.source) : mapping.source;
-          node.add(new SourceNode(mapping.originalLine, mapping.originalColumn, source, code, mapping.name));
-        }
-      }
-    };
-    SourceNode.prototype.add = function SourceNode_add(aChunk) {
-      if (Array.isArray(aChunk)) {
-        aChunk.forEach(function(chunk) {
-          this.add(chunk);
-        }, this);
-      } else if (aChunk[isSourceNode] || typeof aChunk === "string") {
-        if (aChunk) {
-          this.children.push(aChunk);
-        }
-      } else {
-        throw new TypeError("Expected a SourceNode, string, or an array of SourceNodes and strings. Got " + aChunk);
-      }
-      return this;
-    };
-    SourceNode.prototype.prepend = function SourceNode_prepend(aChunk) {
-      if (Array.isArray(aChunk)) {
-        for (var i = aChunk.length - 1; i >= 0; i--) {
-          this.prepend(aChunk[i]);
-        }
-      } else if (aChunk[isSourceNode] || typeof aChunk === "string") {
-        this.children.unshift(aChunk);
-      } else {
-        throw new TypeError("Expected a SourceNode, string, or an array of SourceNodes and strings. Got " + aChunk);
-      }
-      return this;
-    };
-    SourceNode.prototype.walk = function SourceNode_walk(aFn) {
-      var chunk;
-      for (var i = 0, len = this.children.length; i < len; i++) {
-        chunk = this.children[i];
-        if (chunk[isSourceNode]) {
-          chunk.walk(aFn);
-        } else {
-          if (chunk !== "") {
-            aFn(chunk, {
-              source: this.source,
-              line: this.line,
-              column: this.column,
-              name: this.name
-            });
-          }
-        }
-      }
-    };
-    SourceNode.prototype.join = function SourceNode_join(aSep) {
-      var newChildren;
-      var i;
-      var len = this.children.length;
-      if (len > 0) {
-        newChildren = [];
-        for (i = 0; i < len - 1; i++) {
-          newChildren.push(this.children[i]);
-          newChildren.push(aSep);
-        }
-        newChildren.push(this.children[i]);
-        this.children = newChildren;
-      }
-      return this;
-    };
-    SourceNode.prototype.replaceRight = function SourceNode_replaceRight(aPattern, aReplacement) {
-      var lastChild = this.children[this.children.length - 1];
-      if (lastChild[isSourceNode]) {
-        lastChild.replaceRight(aPattern, aReplacement);
-      } else if (typeof lastChild === "string") {
-        this.children[this.children.length - 1] = lastChild.replace(aPattern, aReplacement);
-      } else {
-        this.children.push("".replace(aPattern, aReplacement));
-      }
-      return this;
-    };
-    SourceNode.prototype.setSourceContent = function SourceNode_setSourceContent(aSourceFile, aSourceContent) {
-      this.sourceContents[util.toSetString(aSourceFile)] = aSourceContent;
-    };
-    SourceNode.prototype.walkSourceContents = function SourceNode_walkSourceContents(aFn) {
-      for (var i = 0, len = this.children.length; i < len; i++) {
-        if (this.children[i][isSourceNode]) {
-          this.children[i].walkSourceContents(aFn);
-        }
-      }
-      var sources = Object.keys(this.sourceContents);
-      for (var i = 0, len = sources.length; i < len; i++) {
-        aFn(util.fromSetString(sources[i]), this.sourceContents[sources[i]]);
-      }
-    };
-    SourceNode.prototype.toString = function SourceNode_toString() {
-      var str = "";
-      this.walk(function(chunk) {
-        str += chunk;
-      });
-      return str;
-    };
-    SourceNode.prototype.toStringWithSourceMap = function SourceNode_toStringWithSourceMap(aArgs) {
-      var generated = {
-        code: "",
-        line: 1,
-        column: 0
-      };
-      var map = new SourceMapGenerator(aArgs);
-      var sourceMappingActive = false;
-      var lastOriginalSource = null;
-      var lastOriginalLine = null;
-      var lastOriginalColumn = null;
-      var lastOriginalName = null;
-      this.walk(function(chunk, original) {
-        generated.code += chunk;
-        if (original.source !== null && original.line !== null && original.column !== null) {
-          if (lastOriginalSource !== original.source || lastOriginalLine !== original.line || lastOriginalColumn !== original.column || lastOriginalName !== original.name) {
-            map.addMapping({
-              source: original.source,
-              original: {
-                line: original.line,
-                column: original.column
-              },
-              generated: {
-                line: generated.line,
-                column: generated.column
-              },
-              name: original.name
-            });
-          }
-          lastOriginalSource = original.source;
-          lastOriginalLine = original.line;
-          lastOriginalColumn = original.column;
-          lastOriginalName = original.name;
-          sourceMappingActive = true;
-        } else if (sourceMappingActive) {
-          map.addMapping({
-            generated: {
-              line: generated.line,
-              column: generated.column
-            }
-          });
-          lastOriginalSource = null;
-          sourceMappingActive = false;
-        }
-        for (var idx = 0, length = chunk.length; idx < length; idx++) {
-          if (chunk.charCodeAt(idx) === NEWLINE_CODE) {
-            generated.line++;
-            generated.column = 0;
-            if (idx + 1 === length) {
-              lastOriginalSource = null;
-              sourceMappingActive = false;
-            } else if (sourceMappingActive) {
-              map.addMapping({
-                source: original.source,
-                original: {
-                  line: original.line,
-                  column: original.column
-                },
-                generated: {
-                  line: generated.line,
-                  column: generated.column
-                },
-                name: original.name
-              });
-            }
-          } else {
-            generated.column++;
-          }
-        }
-      });
-      this.walkSourceContents(function(sourceFile, sourceContent) {
-        map.setSourceContent(sourceFile, sourceContent);
-      });
-      return { code: generated.code, map };
-    };
-    exports2.SourceNode = SourceNode;
-  }
-});
-
-// node_modules/.pnpm/source-map@0.6.1/node_modules/source-map/source-map.js
-var require_source_map = __commonJS({
-  "node_modules/.pnpm/source-map@0.6.1/node_modules/source-map/source-map.js"(exports2) {
-    exports2.SourceMapGenerator = require_source_map_generator().SourceMapGenerator;
-    exports2.SourceMapConsumer = require_source_map_consumer().SourceMapConsumer;
-    exports2.SourceNode = require_source_node().SourceNode;
-  }
-});
-
-// node_modules/.pnpm/buffer-from@1.1.2/node_modules/buffer-from/index.js
-var require_buffer_from = __commonJS({
-  "node_modules/.pnpm/buffer-from@1.1.2/node_modules/buffer-from/index.js"(exports2, module2) {
-    var toString = Object.prototype.toString;
-    var isModern = typeof Buffer !== "undefined" && typeof Buffer.alloc === "function" && typeof Buffer.allocUnsafe === "function" && typeof Buffer.from === "function";
-    function isArrayBuffer(input) {
-      return toString.call(input).slice(8, -1) === "ArrayBuffer";
-    }
-    function fromArrayBuffer(obj, byteOffset, length) {
-      byteOffset >>>= 0;
-      var maxLength = obj.byteLength - byteOffset;
-      if (maxLength < 0) {
-        throw new RangeError("'offset' is out of bounds");
-      }
-      if (length === void 0) {
-        length = maxLength;
-      } else {
-        length >>>= 0;
-        if (length > maxLength) {
-          throw new RangeError("'length' is out of bounds");
-        }
-      }
-      return isModern ? Buffer.from(obj.slice(byteOffset, byteOffset + length)) : new Buffer(new Uint8Array(obj.slice(byteOffset, byteOffset + length)));
-    }
-    function fromString(string, encoding) {
-      if (typeof encoding !== "string" || encoding === "") {
-        encoding = "utf8";
-      }
-      if (!Buffer.isEncoding(encoding)) {
-        throw new TypeError('"encoding" must be a valid string encoding');
-      }
-      return isModern ? Buffer.from(string, encoding) : new Buffer(string, encoding);
-    }
-    function bufferFrom(value, encodingOrOffset, length) {
-      if (typeof value === "number") {
-        throw new TypeError('"value" argument must not be a number');
-      }
-      if (isArrayBuffer(value)) {
-        return fromArrayBuffer(value, encodingOrOffset, length);
-      }
-      if (typeof value === "string") {
-        return fromString(value, encodingOrOffset);
-      }
-      return isModern ? Buffer.from(value) : new Buffer(value);
-    }
-    module2.exports = bufferFrom;
-  }
-});
-
-// node_modules/.pnpm/source-map-support@0.5.20/node_modules/source-map-support/source-map-support.js
-var require_source_map_support = __commonJS({
-  "node_modules/.pnpm/source-map-support@0.5.20/node_modules/source-map-support/source-map-support.js"(exports2, module2) {
-    var SourceMapConsumer = require_source_map().SourceMapConsumer;
-    var path = require("path");
-    var fs;
-    try {
-      fs = require("fs");
-      if (!fs.existsSync || !fs.readFileSync) {
-        fs = null;
-      }
-    } catch (err) {
-    }
-    var bufferFrom = require_buffer_from();
-    function dynamicRequire(mod, request) {
-      return mod.require(request);
-    }
-    var errorFormatterInstalled = false;
-    var uncaughtShimInstalled = false;
-    var emptyCacheBetweenOperations = false;
-    var environment = "auto";
-    var fileContentsCache = {};
-    var sourceMapCache = {};
-    var reSourceMap = /^data:application\/json[^,]+base64,/;
-    var retrieveFileHandlers = [];
-    var retrieveMapHandlers = [];
-    function isInBrowser() {
-      if (environment === "browser")
-        return true;
-      if (environment === "node")
-        return false;
-      return typeof window !== "undefined" && typeof XMLHttpRequest === "function" && !(window.require && window.module && window.process && window.process.type === "renderer");
-    }
-    function hasGlobalProcessEventEmitter() {
-      return typeof process === "object" && process !== null && typeof process.on === "function";
-    }
-    function globalProcessVersion() {
-      if (typeof process === "object" && process !== null) {
-        return process.version;
-      } else {
-        return "";
-      }
-    }
-    function globalProcessStderr() {
-      if (typeof process === "object" && process !== null) {
-        return process.stderr;
-      }
-    }
-    function globalProcessExit(code) {
-      if (typeof process === "object" && process !== null && typeof process.exit === "function") {
-        return process.exit(code);
-      }
-    }
-    function handlerExec(list) {
-      return function(arg) {
-        for (var i = 0; i < list.length; i++) {
-          var ret = list[i](arg);
-          if (ret) {
-            return ret;
-          }
-        }
-        return null;
-      };
-    }
-    var retrieveFile = handlerExec(retrieveFileHandlers);
-    retrieveFileHandlers.push(function(path2) {
-      path2 = path2.trim();
-      if (/^file:/.test(path2)) {
-        path2 = path2.replace(/file:\/\/\/(\w:)?/, function(protocol, drive) {
-          return drive ? "" : "/";
-        });
-      }
-      if (path2 in fileContentsCache) {
-        return fileContentsCache[path2];
-      }
-      var contents = "";
-      try {
-        if (!fs) {
-          var xhr = new XMLHttpRequest();
-          xhr.open("GET", path2, false);
-          xhr.send(null);
-          if (xhr.readyState === 4 && xhr.status === 200) {
-            contents = xhr.responseText;
-          }
-        } else if (fs.existsSync(path2)) {
-          contents = fs.readFileSync(path2, "utf8");
-        }
-      } catch (er) {
-      }
-      return fileContentsCache[path2] = contents;
-    });
-    function supportRelativeURL(file, url) {
-      if (!file)
-        return url;
-      var dir = path.dirname(file);
-      var match = /^\w+:\/\/[^\/]*/.exec(dir);
-      var protocol = match ? match[0] : "";
-      var startPath = dir.slice(protocol.length);
-      if (protocol && /^\/\w\:/.test(startPath)) {
-        protocol += "/";
-        return protocol + path.resolve(dir.slice(protocol.length), url).replace(/\\/g, "/");
-      }
-      return protocol + path.resolve(dir.slice(protocol.length), url);
-    }
-    function retrieveSourceMapURL(source) {
-      var fileData;
-      if (isInBrowser()) {
-        try {
-          var xhr = new XMLHttpRequest();
-          xhr.open("GET", source, false);
-          xhr.send(null);
-          fileData = xhr.readyState === 4 ? xhr.responseText : null;
-          var sourceMapHeader = xhr.getResponseHeader("SourceMap") || xhr.getResponseHeader("X-SourceMap");
-          if (sourceMapHeader) {
-            return sourceMapHeader;
-          }
-        } catch (e) {
-        }
-      }
-      fileData = retrieveFile(source);
-      var re = /(?:\/\/[@#][\s]*sourceMappingURL=([^\s'"]+)[\s]*$)|(?:\/\*[@#][\s]*sourceMappingURL=([^\s*'"]+)[\s]*(?:\*\/)[\s]*$)/mg;
-      var lastMatch, match;
-      while (match = re.exec(fileData))
-        lastMatch = match;
-      if (!lastMatch)
-        return null;
-      return lastMatch[1];
-    }
-    var retrieveSourceMap = handlerExec(retrieveMapHandlers);
-    retrieveMapHandlers.push(function(source) {
-      var sourceMappingURL = retrieveSourceMapURL(source);
-      if (!sourceMappingURL)
-        return null;
-      var sourceMapData;
-      if (reSourceMap.test(sourceMappingURL)) {
-        var rawData = sourceMappingURL.slice(sourceMappingURL.indexOf(",") + 1);
-        sourceMapData = bufferFrom(rawData, "base64").toString();
-        sourceMappingURL = source;
-      } else {
-        sourceMappingURL = supportRelativeURL(source, sourceMappingURL);
-        sourceMapData = retrieveFile(sourceMappingURL);
-      }
-      if (!sourceMapData) {
-        return null;
-      }
-      return {
-        url: sourceMappingURL,
-        map: sourceMapData
-      };
-    });
-    function mapSourcePosition(position) {
-      var sourceMap = sourceMapCache[position.source];
-      if (!sourceMap) {
-        var urlAndMap = retrieveSourceMap(position.source);
-        if (urlAndMap) {
-          sourceMap = sourceMapCache[position.source] = {
-            url: urlAndMap.url,
-            map: new SourceMapConsumer(urlAndMap.map)
-          };
-          if (sourceMap.map.sourcesContent) {
-            sourceMap.map.sources.forEach(function(source, i) {
-              var contents = sourceMap.map.sourcesContent[i];
-              if (contents) {
-                var url = supportRelativeURL(sourceMap.url, source);
-                fileContentsCache[url] = contents;
-              }
-            });
-          }
-        } else {
-          sourceMap = sourceMapCache[position.source] = {
-            url: null,
-            map: null
-          };
-        }
-      }
-      if (sourceMap && sourceMap.map && typeof sourceMap.map.originalPositionFor === "function") {
-        var originalPosition = sourceMap.map.originalPositionFor(position);
-        if (originalPosition.source !== null) {
-          originalPosition.source = supportRelativeURL(sourceMap.url, originalPosition.source);
-          return originalPosition;
-        }
-      }
-      return position;
-    }
-    function mapEvalOrigin(origin) {
-      var match = /^eval at ([^(]+) \((.+):(\d+):(\d+)\)$/.exec(origin);
-      if (match) {
-        var position = mapSourcePosition({
-          source: match[2],
-          line: +match[3],
-          column: match[4] - 1
-        });
-        return "eval at " + match[1] + " (" + position.source + ":" + position.line + ":" + (position.column + 1) + ")";
-      }
-      match = /^eval at ([^(]+) \((.+)\)$/.exec(origin);
-      if (match) {
-        return "eval at " + match[1] + " (" + mapEvalOrigin(match[2]) + ")";
-      }
-      return origin;
-    }
-    function CallSiteToString() {
-      var fileName;
-      var fileLocation = "";
-      if (this.isNative()) {
-        fileLocation = "native";
-      } else {
-        fileName = this.getScriptNameOrSourceURL();
-        if (!fileName && this.isEval()) {
-          fileLocation = this.getEvalOrigin();
-          fileLocation += ", ";
-        }
-        if (fileName) {
-          fileLocation += fileName;
-        } else {
-          fileLocation += "<anonymous>";
-        }
-        var lineNumber = this.getLineNumber();
-        if (lineNumber != null) {
-          fileLocation += ":" + lineNumber;
-          var columnNumber = this.getColumnNumber();
-          if (columnNumber) {
-            fileLocation += ":" + columnNumber;
-          }
-        }
-      }
-      var line = "";
-      var functionName = this.getFunctionName();
-      var addSuffix = true;
-      var isConstructor = this.isConstructor();
-      var isMethodCall = !(this.isToplevel() || isConstructor);
-      if (isMethodCall) {
-        var typeName = this.getTypeName();
-        if (typeName === "[object Object]") {
-          typeName = "null";
-        }
-        var methodName = this.getMethodName();
-        if (functionName) {
-          if (typeName && functionName.indexOf(typeName) != 0) {
-            line += typeName + ".";
-          }
-          line += functionName;
-          if (methodName && functionName.indexOf("." + methodName) != functionName.length - methodName.length - 1) {
-            line += " [as " + methodName + "]";
-          }
-        } else {
-          line += typeName + "." + (methodName || "<anonymous>");
-        }
-      } else if (isConstructor) {
-        line += "new " + (functionName || "<anonymous>");
-      } else if (functionName) {
-        line += functionName;
-      } else {
-        line += fileLocation;
-        addSuffix = false;
-      }
-      if (addSuffix) {
-        line += " (" + fileLocation + ")";
-      }
-      return line;
-    }
-    function cloneCallSite(frame) {
-      var object = {};
-      Object.getOwnPropertyNames(Object.getPrototypeOf(frame)).forEach(function(name) {
-        object[name] = /^(?:is|get)/.test(name) ? function() {
-          return frame[name].call(frame);
-        } : frame[name];
-      });
-      object.toString = CallSiteToString;
-      return object;
-    }
-    function wrapCallSite(frame, state) {
-      if (state === void 0) {
-        state = { nextPosition: null, curPosition: null };
-      }
-      if (frame.isNative()) {
-        state.curPosition = null;
-        return frame;
-      }
-      var source = frame.getFileName() || frame.getScriptNameOrSourceURL();
-      if (source) {
-        var line = frame.getLineNumber();
-        var column = frame.getColumnNumber() - 1;
-        var noHeader = /^v(10\.1[6-9]|10\.[2-9][0-9]|10\.[0-9]{3,}|1[2-9]\d*|[2-9]\d|\d{3,}|11\.11)/;
-        var headerLength = noHeader.test(globalProcessVersion()) ? 0 : 62;
-        if (line === 1 && column > headerLength && !isInBrowser() && !frame.isEval()) {
-          column -= headerLength;
-        }
-        var position = mapSourcePosition({
-          source,
-          line,
-          column
-        });
-        state.curPosition = position;
-        frame = cloneCallSite(frame);
-        var originalFunctionName = frame.getFunctionName;
-        frame.getFunctionName = function() {
-          if (state.nextPosition == null) {
-            return originalFunctionName();
-          }
-          return state.nextPosition.name || originalFunctionName();
-        };
-        frame.getFileName = function() {
-          return position.source;
-        };
-        frame.getLineNumber = function() {
-          return position.line;
-        };
-        frame.getColumnNumber = function() {
-          return position.column + 1;
-        };
-        frame.getScriptNameOrSourceURL = function() {
-          return position.source;
-        };
-        return frame;
-      }
-      var origin = frame.isEval() && frame.getEvalOrigin();
-      if (origin) {
-        origin = mapEvalOrigin(origin);
-        frame = cloneCallSite(frame);
-        frame.getEvalOrigin = function() {
-          return origin;
-        };
-        return frame;
-      }
-      return frame;
-    }
-    function prepareStackTrace(error, stack) {
-      if (emptyCacheBetweenOperations) {
-        fileContentsCache = {};
-        sourceMapCache = {};
-      }
-      var name = error.name || "Error";
-      var message = error.message || "";
-      var errorString = name + ": " + message;
-      var state = { nextPosition: null, curPosition: null };
-      var processedStack = [];
-      for (var i = stack.length - 1; i >= 0; i--) {
-        processedStack.push("\n    at " + wrapCallSite(stack[i], state));
-        state.nextPosition = state.curPosition;
-      }
-      state.curPosition = state.nextPosition = null;
-      return errorString + processedStack.reverse().join("");
-    }
-    function getErrorSource(error) {
-      var match = /\n    at [^(]+ \((.*):(\d+):(\d+)\)/.exec(error.stack);
-      if (match) {
-        var source = match[1];
-        var line = +match[2];
-        var column = +match[3];
-        var contents = fileContentsCache[source];
-        if (!contents && fs && fs.existsSync(source)) {
-          try {
-            contents = fs.readFileSync(source, "utf8");
-          } catch (er) {
-            contents = "";
-          }
-        }
-        if (contents) {
-          var code = contents.split(/(?:\r\n|\r|\n)/)[line - 1];
-          if (code) {
-            return source + ":" + line + "\n" + code + "\n" + new Array(column).join(" ") + "^";
-          }
-        }
-      }
-      return null;
-    }
-    function printErrorAndExit(error) {
-      var source = getErrorSource(error);
-      var stderr = globalProcessStderr();
-      if (stderr && stderr._handle && stderr._handle.setBlocking) {
-        stderr._handle.setBlocking(true);
-      }
-      if (source) {
-        console.error();
-        console.error(source);
-      }
-      console.error(error.stack);
-      globalProcessExit(1);
-    }
-    function shimEmitUncaughtException() {
-      var origEmit = process.emit;
-      process.emit = function(type) {
-        if (type === "uncaughtException") {
-          var hasStack = arguments[1] && arguments[1].stack;
-          var hasListeners = this.listeners(type).length > 0;
-          if (hasStack && !hasListeners) {
-            return printErrorAndExit(arguments[1]);
-          }
-        }
-        return origEmit.apply(this, arguments);
-      };
-    }
-    var originalRetrieveFileHandlers = retrieveFileHandlers.slice(0);
-    var originalRetrieveMapHandlers = retrieveMapHandlers.slice(0);
-    exports2.wrapCallSite = wrapCallSite;
-    exports2.getErrorSource = getErrorSource;
-    exports2.mapSourcePosition = mapSourcePosition;
-    exports2.retrieveSourceMap = retrieveSourceMap;
-    exports2.install = function(options) {
-      options = options || {};
-      if (options.environment) {
-        environment = options.environment;
-        if (["node", "browser", "auto"].indexOf(environment) === -1) {
-          throw new Error("environment " + environment + " was unknown. Available options are {auto, browser, node}");
-        }
-      }
-      if (options.retrieveFile) {
-        if (options.overrideRetrieveFile) {
-          retrieveFileHandlers.length = 0;
-        }
-        retrieveFileHandlers.unshift(options.retrieveFile);
-      }
-      if (options.retrieveSourceMap) {
-        if (options.overrideRetrieveSourceMap) {
-          retrieveMapHandlers.length = 0;
-        }
-        retrieveMapHandlers.unshift(options.retrieveSourceMap);
-      }
-      if (options.hookRequire && !isInBrowser()) {
-        var Module = dynamicRequire(module2, "module");
-        var $compile = Module.prototype._compile;
-        if (!$compile.__sourceMapSupport) {
-          Module.prototype._compile = function(content, filename) {
-            fileContentsCache[filename] = content;
-            sourceMapCache[filename] = void 0;
-            return $compile.call(this, content, filename);
-          };
-          Module.prototype._compile.__sourceMapSupport = true;
-        }
-      }
-      if (!emptyCacheBetweenOperations) {
-        emptyCacheBetweenOperations = "emptyCacheBetweenOperations" in options ? options.emptyCacheBetweenOperations : false;
-      }
-      if (!errorFormatterInstalled) {
-        errorFormatterInstalled = true;
-        Error.prepareStackTrace = prepareStackTrace;
-      }
-      if (!uncaughtShimInstalled) {
-        var installHandler = "handleUncaughtExceptions" in options ? options.handleUncaughtExceptions : true;
-        try {
-          var worker_threads = dynamicRequire(module2, "worker_threads");
-          if (worker_threads.isMainThread === false) {
-            installHandler = false;
-          }
-        } catch (e) {
-        }
-        if (installHandler && hasGlobalProcessEventEmitter()) {
-          uncaughtShimInstalled = true;
-          shimEmitUncaughtException();
-        }
-      }
-    };
-    exports2.resetRetrieveHandlers = function() {
-      retrieveFileHandlers.length = 0;
-      retrieveMapHandlers.length = 0;
-      retrieveFileHandlers = originalRetrieveFileHandlers.slice(0);
-      retrieveMapHandlers = originalRetrieveMapHandlers.slice(0);
-      retrieveSourceMap = handlerExec(retrieveMapHandlers);
-      retrieveFile = handlerExec(retrieveFileHandlers);
-    };
-  }
-});
-
 // node_modules/.pnpm/@actions+core@1.6.0/node_modules/@actions/core/lib/utils.js
 var require_utils = __commonJS({
   "node_modules/.pnpm/@actions+core@1.6.0/node_modules/@actions/core/lib/utils.js"(exports2) {
@@ -2581,7 +372,7 @@ var require_tunnel = __commonJS({
       connectReq.once("response", onResponse);
       connectReq.once("upgrade", onUpgrade);
       connectReq.once("connect", onConnect);
-      connectReq.once("error", onError);
+      connectReq.once("error", onError2);
       connectReq.end();
       function onResponse(res) {
         res.upgrade = true;
@@ -2616,7 +407,7 @@ var require_tunnel = __commonJS({
         self.sockets[self.sockets.indexOf(placeholder)] = socket;
         return cb(socket);
       }
-      function onError(cause) {
+      function onError2(cause) {
         connectReq.removeAllListeners();
         debug("tunneling socket could not be established, cause=%s\n", cause.message, cause.stack);
         var error = new Error("tunneling socket could not be established, cause=" + cause.message);
@@ -2784,13 +575,13 @@ var require_http_client = __commonJS({
         this.message = message;
       }
       readBody() {
-        return new Promise(async (resolve6, reject) => {
+        return new Promise(async (resolve3, reject) => {
           let output = Buffer.alloc(0);
           this.message.on("data", (chunk) => {
             output = Buffer.concat([output, chunk]);
           });
           this.message.on("end", () => {
-            resolve6(output.toString());
+            resolve3(output.toString());
           });
         });
       }
@@ -2954,12 +745,12 @@ var require_http_client = __commonJS({
         this._disposed = true;
       }
       requestRaw(info, data) {
-        return new Promise((resolve6, reject) => {
+        return new Promise((resolve3, reject) => {
           let callbackForResult = function(err, res) {
             if (err) {
               reject(err);
             }
-            resolve6(res);
+            resolve3(res);
           };
           this.requestRawWithCallback(info, data, callbackForResult);
         });
@@ -3106,7 +897,7 @@ var require_http_client = __commonJS({
       _performExponentialBackoff(retryNumber) {
         retryNumber = Math.min(ExponentialBackoffCeiling, retryNumber);
         const ms = ExponentialBackoffTimeSlice * Math.pow(2, retryNumber);
-        return new Promise((resolve6) => setTimeout(() => resolve6(), ms));
+        return new Promise((resolve3) => setTimeout(() => resolve3(), ms));
       }
       static dateTimeDeserializer(key, value) {
         if (typeof value === "string") {
@@ -3118,7 +909,7 @@ var require_http_client = __commonJS({
         return value;
       }
       async _processResponse(res, options) {
-        return new Promise(async (resolve6, reject) => {
+        return new Promise(async (resolve3, reject) => {
           const statusCode = res.message.statusCode;
           const response = {
             statusCode,
@@ -3126,7 +917,7 @@ var require_http_client = __commonJS({
             headers: {}
           };
           if (statusCode == HttpCodes.NotFound) {
-            resolve6(response);
+            resolve3(response);
           }
           let obj;
           let contents;
@@ -3156,7 +947,7 @@ var require_http_client = __commonJS({
             err.result = response.result;
             reject(err);
           } else {
-            resolve6(response);
+            resolve3(response);
           }
         });
       }
@@ -3225,11 +1016,11 @@ var require_oidc_utils = __commonJS({
     "use strict";
     var __awaiter = exports2 && exports2.__awaiter || function(thisArg, _arguments, P, generator) {
       function adopt(value) {
-        return value instanceof P ? value : new P(function(resolve6) {
-          resolve6(value);
+        return value instanceof P ? value : new P(function(resolve3) {
+          resolve3(value);
         });
       }
-      return new (P || (P = Promise))(function(resolve6, reject) {
+      return new (P || (P = Promise))(function(resolve3, reject) {
         function fulfilled(value) {
           try {
             step(generator.next(value));
@@ -3245,7 +1036,7 @@ var require_oidc_utils = __commonJS({
           }
         }
         function step(result) {
-          result.done ? resolve6(result.value) : adopt(result.value).then(fulfilled, rejected);
+          result.done ? resolve3(result.value) : adopt(result.value).then(fulfilled, rejected);
         }
         step((generator = generator.apply(thisArg, _arguments || [])).next());
       });
@@ -3278,7 +1069,7 @@ var require_oidc_utils = __commonJS({
         return runtimeUrl;
       }
       static getCall(id_token_url) {
-        var _a2;
+        var _a;
         return __awaiter(this, void 0, void 0, function* () {
           const httpclient = OidcClient.createHttpClient();
           const res = yield httpclient.getJson(id_token_url).catch((error) => {
@@ -3288,7 +1079,7 @@ var require_oidc_utils = __commonJS({
  
         Error Message: ${error.result.message}`);
           });
-          const id_token = (_a2 = res.result) === null || _a2 === void 0 ? void 0 : _a2.value;
+          const id_token = (_a = res.result) === null || _a === void 0 ? void 0 : _a.value;
           if (!id_token) {
             throw new Error("Response json body do not have ID Token field");
           }
@@ -3351,11 +1142,11 @@ var require_core = __commonJS({
     };
     var __awaiter = exports2 && exports2.__awaiter || function(thisArg, _arguments, P, generator) {
       function adopt(value) {
-        return value instanceof P ? value : new P(function(resolve6) {
-          resolve6(value);
+        return value instanceof P ? value : new P(function(resolve3) {
+          resolve3(value);
         });
       }
-      return new (P || (P = Promise))(function(resolve6, reject) {
+      return new (P || (P = Promise))(function(resolve3, reject) {
         function fulfilled(value) {
           try {
             step(generator.next(value));
@@ -3371,7 +1162,7 @@ var require_core = __commonJS({
           }
         }
         function step(result) {
-          result.done ? resolve6(result.value) : adopt(result.value).then(fulfilled, rejected);
+          result.done ? resolve3(result.value) : adopt(result.value).then(fulfilled, rejected);
         }
         step((generator = generator.apply(thisArg, _arguments || [])).next());
       });
@@ -3453,11 +1244,11 @@ Support boolean input list: \`true | True | TRUE | false | False | FALSE\``);
       command_1.issue("echo", enabled ? "on" : "off");
     }
     exports2.setCommandEcho = setCommandEcho;
-    function setFailed4(message) {
+    function setFailed2(message) {
       process.exitCode = ExitCode.Failure;
       error(message);
     }
-    exports2.setFailed = setFailed4;
+    exports2.setFailed = setFailed2;
     function isDebug() {
       return process.env["RUNNER_DEBUG"] === "1";
     }
@@ -3482,22 +1273,22 @@ Support boolean input list: \`true | True | TRUE | false | False | FALSE\``);
       process.stdout.write(message + os.EOL);
     }
     exports2.info = info;
-    function startGroup(name) {
+    function startGroup2(name) {
       command_1.issue("group", name);
     }
-    exports2.startGroup = startGroup;
-    function endGroup() {
+    exports2.startGroup = startGroup2;
+    function endGroup2() {
       command_1.issue("endgroup");
     }
-    exports2.endGroup = endGroup;
+    exports2.endGroup = endGroup2;
     function group(name, fn) {
       return __awaiter(this, void 0, void 0, function* () {
-        startGroup(name);
+        startGroup2(name);
         let result;
         try {
           result = yield fn();
         } finally {
-          endGroup();
+          endGroup2();
         }
         return result;
       });
@@ -3554,11 +1345,11 @@ var require_io_util = __commonJS({
     };
     var __awaiter = exports2 && exports2.__awaiter || function(thisArg, _arguments, P, generator) {
       function adopt(value) {
-        return value instanceof P ? value : new P(function(resolve6) {
-          resolve6(value);
+        return value instanceof P ? value : new P(function(resolve3) {
+          resolve3(value);
         });
       }
-      return new (P || (P = Promise))(function(resolve6, reject) {
+      return new (P || (P = Promise))(function(resolve3, reject) {
         function fulfilled(value) {
           try {
             step(generator.next(value));
@@ -3574,17 +1365,17 @@ var require_io_util = __commonJS({
           }
         }
         function step(result) {
-          result.done ? resolve6(result.value) : adopt(result.value).then(fulfilled, rejected);
+          result.done ? resolve3(result.value) : adopt(result.value).then(fulfilled, rejected);
         }
         step((generator = generator.apply(thisArg, _arguments || [])).next());
       });
     };
-    var _a2;
+    var _a;
     Object.defineProperty(exports2, "__esModule", { value: true });
     exports2.getCmdPath = exports2.tryGetExecutablePath = exports2.isRooted = exports2.isDirectory = exports2.exists = exports2.IS_WINDOWS = exports2.unlink = exports2.symlink = exports2.stat = exports2.rmdir = exports2.rename = exports2.readlink = exports2.readdir = exports2.mkdir = exports2.lstat = exports2.copyFile = exports2.chmod = void 0;
     var fs = __importStar(require("fs"));
     var path = __importStar(require("path"));
-    _a2 = fs.promises, exports2.chmod = _a2.chmod, exports2.copyFile = _a2.copyFile, exports2.lstat = _a2.lstat, exports2.mkdir = _a2.mkdir, exports2.readdir = _a2.readdir, exports2.readlink = _a2.readlink, exports2.rename = _a2.rename, exports2.rmdir = _a2.rmdir, exports2.stat = _a2.stat, exports2.symlink = _a2.symlink, exports2.unlink = _a2.unlink;
+    _a = fs.promises, exports2.chmod = _a.chmod, exports2.copyFile = _a.copyFile, exports2.lstat = _a.lstat, exports2.mkdir = _a.mkdir, exports2.readdir = _a.readdir, exports2.readlink = _a.readlink, exports2.rename = _a.rename, exports2.rmdir = _a.rmdir, exports2.stat = _a.stat, exports2.symlink = _a.symlink, exports2.unlink = _a.unlink;
     exports2.IS_WINDOWS = process.platform === "win32";
     function exists(fsPath) {
       return __awaiter(this, void 0, void 0, function* () {
@@ -3689,8 +1480,8 @@ var require_io_util = __commonJS({
       return (stats.mode & 1) > 0 || (stats.mode & 8) > 0 && stats.gid === process.getgid() || (stats.mode & 64) > 0 && stats.uid === process.getuid();
     }
     function getCmdPath() {
-      var _a3;
-      return (_a3 = process.env["COMSPEC"]) !== null && _a3 !== void 0 ? _a3 : `cmd.exe`;
+      var _a2;
+      return (_a2 = process.env["COMSPEC"]) !== null && _a2 !== void 0 ? _a2 : `cmd.exe`;
     }
     exports2.getCmdPath = getCmdPath;
   }
@@ -3730,11 +1521,11 @@ var require_io = __commonJS({
     };
     var __awaiter = exports2 && exports2.__awaiter || function(thisArg, _arguments, P, generator) {
       function adopt(value) {
-        return value instanceof P ? value : new P(function(resolve6) {
-          resolve6(value);
+        return value instanceof P ? value : new P(function(resolve3) {
+          resolve3(value);
         });
       }
-      return new (P || (P = Promise))(function(resolve6, reject) {
+      return new (P || (P = Promise))(function(resolve3, reject) {
         function fulfilled(value) {
           try {
             step(generator.next(value));
@@ -3750,7 +1541,7 @@ var require_io = __commonJS({
           }
         }
         function step(result) {
-          result.done ? resolve6(result.value) : adopt(result.value).then(fulfilled, rejected);
+          result.done ? resolve3(result.value) : adopt(result.value).then(fulfilled, rejected);
         }
         step((generator = generator.apply(thisArg, _arguments || [])).next());
       });
@@ -3762,7 +1553,7 @@ var require_io = __commonJS({
     var path = __importStar(require("path"));
     var util_1 = require("util");
     var ioUtil = __importStar(require_io_util());
-    var exec7 = util_1.promisify(childProcess.exec);
+    var exec3 = util_1.promisify(childProcess.exec);
     var execFile = util_1.promisify(childProcess.execFile);
     function cp(source, dest, options = {}) {
       return __awaiter(this, void 0, void 0, function* () {
@@ -3791,7 +1582,7 @@ var require_io = __commonJS({
       });
     }
     exports2.cp = cp;
-    function mv(source, dest, options = {}) {
+    function mv2(source, dest, options = {}) {
       return __awaiter(this, void 0, void 0, function* () {
         if (yield ioUtil.exists(dest)) {
           let destExists = true;
@@ -3801,18 +1592,18 @@ var require_io = __commonJS({
           }
           if (destExists) {
             if (options.force == null || options.force) {
-              yield rmRF(dest);
+              yield rmRF2(dest);
             } else {
               throw new Error("Destination already exists");
             }
           }
         }
-        yield mkdirP(path.dirname(dest));
+        yield mkdirP2(path.dirname(dest));
         yield ioUtil.rename(source, dest);
       });
     }
-    exports2.mv = mv;
-    function rmRF(inputPath) {
+    exports2.mv = mv2;
+    function rmRF2(inputPath) {
       return __awaiter(this, void 0, void 0, function* () {
         if (ioUtil.IS_WINDOWS) {
           if (/[*"<>|]/.test(inputPath)) {
@@ -3821,11 +1612,11 @@ var require_io = __commonJS({
           try {
             const cmdPath = ioUtil.getCmdPath();
             if (yield ioUtil.isDirectory(inputPath, true)) {
-              yield exec7(`${cmdPath} /s /c "rd /s /q "%inputPath%""`, {
+              yield exec3(`${cmdPath} /s /c "rd /s /q "%inputPath%""`, {
                 env: { inputPath }
               });
             } else {
-              yield exec7(`${cmdPath} /s /c "del /f /a "%inputPath%""`, {
+              yield exec3(`${cmdPath} /s /c "del /f /a "%inputPath%""`, {
                 env: { inputPath }
               });
             }
@@ -3856,14 +1647,14 @@ var require_io = __commonJS({
         }
       });
     }
-    exports2.rmRF = rmRF;
-    function mkdirP(fsPath) {
+    exports2.rmRF = rmRF2;
+    function mkdirP2(fsPath) {
       return __awaiter(this, void 0, void 0, function* () {
         assert_1.ok(fsPath, "a path argument must be provided");
         yield ioUtil.mkdir(fsPath, { recursive: true });
       });
     }
-    exports2.mkdirP = mkdirP;
+    exports2.mkdirP = mkdirP2;
     function which(tool, check) {
       return __awaiter(this, void 0, void 0, function* () {
         if (!tool) {
@@ -3941,7 +1732,7 @@ var require_io = __commonJS({
         if (currentDepth >= 255)
           return;
         currentDepth++;
-        yield mkdirP(destDir);
+        yield mkdirP2(destDir);
         const files = yield ioUtil.readdir(sourceDir);
         for (const fileName of files) {
           const srcFile = `${sourceDir}/${fileName}`;
@@ -4012,11 +1803,11 @@ var require_toolrunner = __commonJS({
     };
     var __awaiter = exports2 && exports2.__awaiter || function(thisArg, _arguments, P, generator) {
       function adopt(value) {
-        return value instanceof P ? value : new P(function(resolve6) {
-          resolve6(value);
+        return value instanceof P ? value : new P(function(resolve3) {
+          resolve3(value);
         });
       }
-      return new (P || (P = Promise))(function(resolve6, reject) {
+      return new (P || (P = Promise))(function(resolve3, reject) {
         function fulfilled(value) {
           try {
             step(generator.next(value));
@@ -4032,7 +1823,7 @@ var require_toolrunner = __commonJS({
           }
         }
         function step(result) {
-          result.done ? resolve6(result.value) : adopt(result.value).then(fulfilled, rejected);
+          result.done ? resolve3(result.value) : adopt(result.value).then(fulfilled, rejected);
         }
         step((generator = generator.apply(thisArg, _arguments || [])).next());
       });
@@ -4251,7 +2042,7 @@ var require_toolrunner = __commonJS({
             this.toolPath = path.resolve(process.cwd(), this.options.cwd || process.cwd(), this.toolPath);
           }
           this.toolPath = yield io.which(this.toolPath, true);
-          return new Promise((resolve6, reject) => __awaiter(this, void 0, void 0, function* () {
+          return new Promise((resolve3, reject) => __awaiter(this, void 0, void 0, function* () {
             this._debug(`exec tool: ${this.toolPath}`);
             this._debug("arguments:");
             for (const arg of this.args) {
@@ -4334,7 +2125,7 @@ var require_toolrunner = __commonJS({
               if (error) {
                 reject(error);
               } else {
-                resolve6(exitCode);
+                resolve3(exitCode);
               }
             });
             if (this.options.input) {
@@ -4492,11 +2283,11 @@ var require_exec = __commonJS({
     };
     var __awaiter = exports2 && exports2.__awaiter || function(thisArg, _arguments, P, generator) {
       function adopt(value) {
-        return value instanceof P ? value : new P(function(resolve6) {
-          resolve6(value);
+        return value instanceof P ? value : new P(function(resolve3) {
+          resolve3(value);
         });
       }
-      return new (P || (P = Promise))(function(resolve6, reject) {
+      return new (P || (P = Promise))(function(resolve3, reject) {
         function fulfilled(value) {
           try {
             step(generator.next(value));
@@ -4512,7 +2303,7 @@ var require_exec = __commonJS({
           }
         }
         function step(result) {
-          result.done ? resolve6(result.value) : adopt(result.value).then(fulfilled, rejected);
+          result.done ? resolve3(result.value) : adopt(result.value).then(fulfilled, rejected);
         }
         step((generator = generator.apply(thisArg, _arguments || [])).next());
       });
@@ -4521,7 +2312,7 @@ var require_exec = __commonJS({
     exports2.getExecOutput = exports2.exec = void 0;
     var string_decoder_1 = require("string_decoder");
     var tr = __importStar(require_toolrunner());
-    function exec7(commandLine, args, options) {
+    function exec3(commandLine, args, options) {
       return __awaiter(this, void 0, void 0, function* () {
         const commandArgs = tr.argStringToArray(commandLine);
         if (commandArgs.length === 0) {
@@ -4533,15 +2324,15 @@ var require_exec = __commonJS({
         return runner.exec();
       });
     }
-    exports2.exec = exec7;
+    exports2.exec = exec3;
     function getExecOutput(commandLine, args, options) {
-      var _a2, _b;
+      var _a, _b;
       return __awaiter(this, void 0, void 0, function* () {
         let stdout = "";
         let stderr = "";
         const stdoutDecoder = new string_decoder_1.StringDecoder("utf8");
         const stderrDecoder = new string_decoder_1.StringDecoder("utf8");
-        const originalStdoutListener = (_a2 = options === null || options === void 0 ? void 0 : options.listeners) === null || _a2 === void 0 ? void 0 : _a2.stdout;
+        const originalStdoutListener = (_a = options === null || options === void 0 ? void 0 : options.listeners) === null || _a === void 0 ? void 0 : _a.stdout;
         const originalStdErrListener = (_b = options === null || options === void 0 ? void 0 : options.listeners) === null || _b === void 0 ? void 0 : _b.stderr;
         const stdErrListener = (data) => {
           stderr += stderrDecoder.write(data);
@@ -4556,7 +2347,7 @@ var require_exec = __commonJS({
           }
         };
         const listeners = Object.assign(Object.assign({}, options === null || options === void 0 ? void 0 : options.listeners), { stdout: stdOutListener, stderr: stdErrListener });
-        const exitCode = yield exec7(commandLine, args, Object.assign(Object.assign({}, options), { listeners }));
+        const exitCode = yield exec3(commandLine, args, Object.assign(Object.assign({}, options), { listeners }));
         stdout += stdoutDecoder.end();
         stderr += stderrDecoder.end();
         return {
@@ -5732,11 +3523,11 @@ var require_manifest = __commonJS({
     };
     var __awaiter = exports2 && exports2.__awaiter || function(thisArg, _arguments, P, generator) {
       function adopt(value) {
-        return value instanceof P ? value : new P(function(resolve6) {
-          resolve6(value);
+        return value instanceof P ? value : new P(function(resolve3) {
+          resolve3(value);
         });
       }
-      return new (P || (P = Promise))(function(resolve6, reject) {
+      return new (P || (P = Promise))(function(resolve3, reject) {
         function fulfilled(value) {
           try {
             step(generator.next(value));
@@ -5752,7 +3543,7 @@ var require_manifest = __commonJS({
           }
         }
         function step(result) {
-          result.done ? resolve6(result.value) : adopt(result.value).then(fulfilled, rejected);
+          result.done ? resolve3(result.value) : adopt(result.value).then(fulfilled, rejected);
         }
         step((generator = generator.apply(thisArg, _arguments || [])).next());
       });
@@ -5946,11 +3737,11 @@ var require_retry_helper = __commonJS({
     };
     var __awaiter = exports2 && exports2.__awaiter || function(thisArg, _arguments, P, generator) {
       function adopt(value) {
-        return value instanceof P ? value : new P(function(resolve6) {
-          resolve6(value);
+        return value instanceof P ? value : new P(function(resolve3) {
+          resolve3(value);
         });
       }
-      return new (P || (P = Promise))(function(resolve6, reject) {
+      return new (P || (P = Promise))(function(resolve3, reject) {
         function fulfilled(value) {
           try {
             step(generator.next(value));
@@ -5966,14 +3757,14 @@ var require_retry_helper = __commonJS({
           }
         }
         function step(result) {
-          result.done ? resolve6(result.value) : adopt(result.value).then(fulfilled, rejected);
+          result.done ? resolve3(result.value) : adopt(result.value).then(fulfilled, rejected);
         }
         step((generator = generator.apply(thisArg, _arguments || [])).next());
       });
     };
     Object.defineProperty(exports2, "__esModule", { value: true });
     exports2.RetryHelper = void 0;
-    var core6 = __importStar(require_core());
+    var core = __importStar(require_core());
     var RetryHelper = class {
       constructor(maxAttempts, minSeconds, maxSeconds) {
         if (maxAttempts < 1) {
@@ -5996,10 +3787,10 @@ var require_retry_helper = __commonJS({
               if (isRetryable && !isRetryable(err)) {
                 throw err;
               }
-              core6.info(err.message);
+              core.info(err.message);
             }
             const seconds = this.getSleepAmount();
-            core6.info(`Waiting ${seconds} seconds before trying again`);
+            core.info(`Waiting ${seconds} seconds before trying again`);
             yield this.sleep(seconds);
             attempt++;
           }
@@ -6011,7 +3802,7 @@ var require_retry_helper = __commonJS({
       }
       sleep(seconds) {
         return __awaiter(this, void 0, void 0, function* () {
-          return new Promise((resolve6) => setTimeout(resolve6, seconds * 1e3));
+          return new Promise((resolve3) => setTimeout(resolve3, seconds * 1e3));
         });
       }
     };
@@ -6053,11 +3844,11 @@ var require_tool_cache = __commonJS({
     };
     var __awaiter = exports2 && exports2.__awaiter || function(thisArg, _arguments, P, generator) {
       function adopt(value) {
-        return value instanceof P ? value : new P(function(resolve6) {
-          resolve6(value);
+        return value instanceof P ? value : new P(function(resolve3) {
+          resolve3(value);
         });
       }
-      return new (P || (P = Promise))(function(resolve6, reject) {
+      return new (P || (P = Promise))(function(resolve3, reject) {
         function fulfilled(value) {
           try {
             step(generator.next(value));
@@ -6073,7 +3864,7 @@ var require_tool_cache = __commonJS({
           }
         }
         function step(result) {
-          result.done ? resolve6(result.value) : adopt(result.value).then(fulfilled, rejected);
+          result.done ? resolve3(result.value) : adopt(result.value).then(fulfilled, rejected);
         }
         step((generator = generator.apply(thisArg, _arguments || [])).next());
       });
@@ -6083,7 +3874,7 @@ var require_tool_cache = __commonJS({
     };
     Object.defineProperty(exports2, "__esModule", { value: true });
     exports2.evaluateVersions = exports2.isExplicitVersion = exports2.findFromManifest = exports2.getManifestFromRepo = exports2.findAllVersions = exports2.find = exports2.cacheFile = exports2.cacheDir = exports2.extractZip = exports2.extractXar = exports2.extractTar = exports2.extract7z = exports2.downloadTool = exports2.HTTPError = void 0;
-    var core6 = __importStar(require_core());
+    var core = __importStar(require_core());
     var io = __importStar(require_io());
     var fs = __importStar(require("fs"));
     var mm = __importStar(require_manifest());
@@ -6108,18 +3899,18 @@ var require_tool_cache = __commonJS({
     var IS_WINDOWS = process.platform === "win32";
     var IS_MAC = process.platform === "darwin";
     var userAgent = "actions/tool-cache";
-    function downloadTool2(url, dest, auth, headers) {
+    function downloadTool2(url, dest, auth2, headers) {
       return __awaiter(this, void 0, void 0, function* () {
         dest = dest || path.join(_getTempDirectory(), v4_1.default());
         yield io.mkdirP(path.dirname(dest));
-        core6.debug(`Downloading ${url}`);
-        core6.debug(`Destination ${dest}`);
+        core.debug(`Downloading ${url}`);
+        core.debug(`Destination ${dest}`);
         const maxAttempts = 3;
         const minSeconds = _getGlobal("TEST_DOWNLOAD_TOOL_RETRY_MIN_SECONDS", 10);
         const maxSeconds = _getGlobal("TEST_DOWNLOAD_TOOL_RETRY_MAX_SECONDS", 20);
         const retryHelper = new retry_helper_1.RetryHelper(maxAttempts, minSeconds, maxSeconds);
         return yield retryHelper.execute(() => __awaiter(this, void 0, void 0, function* () {
-          return yield downloadToolAttempt(url, dest || "", auth, headers);
+          return yield downloadToolAttempt(url, dest || "", auth2, headers);
         }), (err) => {
           if (err instanceof HTTPError && err.httpStatusCode) {
             if (err.httpStatusCode < 500 && err.httpStatusCode !== 408 && err.httpStatusCode !== 429) {
@@ -6131,7 +3922,7 @@ var require_tool_cache = __commonJS({
       });
     }
     exports2.downloadTool = downloadTool2;
-    function downloadToolAttempt(url, dest, auth, headers) {
+    function downloadToolAttempt(url, dest, auth2, headers) {
       return __awaiter(this, void 0, void 0, function* () {
         if (fs.existsSync(dest)) {
           throw new Error(`Destination file path ${dest} already exists`);
@@ -6139,17 +3930,17 @@ var require_tool_cache = __commonJS({
         const http = new httpm.HttpClient(userAgent, [], {
           allowRetries: false
         });
-        if (auth) {
-          core6.debug("set auth");
+        if (auth2) {
+          core.debug("set auth");
           if (headers === void 0) {
             headers = {};
           }
-          headers.authorization = auth;
+          headers.authorization = auth2;
         }
         const response = yield http.get(url, headers);
         if (response.message.statusCode !== 200) {
           const err = new HTTPError(response.message.statusCode);
-          core6.debug(`Failed to download from "${url}". Code(${response.message.statusCode}) Message(${response.message.statusMessage})`);
+          core.debug(`Failed to download from "${url}". Code(${response.message.statusCode}) Message(${response.message.statusMessage})`);
           throw err;
         }
         const pipeline = util.promisify(stream.pipeline);
@@ -6158,16 +3949,16 @@ var require_tool_cache = __commonJS({
         let succeeded = false;
         try {
           yield pipeline(readStream, fs.createWriteStream(dest));
-          core6.debug("download complete");
+          core.debug("download complete");
           succeeded = true;
           return dest;
         } finally {
           if (!succeeded) {
-            core6.debug("download failed");
+            core.debug("download failed");
             try {
               yield io.rmRF(dest);
             } catch (err) {
-              core6.debug(`Failed to delete '${dest}'. ${err.message}`);
+              core.debug(`Failed to delete '${dest}'. ${err.message}`);
             }
           }
         }
@@ -6182,7 +3973,7 @@ var require_tool_cache = __commonJS({
         process.chdir(dest);
         if (_7zPath) {
           try {
-            const logLevel = core6.isDebug() ? "-bb1" : "-bb0";
+            const logLevel = core.isDebug() ? "-bb1" : "-bb0";
             const args = [
               "x",
               logLevel,
@@ -6232,7 +4023,7 @@ var require_tool_cache = __commonJS({
           throw new Error("parameter 'file' is required");
         }
         dest = yield _createExtractFolder(dest);
-        core6.debug("Checking tar --version");
+        core.debug("Checking tar --version");
         let versionOutput = "";
         yield exec_1.exec("tar --version", [], {
           ignoreReturnCode: true,
@@ -6242,7 +4033,7 @@ var require_tool_cache = __commonJS({
             stderr: (data) => versionOutput += data.toString()
           }
         });
-        core6.debug(versionOutput.trim());
+        core.debug(versionOutput.trim());
         const isGnuTar = versionOutput.toUpperCase().includes("GNU TAR");
         let args;
         if (flags instanceof Array) {
@@ -6250,7 +4041,7 @@ var require_tool_cache = __commonJS({
         } else {
           args = [flags];
         }
-        if (core6.isDebug() && !flags.includes("v")) {
+        if (core.isDebug() && !flags.includes("v")) {
           args.push("-v");
         }
         let destArg = dest;
@@ -6282,7 +4073,7 @@ var require_tool_cache = __commonJS({
           args = [flags];
         }
         args.push("-x", "-C", dest, "-f", file);
-        if (core6.isDebug()) {
+        if (core.isDebug()) {
           args.push("-v");
         }
         const xarPath = yield io.which("xar", true);
@@ -6327,7 +4118,7 @@ var require_tool_cache = __commonJS({
             "-Command",
             pwshCommand
           ];
-          core6.debug(`Using pwsh at path: ${pwshPath}`);
+          core.debug(`Using pwsh at path: ${pwshPath}`);
           yield exec_1.exec(`"${pwshPath}"`, args);
         } else {
           const powershellCommand = [
@@ -6347,7 +4138,7 @@ var require_tool_cache = __commonJS({
             powershellCommand
           ];
           const powershellPath = yield io.which("powershell", true);
-          core6.debug(`Using powershell at path: ${powershellPath}`);
+          core.debug(`Using powershell at path: ${powershellPath}`);
           yield exec_1.exec(`"${powershellPath}"`, args);
         }
       });
@@ -6356,19 +4147,19 @@ var require_tool_cache = __commonJS({
       return __awaiter(this, void 0, void 0, function* () {
         const unzipPath = yield io.which("unzip", true);
         const args = [file];
-        if (!core6.isDebug()) {
+        if (!core.isDebug()) {
           args.unshift("-q");
         }
         args.unshift("-o");
         yield exec_1.exec(`"${unzipPath}"`, args, { cwd: dest });
       });
     }
-    function cacheDir(sourceDir, tool, version, arch) {
+    function cacheDir2(sourceDir, tool, version, arch) {
       return __awaiter(this, void 0, void 0, function* () {
         version = semver.clean(version) || version;
         arch = arch || os.arch();
-        core6.debug(`Caching tool ${tool} ${version} ${arch}`);
-        core6.debug(`source dir: ${sourceDir}`);
+        core.debug(`Caching tool ${tool} ${version} ${arch}`);
+        core.debug(`source dir: ${sourceDir}`);
         if (!fs.statSync(sourceDir).isDirectory()) {
           throw new Error("sourceDir is not a directory");
         }
@@ -6381,19 +4172,19 @@ var require_tool_cache = __commonJS({
         return destPath;
       });
     }
-    exports2.cacheDir = cacheDir;
+    exports2.cacheDir = cacheDir2;
     function cacheFile(sourceFile, targetFile, tool, version, arch) {
       return __awaiter(this, void 0, void 0, function* () {
         version = semver.clean(version) || version;
         arch = arch || os.arch();
-        core6.debug(`Caching tool ${tool} ${version} ${arch}`);
-        core6.debug(`source file: ${sourceFile}`);
+        core.debug(`Caching tool ${tool} ${version} ${arch}`);
+        core.debug(`source file: ${sourceFile}`);
         if (!fs.statSync(sourceFile).isFile()) {
           throw new Error("sourceFile is not a file");
         }
         const destFolder = yield _createToolPath(tool, version, arch);
         const destPath = path.join(destFolder, targetFile);
-        core6.debug(`destination file ${destPath}`);
+        core.debug(`destination file ${destPath}`);
         yield io.cp(sourceFile, destPath);
         _completeToolPath(tool, version, arch);
         return destFolder;
@@ -6417,12 +4208,12 @@ var require_tool_cache = __commonJS({
       if (versionSpec) {
         versionSpec = semver.clean(versionSpec) || "";
         const cachePath = path.join(_getCacheDirectory(), toolName, versionSpec, arch);
-        core6.debug(`checking cache: ${cachePath}`);
+        core.debug(`checking cache: ${cachePath}`);
         if (fs.existsSync(cachePath) && fs.existsSync(`${cachePath}.complete`)) {
-          core6.debug(`Found tool in cache ${toolName} ${versionSpec} ${arch}`);
+          core.debug(`Found tool in cache ${toolName} ${versionSpec} ${arch}`);
           toolPath = cachePath;
         } else {
-          core6.debug("not found");
+          core.debug("not found");
         }
       }
       return toolPath;
@@ -6446,15 +4237,15 @@ var require_tool_cache = __commonJS({
       return versions;
     }
     exports2.findAllVersions = findAllVersions;
-    function getManifestFromRepo(owner, repo, auth, branch = "master") {
+    function getManifestFromRepo(owner, repo, auth2, branch = "master") {
       return __awaiter(this, void 0, void 0, function* () {
         let releases = [];
         const treeUrl = `https://api.github.com/repos/${owner}/${repo}/git/trees/${branch}`;
         const http = new httpm.HttpClient("tool-cache");
         const headers = {};
-        if (auth) {
-          core6.debug("set auth");
-          headers.authorization = auth;
+        if (auth2) {
+          core.debug("set auth");
+          headers.authorization = auth2;
         }
         const response = yield http.getJson(treeUrl, headers);
         if (!response.result) {
@@ -6473,8 +4264,8 @@ var require_tool_cache = __commonJS({
           versionsRaw = versionsRaw.replace(/^\uFEFF/, "");
           try {
             releases = JSON.parse(versionsRaw);
-          } catch (_a2) {
-            core6.debug("Invalid json");
+          } catch (_a) {
+            core.debug("Invalid json");
           }
         }
         return releases;
@@ -6500,7 +4291,7 @@ var require_tool_cache = __commonJS({
     function _createToolPath(tool, version, arch) {
       return __awaiter(this, void 0, void 0, function* () {
         const folderPath = path.join(_getCacheDirectory(), tool, semver.clean(version) || version, arch || "");
-        core6.debug(`destination ${folderPath}`);
+        core.debug(`destination ${folderPath}`);
         const markerPath = `${folderPath}.complete`;
         yield io.rmRF(folderPath);
         yield io.rmRF(markerPath);
@@ -6512,19 +4303,19 @@ var require_tool_cache = __commonJS({
       const folderPath = path.join(_getCacheDirectory(), tool, semver.clean(version) || version, arch || "");
       const markerPath = `${folderPath}.complete`;
       fs.writeFileSync(markerPath, "");
-      core6.debug("finished caching tool");
+      core.debug("finished caching tool");
     }
     function isExplicitVersion(versionSpec) {
       const c = semver.clean(versionSpec) || "";
-      core6.debug(`isExplicit: ${c}`);
+      core.debug(`isExplicit: ${c}`);
       const valid = semver.valid(c) != null;
-      core6.debug(`explicit? ${valid}`);
+      core.debug(`explicit? ${valid}`);
       return valid;
     }
     exports2.isExplicitVersion = isExplicitVersion;
     function evaluateVersions(versions, versionSpec) {
       let version = "";
-      core6.debug(`evaluating ${versions.length} versions`);
+      core.debug(`evaluating ${versions.length} versions`);
       versions = versions.sort((a, b) => {
         if (semver.gt(a, b)) {
           return 1;
@@ -6540,9 +4331,9 @@ var require_tool_cache = __commonJS({
         }
       }
       if (version) {
-        core6.debug(`matched: ${version}`);
+        core.debug(`matched: ${version}`);
       } else {
-        core6.debug("match not found");
+        core.debug("match not found");
       }
       return version;
     }
@@ -6567,197 +4358,169 @@ var require_tool_cache = __commonJS({
   }
 });
 
-// node_modules/.pnpm/source-map-support@0.5.20/node_modules/source-map-support/register.js
-require_source_map_support().install();
-
-// src/install.ts
+// src/lib/on-error.ts
 var import_util = __toModule(require("util"));
-var core5 = __toModule(require_core());
+var import_core = __toModule(require_core());
+function onError(error) {
+  if (import_util.types.isNativeError(error)) {
+    (0, import_core.setFailed)(error);
+    return;
+  }
+  if (typeof error === "undefined" || error === null) {
+    (0, import_core.setFailed)("Undefined error (but this should never happen)...");
+    return;
+  }
+  let str = "Unknown error";
+  try {
+    str = error.toString();
+  } catch (_) {
+  }
+  (0, import_core.setFailed)(str);
+}
 
-// src/authenticate.ts
+// src/tasks/auth.ts
+var import_crypto = __toModule(require("crypto"));
 var import_fs = __toModule(require("fs"));
-var import_path3 = __toModule(require("path"));
-var core2 = __toModule(require_core());
-
-// src/utils.ts
-var import_path2 = __toModule(require("path"));
-var core = __toModule(require_core());
-var exec = __toModule(require_exec());
-
-// src/constants.ts
+var import_os = __toModule(require("os"));
 var import_path = __toModule(require("path"));
-var INSTALL_DIRECTORY = "google-cloud-sdk";
-var UBUNTU_INSTALL_PATH = `/usr/lib/${INSTALL_DIRECTORY}`;
-var _a;
-var MACOS_INSTALL_PATH = (0, import_path.resolve)((_a = process.env.HOME) != null ? _a : process.cwd(), INSTALL_DIRECTORY);
-var WINDOWS_INSTALL_PATH = `C:\\Program Files\\${INSTALL_DIRECTORY}`;
+var import_core2 = __toModule(require_core());
 
-// src/utils.ts
-function isWindows() {
-  return process.platform === "win32";
+// src/lib/gcloud.ts
+var import_exec = __toModule(require_exec());
+var bin;
+function setPath(path) {
+  bin = path;
 }
-function isMacOS() {
-  return process.platform === "darwin";
+async function gcloud(args, options) {
+  return (0, import_exec.exec)(bin, args, options);
 }
-function isUbuntu() {
-  return process.platform === "linux";
+
+// src/lib/set-project.ts
+function setProject(projectId) {
+  if (projectId.length === 0) {
+    return Promise.resolve(0);
+  }
+  return gcloud(["config", "set", "project", projectId]);
 }
-function getCloudSDKDirectory() {
-  if (isWindows()) {
-    return WINDOWS_INSTALL_PATH;
-  } else if (isUbuntu()) {
-    return UBUNTU_INSTALL_PATH;
+
+// src/tasks/auth.ts
+async function auth() {
+  const serviceAccountKeyBase64 = (0, import_core2.getInput)("service-account-key");
+  if (serviceAccountKeyBase64.length === 0) {
+    (0, import_core2.warning)("No service-account-key input was passed. If it is intentional, you can safely ignore this warning.");
+    return;
+  }
+  const serviceAccountKeyJson = Buffer.from(serviceAccountKeyBase64, "base64").toString();
+  const serviceAccountKeyPath = (0, import_path.resolve)((0, import_os.tmpdir)(), `${(0, import_crypto.randomBytes)(16).toString("hex")}.json`);
+  (0, import_fs.writeFileSync)(serviceAccountKeyPath, serviceAccountKeyJson);
+  await gcloud(["auth", "activate-service-account", `--key-file=${serviceAccountKeyPath}`]);
+  (0, import_fs.unlinkSync)(serviceAccountKeyPath);
+  if ((0, import_core2.getInput)("project") === "auto" && (0, import_core2.getInput)("service-account-key") !== "") {
+    const serviceAccountKey = JSON.parse(serviceAccountKeyJson.toString());
+    if (serviceAccountKey.hasOwnProperty("project_id")) {
+      await setProject(serviceAccountKey.project_id);
+    } else {
+      (0, import_core2.warning)(`You gave a service account key, but it does not have the "project_id" key. Thus, the default project cannot be configured. Your service account key might malformed.`);
+    }
   } else {
-    return MACOS_INSTALL_PATH;
+    await setProject((0, import_core2.getInput)("project"));
   }
 }
-function getDownloadLink() {
+
+// src/tasks/configure-docker.ts
+var import_core3 = __toModule(require_core());
+async function configureDocker() {
+  const registries = (0, import_core3.getInput)("configure-docker").split(",").reduce((registries2, raw) => {
+    if (raw.length > 0) {
+      registries2.push(raw);
+    }
+    return registries2;
+  }, []);
+  if (registries.length === 0) {
+    return;
+  }
+  await gcloud(["auth", "configure-docker", ...registries]);
+}
+
+// src/tasks/download.ts
+var import_fs2 = __toModule(require("fs"));
+var import_path3 = __toModule(require("path"));
+var import_core5 = __toModule(require_core());
+var import_io = __toModule(require_io());
+var import_tool_cache = __toModule(require_tool_cache());
+
+// src/lib/constants.ts
+var import_os2 = __toModule(require("os"));
+var import_path2 = __toModule(require("path"));
+var import_core4 = __toModule(require_core());
+var isWindows = process.platform === "win32";
+var isMacOS = process.platform === "darwin";
+var isLinux = process.platform === "linux";
+var destination = (0, import_path2.resolve)((0, import_core4.getInput)("destination", { required: true }).replace(/~/g, (0, import_os2.homedir)()));
+var downloadLink = (() => {
   const baseUrl = "https://dl.google.com/dl/cloudsdk/channels/rapid";
-  const version = core.getInput("version");
+  const version = (0, import_core4.getInput)("version", { required: true });
   if (version === "latest") {
-    if (isWindows()) {
+    if (isWindows) {
       return `${baseUrl}/google-cloud-sdk.zip`;
     } else {
       return `${baseUrl}/google-cloud-sdk.tar.gz`;
     }
   }
-  if (isWindows()) {
+  if (isWindows) {
     return `${baseUrl}/downloads/google-cloud-sdk-${version}-windows-x86_64.zip`;
-  } else if (isMacOS()) {
+  } else if (isMacOS) {
     return `${baseUrl}/downloads/google-cloud-sdk-${version}-darwin-x86_64.tar.gz`;
   } else {
     return `${baseUrl}/downloads/google-cloud-sdk-${version}-linux-x86_64.tar.gz`;
   }
-}
-async function gcloud(args, options = void 0) {
-  let gcloudPath = (0, import_path2.resolve)(getCloudSDKDirectory(), "bin", "gcloud" + (isWindows() ? ".cmd" : ""));
-  if (isWindows()) {
-    gcloudPath = gcloudPath.replace(getCloudSDKDirectory(), `"${getCloudSDKDirectory()}"`);
+})();
+
+// src/tasks/download.ts
+async function download() {
+  const downloadPath = await (0, import_tool_cache.downloadTool)(downloadLink);
+  let extractionPath;
+  if (downloadLink.endsWith(".zip")) {
+    extractionPath = await (0, import_tool_cache.extractZip)(downloadPath);
+  } else if (downloadLink.endsWith(".tar.gz")) {
+    extractionPath = await (0, import_tool_cache.extractTar)(downloadPath);
+  } else {
+    throw new Error("Unknown extension");
   }
-  args.unshift("--quiet");
-  await exec.exec(gcloudPath, args, options);
+  const version = (0, import_fs2.readFileSync)((0, import_path3.join)(extractionPath, "google-cloud-sdk", "VERSION"), { encoding: "utf-8" }).trim();
+  const final = destination.replace("{version}", version);
+  await (0, import_io.mkdirP)((0, import_path3.join)(final, ".."));
+  await (0, import_io.mv)((0, import_path3.join)(extractionPath, "google-cloud-sdk"), final);
+  await (0, import_tool_cache.cacheDir)(final, "google-cloud-sdk", version, process.arch);
+  (0, import_core5.addPath)((0, import_path3.join)(final, "bin"));
+  await Promise.all([(0, import_io.rmRF)(downloadPath), (0, import_io.rmRF)(extractionPath)]);
+  setPath((0, import_path3.join)(final, "bin", "gcloud" + (isWindows ? ".cmd" : "")));
+  return final;
 }
 
-// src/authenticate.ts
-function configureProject(projectId) {
-  return gcloud(["config", "set", "project", projectId]);
+// src/tasks/install.ts
+var import_path4 = __toModule(require("path"));
+var import_core6 = __toModule(require_core());
+var import_exec2 = __toModule(require_exec());
+async function install(directory) {
+  const args = ["--usage-reporting=false", "--command-completion=false", "--path-update=false"];
+  const components = (0, import_core6.getInput)("components");
+  if (components.length > 0) {
+    args.push(`--additional-components=${components}`);
+  }
+  const script = isWindows ? "install.bat" : "install.sh";
+  (0, import_core6.startGroup)("Install Google Cloud SDK");
+  const exit = await (0, import_exec2.exec)((0, import_path4.join)(directory, script), args);
+  (0, import_core6.endGroup)();
+  return exit;
 }
-async function configureProjectFromInput() {
-  if (!["", "none", "auto"].includes(core2.getInput("project"))) {
-    return await configureProject(core2.getInput("project"));
-  } else {
-    return;
-  }
-}
-async function configureDocker() {
-  const input = core2.getInput("configure-docker");
-  if (input === "false") {
-    return;
-  }
-  const registries = input === "true" ? null : input.split(",").map((r) => r.trim()).filter((r) => r.length > 0).join(",");
-  const args = ["auth", "configure-docker"];
-  if (registries) {
-    args.push(registries);
-  }
-  await gcloud(args);
-}
-async function authenticate() {
-  if (!core2.getInput("service-account-key")) {
-    core2.warning("No service-account-key input was passed. If it is intentional, you can safely ignore this warning.");
-    await configureProjectFromInput();
-  }
-  const serviceAccountKeyBase64 = core2.getInput("service-account-key");
-  const serviceAccountKeyJson = Buffer.from(serviceAccountKeyBase64, "base64").toString();
-  const serviceAccountKeyPath = (0, import_path3.resolve)(process.cwd(), "gcloud.json");
-  (0, import_fs.writeFileSync)(serviceAccountKeyPath, serviceAccountKeyJson);
-  await gcloud(["auth", "activate-service-account", `--key-file=${serviceAccountKeyPath}`]);
-  (0, import_fs.unlinkSync)(serviceAccountKeyPath);
-  if (core2.getInput("project") === "auto" && core2.getInput("service-account-key") !== "") {
-    const serviceAccountKey = JSON.parse(serviceAccountKeyJson.toString());
-    if (serviceAccountKey.hasOwnProperty("project_id")) {
-      await configureProject(serviceAccountKey.project_id);
-    } else {
-      core2.warning('You gave a service account key, but it does not have the "project_id" key. Thus, the default project cannot be configured. Your service account key might malformed.');
-    }
-  } else {
-    await configureProjectFromInput();
-  }
+
+// src/main.ts
+async function main() {
+  const dir = await download();
+  await install(dir);
+  await auth();
   await configureDocker();
 }
-
-// src/download.ts
-var import_path4 = __toModule(require("path"));
-var core3 = __toModule(require_core());
-var exec3 = __toModule(require_exec());
-var tc = __toModule(require_tool_cache());
-async function download() {
-  const downloadLink = getDownloadLink();
-  const downloadPath = await tc.downloadTool(downloadLink);
-  const extractionPath = (0, import_path4.resolve)(getCloudSDKDirectory(), "..");
-  if (downloadLink.endsWith(".zip")) {
-    await tc.extractZip(downloadPath, extractionPath);
-  } else if (downloadLink.endsWith(".tar.gz")) {
-    if (isUbuntu()) {
-      await exec3.exec(`sudo rm -rf ${UBUNTU_INSTALL_PATH}`);
-      await exec3.exec(`sudo tar -xf ${downloadPath} -C ${extractionPath}`);
-    } else {
-      await tc.extractTar(downloadPath, extractionPath);
-    }
-  } else {
-    core3.setFailed(`Unexpected extension (expected zip or tar.gz), but got ${downloadLink}`);
-  }
-}
-
-// src/setup.ts
-var import_child_process = __toModule(require("child_process"));
-var import_path5 = __toModule(require("path"));
-var core4 = __toModule(require_core());
-var exec5 = __toModule(require_exec());
-async function setup() {
-  const installScriptExtension = isWindows() ? "bat" : "sh";
-  const installScript = (0, import_path5.resolve)(getCloudSDKDirectory(), `install.${installScriptExtension}`);
-  const args = [
-    "--usage-reporting=false",
-    "--command-completion=false",
-    "--path-update=false",
-    "--usage-reporting=false",
-    "--quiet"
-  ];
-  if (core4.getInput("components") !== "") {
-    args.push("--additional-components=" + core4.getInput("components"));
-  }
-  if (isUbuntu()) {
-    await exec5.exec(`sudo ${installScript}`, args);
-    const user = process.env.USER || "";
-    const home = process.env.HOME || "";
-    await exec5.exec(`sudo chown -R ${user} ${home}`);
-  } else if (isMacOS()) {
-    await exec5.exec(installScript, args);
-  } else if (isWindows()) {
-    (0, import_child_process.execSync)(`"${installScript}" ${args.join(" ")}`, { stdio: "inherit" });
-  } else {
-    core4.setFailed(`Unexpected os platform, got: ${process.platform}`);
-  }
-  const binPath = (0, import_path5.resolve)(getCloudSDKDirectory(), "bin");
-  core4.addPath(binPath);
-}
-
-// src/install.ts
-try {
-  (async () => {
-    if (core5.getInput("version") === "local") {
-      if (!isUbuntu()) {
-        throw new Error("Usage if the local Google Cloud SDK is only available on Ubuntu");
-      }
-    } else {
-      await download();
-      await setup();
-    }
-    await authenticate();
-  })();
-} catch (exception) {
-  if (import_util.types.isNativeError(exception)) {
-    core5.setFailed(exception.message);
-  }
-}
+main().catch(onError);
 //# sourceMappingURL=index.js.map

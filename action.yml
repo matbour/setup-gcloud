@@ -19,10 +19,13 @@ inputs:
     description: The default Google Cloud project. You can change it later.
     required: false
     default: 'auto'
+  destination:
+    description: The installation destination directory.
+    required: false
+    default: '~/google-cloud-sdk/{version}'
   components:
     description: Install additional components (e.g. beta, gsutil, etc.)
     required: false
   configure-docker:
     description: Configure Docker to interact with Google Cloud Container Registry. Use true for all repositories, or specify comma-separated registries.
     required: false
-    default: 'false'
