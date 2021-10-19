@@ -4540,7 +4540,9 @@ async function install(directory) {
       args.push(`--additional-components=${components}`);
     }
     const script = isWindows ? "install.bat" : "install.sh";
-    return await (0, import_exec2.exec)((0, import_path4.join)(directory, script), args);
+    return await (0, import_exec2.exec)((0, import_path4.join)(directory, script), args, {
+      env: {}
+    });
   });
 }
 

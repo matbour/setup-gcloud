@@ -18,6 +18,10 @@ export default async function install(directory: string): Promise<number> {
     }
 
     const script = isWindows ? 'install.bat' : 'install.sh';
-    return await exec(join(directory, script), args);
+    return await exec(join(directory, script), args, {
+      env: {
+        // INSTALL_PYTHON: 'true',
+      },
+    });
   });
 }
