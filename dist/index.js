@@ -1555,7 +1555,7 @@ var require_io = __commonJS({
     var ioUtil = __importStar(require_io_util());
     var exec3 = util_1.promisify(childProcess.exec);
     var execFile = util_1.promisify(childProcess.execFile);
-    function cp(source, dest, options = {}) {
+    function cp2(source, dest, options = {}) {
       return __awaiter(this, void 0, void 0, function* () {
         const { force, recursive, copySourceDirectory } = readCopyOptions(options);
         const destStat = (yield ioUtil.exists(dest)) ? yield ioUtil.stat(dest) : null;
@@ -1581,7 +1581,7 @@ var require_io = __commonJS({
         }
       });
     }
-    exports2.cp = cp;
+    exports2.cp = cp2;
     function mv2(source, dest, options = {}) {
       return __awaiter(this, void 0, void 0, function* () {
         if (yield ioUtil.exists(dest)) {
@@ -2060,10 +2060,10 @@ var require_toolrunner = __commonJS({
               return reject(new Error(`The cwd: ${this.options.cwd} does not exist!`));
             }
             const fileName = this._getSpawnFileName();
-            const cp = child.spawn(fileName, this._getSpawnArgs(optionsNonNull), this._getSpawnOptions(this.options, fileName));
+            const cp2 = child.spawn(fileName, this._getSpawnArgs(optionsNonNull), this._getSpawnOptions(this.options, fileName));
             let stdbuffer = "";
-            if (cp.stdout) {
-              cp.stdout.on("data", (data) => {
+            if (cp2.stdout) {
+              cp2.stdout.on("data", (data) => {
                 if (this.options.listeners && this.options.listeners.stdout) {
                   this.options.listeners.stdout(data);
                 }
@@ -2078,8 +2078,8 @@ var require_toolrunner = __commonJS({
               });
             }
             let errbuffer = "";
-            if (cp.stderr) {
-              cp.stderr.on("data", (data) => {
+            if (cp2.stderr) {
+              cp2.stderr.on("data", (data) => {
                 state.processStderr = true;
                 if (this.options.listeners && this.options.listeners.stderr) {
                   this.options.listeners.stderr(data);
@@ -2095,19 +2095,19 @@ var require_toolrunner = __commonJS({
                 });
               });
             }
-            cp.on("error", (err) => {
+            cp2.on("error", (err) => {
               state.processError = err.message;
               state.processExited = true;
               state.processClosed = true;
               state.CheckComplete();
             });
-            cp.on("exit", (code) => {
+            cp2.on("exit", (code) => {
               state.processExitCode = code;
               state.processExited = true;
               this._debug(`Exit code ${code} received from tool '${this.toolPath}'`);
               state.CheckComplete();
             });
-            cp.on("close", (code) => {
+            cp2.on("close", (code) => {
               state.processExitCode = code;
               state.processExited = true;
               state.processClosed = true;
@@ -2121,7 +2121,7 @@ var require_toolrunner = __commonJS({
               if (errbuffer.length > 0) {
                 this.emit("errline", errbuffer);
               }
-              cp.removeAllListeners();
+              cp2.removeAllListeners();
               if (error) {
                 reject(error);
               } else {
@@ -2129,10 +2129,10 @@ var require_toolrunner = __commonJS({
               }
             });
             if (this.options.input) {
-              if (!cp.stdin) {
+              if (!cp2.stdin) {
                 throw new Error("child process missing stdin");
               }
-              cp.stdin.end(this.options.input);
+              cp2.stdin.end(this.options.input);
             }
           }));
         });
@@ -3553,7 +3553,7 @@ var require_manifest = __commonJS({
     var semver = __importStar(require_semver());
     var core_1 = require_core();
     var os = require("os");
-    var cp = require("child_process");
+    var cp2 = require("child_process");
     var fs = require("fs");
     function _findMatch(versionSpec, stable, candidates, archFilter) {
       return __awaiter(this, void 0, void 0, function* () {
@@ -3597,7 +3597,7 @@ var require_manifest = __commonJS({
       const plat = os.platform();
       let version2 = "";
       if (plat === "darwin") {
-        version2 = cp.execSync("sw_vers -productVersion").toString();
+        version2 = cp2.execSync("sw_vers -productVersion").toString();
       } else if (plat === "linux") {
         const lsbContents = module2.exports._readLinuxVersionFile();
         if (lsbContents) {
@@ -4512,9 +4512,14 @@ async function download() {
       throw new Error("Unknown extension");
     }
     const version2 = (0, import_fs2.readFileSync)((0, import_path3.join)(extractionPath, "google-cloud-sdk", "VERSION"), { encoding: "utf-8" }).trim();
+    const source = (0, import_path3.join)(extractionPath, "google-cloud-sdk");
     const final = destination.replace("{version}", version2);
     await (0, import_io.mkdirP)((0, import_path3.join)(final, ".."));
-    await (0, import_io.mv)((0, import_path3.join)(extractionPath, "google-cloud-sdk"), final);
+    try {
+      await (0, import_io.mv)(source, final);
+    } catch (_) {
+      await (0, import_io.cp)(source, final, { recursive: true });
+    }
     await (0, import_tool_cache.cacheDir)(final, "google-cloud-sdk", version2, process.arch);
     (0, import_core5.addPath)((0, import_path3.join)(final, "bin"));
     await Promise.all([(0, import_io.rmRF)(downloadPath), (0, import_io.rmRF)(extractionPath)]);
