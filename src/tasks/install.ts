@@ -11,7 +11,7 @@ import { isWindows } from '../lib/constants';
  */
 export default async function install(directory: string): Promise<number> {
   return group('Install Google Cloud SDK', async () => {
-    const args = ['--usage-reporting=false', '--command-completion=false', '--path-update=false'];
+    const args = ['--quiet', '--usage-reporting=false', '--command-completion=false', '--path-update=false'];
 
     const components = getInput('components');
     if (components.length > 0) {

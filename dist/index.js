@@ -4536,7 +4536,7 @@ var import_core6 = __toModule(require_core());
 var import_exec2 = __toModule(require_exec());
 async function install(directory) {
   return (0, import_core6.group)("Install Google Cloud SDK", async () => {
-    const args = ["--usage-reporting=false", "--command-completion=false", "--path-update=false"];
+    const args = ["--quiet", "--usage-reporting=false", "--command-completion=false", "--path-update=false"];
     const components = (0, import_core6.getInput)("components");
     if (components.length > 0) {
       args.push(`--additional-components=${components}`);
