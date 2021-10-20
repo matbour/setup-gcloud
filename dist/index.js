@@ -4439,7 +4439,7 @@ async function configureDocker() {
   if (registries.length === 0) {
     return;
   }
-  await gcloud(["auth", "configure-docker", ...registries]);
+  await gcloud(["auth", "configure-docker", ...registries, "--quiet"]);
 }
 
 // src/tasks/download.ts

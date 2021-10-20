@@ -21,5 +21,5 @@ export default async function configureDocker() {
     return;
   }
 
-  await gcloud(['auth', 'configure-docker', ...registries]);
+  await gcloud(['auth', 'configure-docker', ...registries, '--quiet']);
 }
