@@ -1,6 +1,7 @@
 import { join } from 'path';
 import { getInput, group } from '@actions/core';
 import { exec } from '@actions/exec';
+import { which } from '@actions/io';
 import { isWindows } from '../lib/constants';
 
 /**
@@ -20,6 +21,7 @@ export default async function install(directory: string): Promise<number> {
     const script = isWindows ? 'install.bat' : 'install.sh';
     return await exec(join(directory, script), args, {
       env: {
+        CLOUDSDK_PYTHON: await which('python'),
         // INSTALL_PYTHON: 'true',
       },
     });
