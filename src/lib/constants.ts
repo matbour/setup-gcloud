@@ -2,7 +2,6 @@ import { homedir } from 'os';
 import { resolve } from 'path';
 import * as process from 'process';
 import { getInput } from '@actions/core';
-import mapping from './mapping';
 
 /** @type {boolean} If we are running on Windows */
 export const isWindows = process.platform === 'win32';
@@ -36,5 +35,6 @@ export const archMappings: Record<typeof process.arch, string> = {
   arm64: 'arm',
 };
 
+/** @type {string} The base url to download the latest */
 export const latestBaseUrl = 'https://dl.google.com/dl/cloudsdk/channels/rapid';
 export const versionBaseUrl = 'https://storage.googleapis.com/cloud-sdk-release';

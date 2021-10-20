@@ -1,9 +1,9 @@
 name: Tests
 on:
   push:
-    branches: [ main, v*-dev ]
+    branches: [main, v*-dev]
   pull_request:
-    types: [ opened, synchronize, reopened ]
+    types: [opened, synchronize, reopened]
 jobs:
   lint:
     name: Lint with ESLint / Prettier
@@ -43,10 +43,12 @@ jobs:
           - macos-11
           - windows-2016
           - windows-2019
-        version: [ latest, local, 360.0.0 ]
-        project: [ auto, windys-lab ]
+        version: [latest, local, 360.0.0]
+        project: [auto, windys-lab]
         exclude:
           - os: macos-10.15
+            version: local
+          - os: macos-11
             version: local
       fail-fast: false
     runs-on: ${{ matrix.os }}
