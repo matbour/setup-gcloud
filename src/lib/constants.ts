@@ -35,6 +35,7 @@ export const archMappings: Record<typeof process.arch, string> = {
   arm64: 'arm',
 };
 
-/** @type {string} The base url to download the latest */
+/** @type {string} The base url to download the latest version of the Google Cloud SDK */
 export const latestBaseUrl = 'https://dl.google.com/dl/cloudsdk/channels/rapid';
+/** @type {string} The base url to download a static version of the Google Cloud SDK */
 export const versionBaseUrl = 'https://storage.googleapis.com/cloud-sdk-release';

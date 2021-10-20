@@ -1,7 +1,7 @@
 name: Tests
 on:
   push:
-    branches: [main, v*-dev]
+    branches: [main]
   pull_request:
     types: [opened, synchronize, reopened]
 jobs:
@@ -17,6 +17,18 @@ jobs:
           install: true
       - name: Run ESLint
         run: pnpm lint
+  unit_tests:
+    name: Test with EJest
+    runs-on: ubuntu-20.04
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Setup environment
+        uses: ./.github/actions/setup
+        with:
+          install: true
+      - name: Run Jest
+        run: pnpm test
   sonarcloud:
     name: SonarCloud
     runs-on: ubuntu-20.04
@@ -32,7 +44,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-  test:
+  integration_tests:
     name: Integration tests
     strategy:
       matrix:

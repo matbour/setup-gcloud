@@ -26,8 +26,8 @@
   "scripts": {
     "clean": "rimraf dist",
     "build": "esbuild src/main.ts --platform=node --target=node12 --bundle --outfile=dist/index.js --sourcemap --analyze --color=true",
+    "test": "jest",
     "run": "pnpm build && node -r dotenv/config dist/index.js dotenv_config_path=.env.local",
-    "format": "prettier --write \"src/**/*.ts\"",
     "lint": "eslint \"src/**\"",
     "lint:fix": "eslint --fix \"src/**\""
   },
