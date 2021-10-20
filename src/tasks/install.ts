@@ -20,11 +20,6 @@ export default async function install(directory: string): Promise<number> {
 
     const script = isWindows ? 'install.bat' : 'install.sh';
 
-    return await exec(join(directory, script), args, {
-      env: {
-        CLOUDSDK_PYTHON: await which('python3').catch(() => which('python')),
-        // INSTALL_PYTHON: 'true',
-      },
-    });
+    return await exec(join(directory, script), args);
   });
 }

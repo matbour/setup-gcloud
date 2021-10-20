@@ -1655,13 +1655,13 @@ var require_io = __commonJS({
       });
     }
     exports2.mkdirP = mkdirP2;
-    function which3(tool, check) {
+    function which2(tool, check) {
       return __awaiter(this, void 0, void 0, function* () {
         if (!tool) {
           throw new Error("parameter 'tool' is required");
         }
         if (check) {
-          const result = yield which3(tool, false);
+          const result = yield which2(tool, false);
           if (!result) {
             if (ioUtil.IS_WINDOWS) {
               throw new Error(`Unable to locate executable file: ${tool}. Please verify either the file path exists or the file can be found within a directory specified by the PATH environment variable. Also verify the file has a valid extension for an executable file.`);
@@ -1678,7 +1678,7 @@ var require_io = __commonJS({
         return "";
       });
     }
-    exports2.which = which3;
+    exports2.which = which2;
     function findInPath(tool) {
       return __awaiter(this, void 0, void 0, function* () {
         if (!tool) {
@@ -4534,7 +4534,6 @@ async function download() {
 var import_path4 = __toModule(require("path"));
 var import_core6 = __toModule(require_core());
 var import_exec2 = __toModule(require_exec());
-var import_io2 = __toModule(require_io());
 async function install(directory) {
   return (0, import_core6.group)("Install Google Cloud SDK", async () => {
     const args = ["--usage-reporting=false", "--command-completion=false", "--path-update=false"];
@@ -4543,11 +4542,7 @@ async function install(directory) {
       args.push(`--additional-components=${components}`);
     }
     const script = isWindows ? "install.bat" : "install.sh";
-    return await (0, import_exec2.exec)((0, import_path4.join)(directory, script), args, {
-      env: {
-        CLOUDSDK_PYTHON: await (0, import_io2.which)("python3").catch(() => (0, import_io2.which)("python"))
-      }
-    });
+    return await (0, import_exec2.exec)((0, import_path4.join)(directory, script), args);
   });
 }
 
