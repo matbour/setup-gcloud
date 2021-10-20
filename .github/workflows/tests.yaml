@@ -1,13 +1,13 @@
 name: Tests
 on:
   push:
-    branches: [ main, v*-dev ]
+    branches: [main, v*-dev]
   pull_request:
-    types: [ opened, synchronize, reopened ]
+    types: [opened, synchronize, reopened]
 jobs:
   lint:
     name: Lint with ESLint / Prettier
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
     steps:
       - name: Checkout
         uses: actions/checkout@v2
@@ -19,7 +19,7 @@ jobs:
         run: pnpm run lint
   sonarcloud:
     name: SonarCloud
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
     steps:
       - name: Checkout
         uses: actions/checkout@v2
@@ -36,9 +36,11 @@ jobs:
     name: Integration tests
     strategy:
       matrix:
-        os: [ ubuntu-18.04, ubuntu-20.04, macos-10.15, windows-2019 ]
-        version: [ latest, local,360.0.0 ]
-        project: [ auto, windys-lab ]
+        os: [ubuntu-20.04, macos-10.15, windows-2019]
+        version: [latest, local, 360.0.0]
+        project: [auto, windys-lab]
+        components: ['', beta]
+        configure-docker: ['', europe-west6-docker.pkg.dev]
         exclude:
           - os: macos-10.15
             version: local
@@ -54,9 +56,9 @@ jobs:
         with:
           version: ${{ matrix.version }}
           project: ${{ matrix.project }}
-          components: beta
           service-account-key: ${{ secrets.GCLOUD_AUTH }}
-        timeout-minutes: 2
+          components: ${{ matrix.components }}
+          configure-docker: ${{ matrix.configure-docker }}
       - name: Test Google Cloud SDK CLI
         run: |
           gcloud version
