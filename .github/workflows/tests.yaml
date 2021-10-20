@@ -1,9 +1,9 @@
 name: Tests
 on:
   push:
-    branches: [ main, v*-dev ]
+    branches: [main, v*-dev]
   pull_request:
-    types: [ opened, synchronize, reopened ]
+    types: [opened, synchronize, reopened]
 jobs:
   lint:
     name: Lint with ESLint / Prettier
@@ -36,9 +36,9 @@ jobs:
     name: Integration tests
     strategy:
       matrix:
-        os: [ ubuntu-18.04, ubuntu-20.04, macos-10.15, windows-2019 ]
-        version: [ latest, local, 361.0.0 ]
-        project: [ auto, windys-lab ]
+        os: [ubuntu-18.04, ubuntu-20.04, macos-10.15, windows-2019]
+        version: [latest, local, 361.0.0]
+        project: [auto, windys-lab]
         exclude:
           - os: macos-10.15
             version: local

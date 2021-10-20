@@ -1,10 +1,9 @@
-import { execSync } from 'child_process';
 import { readFileSync } from 'fs';
 import { join } from 'path';
 import { addPath, group } from '@actions/core';
-import { cp, mkdirP, mv, rmRF } from '@actions/io';
+import { cp, mkdirP, mv, rmRF, which } from '@actions/io';
 import { cacheDir, downloadTool, extractTar, extractZip } from '@actions/tool-cache';
-import { destination, downloadLink, isLinux, isMacOS, isWindows, version } from '../lib/constants';
+import { destination, downloadLink, isWindows, version } from '../lib/constants';
 import { setPath } from '../lib/gcloud';
 
 /**
@@ -13,26 +12,7 @@ import { setPath } from '../lib/gcloud';
  */
 export default async function download(): Promise<string | null> {
   if (version === 'local') {
-    let found: string;
-    const notFound = new Error('Unable to locate the gcloud executable on your machine, please specify a version.');
-
-    if (isLinux || isMacOS) {
-      try {
-        found = execSync('which gcloud').toString('utf-8').trim();
-      } catch (_) {
-        throw notFound;
-      }
-    } else if (isWindows) {
-      try {
-        found = execSync('where gcloud').toString('utf-8').trim();
-      } catch (_) {
-        throw notFound;
-      }
-    } else {
-      throw notFound;
-    }
-
-    setPath(found);
+    setPath(await which('gcloud', true));
     return null;
   }
 

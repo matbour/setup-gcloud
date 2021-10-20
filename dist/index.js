@@ -1655,13 +1655,13 @@ var require_io = __commonJS({
       });
     }
     exports2.mkdirP = mkdirP2;
-    function which(tool, check) {
+    function which2(tool, check) {
       return __awaiter(this, void 0, void 0, function* () {
         if (!tool) {
           throw new Error("parameter 'tool' is required");
         }
         if (check) {
-          const result = yield which(tool, false);
+          const result = yield which2(tool, false);
           if (!result) {
             if (ioUtil.IS_WINDOWS) {
               throw new Error(`Unable to locate executable file: ${tool}. Please verify either the file path exists or the file can be found within a directory specified by the PATH environment variable. Also verify the file has a valid extension for an executable file.`);
@@ -1678,7 +1678,7 @@ var require_io = __commonJS({
         return "";
       });
     }
-    exports2.which = which;
+    exports2.which = which2;
     function findInPath(tool) {
       return __awaiter(this, void 0, void 0, function* () {
         if (!tool) {
@@ -4443,7 +4443,6 @@ async function configureDocker() {
 }
 
 // src/tasks/download.ts
-var import_child_process = __toModule(require("child_process"));
 var import_fs2 = __toModule(require("fs"));
 var import_path3 = __toModule(require("path"));
 var import_core5 = __toModule(require_core());
@@ -4481,24 +4480,7 @@ var downloadLink = (() => {
 // src/tasks/download.ts
 async function download() {
   if (version === "local") {
-    let found;
-    const notFound = new Error("Unable to locate the gcloud executable on your machine, please specify a version.");
-    if (isLinux || isMacOS) {
-      try {
-        found = (0, import_child_process.execSync)("which gcloud").toString("utf-8").trim();
-      } catch (_) {
-        throw notFound;
-      }
-    } else if (isWindows) {
-      try {
-        found = (0, import_child_process.execSync)("where gcloud").toString("utf-8").trim();
-      } catch (_) {
-        throw notFound;
-      }
-    } else {
-      throw notFound;
-    }
-    setPath(found);
+    setPath(await (0, import_io.which)("gcloud", true));
     return null;
   }
   return (0, import_core5.group)("Download Google Cloud SDK", async () => {
