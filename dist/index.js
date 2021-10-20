@@ -4456,6 +4456,7 @@ var import_path2 = __toModule(require("path"));
 var process2 = __toModule(require("process"));
 var import_core4 = __toModule(require_core());
 var isWindows = process2.platform === "win32";
+var isMacOS = process2.platform === "darwin";
 var version = (0, import_core4.getInput)("version", { required: true });
 var destination = (0, import_path2.resolve)((0, import_core4.getInput)("destination", { required: true }).replace(/~/g, (0, import_os2.homedir)()));
 var platformMappings = {
@@ -4541,6 +4542,9 @@ async function install(directory) {
     const components = (0, import_core6.getInput)("components");
     if (components.length > 0) {
       args.push(`--additional-components=${components}`);
+    }
+    if (isMacOS) {
+      args.push("--install-python=false");
     }
     if (isWindows) {
       return new Promise((resolve3) => {

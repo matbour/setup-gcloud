@@ -1,9 +1,8 @@
-import { execSync, spawn, spawnSync } from 'child_process';
+import { spawn } from 'child_process';
 import { join } from 'path';
 import { getInput, group } from '@actions/core';
 import { exec } from '@actions/exec';
-import { which } from '@actions/io';
-import { isWindows } from '../lib/constants';
+import { isMacOS, isWindows } from '../lib/constants';
 
 /**
  * Install the Google Cloud SDK.
@@ -17,6 +16,11 @@ export default async function install(directory: string): Promise<number> {
     const components = getInput('components');
     if (components.length > 0) {
       args.push(`--additional-components=${components}`);
+    }
+
+    if (isMacOS) {
+      // On MacOS, the SDK tries to install python
+      args.push('--install-python=false');
     }
 
     if (isWindows) {
