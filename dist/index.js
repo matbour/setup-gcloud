@@ -4389,7 +4389,7 @@ var import_core2 = __toModule(require_core());
 var import_exec = __toModule(require_exec());
 var bin;
 function setPath(path) {
-  bin = path;
+  bin = !path.includes(" ") ? path : `"${path}"`;
 }
 async function gcloud(args, options) {
   return (0, import_exec.exec)(bin, args, options);

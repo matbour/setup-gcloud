@@ -8,12 +8,13 @@ let bin: string;
  * @param {string} path The full path of the gcloud executable.
  */
 export function setPath(path: string) {
-  bin = path;
+  bin = !path.includes(' ') ? path : `"${path}"`;
 }
 
 /**
  * Execute the gcloud command.
  * @param {string[]} args The gcloud args.
+ *
  * @param {ExecOptions} options The execute options.
  * @returns {Promise<number>} The gcloud exit code.
  */
