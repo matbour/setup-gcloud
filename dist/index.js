@@ -1207,7 +1207,7 @@ var require_core = __commonJS({
       process.env["PATH"] = `${inputPath}${path.delimiter}${process.env["PATH"]}`;
     }
     exports2.addPath = addPath2;
-    function getInput5(name, options) {
+    function getInput6(name, options) {
       const val = process.env[`INPUT_${name.replace(/ /g, "_").toUpperCase()}`] || "";
       if (options && options.required && !val) {
         throw new Error(`Input required and not supplied: ${name}`);
@@ -1217,16 +1217,16 @@ var require_core = __commonJS({
       }
       return val.trim();
     }
-    exports2.getInput = getInput5;
+    exports2.getInput = getInput6;
     function getMultilineInput(name, options) {
-      const inputs = getInput5(name, options).split("\n").filter((x) => x !== "");
+      const inputs = getInput6(name, options).split("\n").filter((x) => x !== "");
       return inputs;
     }
     exports2.getMultilineInput = getMultilineInput;
     function getBooleanInput(name, options) {
       const trueValue = ["true", "True", "TRUE"];
       const falseValue = ["false", "False", "FALSE"];
-      const val = getInput5(name, options);
+      const val = getInput6(name, options);
       if (trueValue.includes(val))
         return true;
       if (falseValue.includes(val))
@@ -4445,6 +4445,7 @@ async function configureDocker() {
 // src/tasks/download.ts
 var import_fs2 = __toModule(require("fs"));
 var import_path3 = __toModule(require("path"));
+var import_process = __toModule(require("process"));
 var import_core5 = __toModule(require_core());
 var import_io = __toModule(require_io());
 var import_tool_cache = __toModule(require_tool_cache());
@@ -4452,38 +4453,56 @@ var import_tool_cache = __toModule(require_tool_cache());
 // src/lib/constants.ts
 var import_os2 = __toModule(require("os"));
 var import_path2 = __toModule(require("path"));
+var process2 = __toModule(require("process"));
 var import_core4 = __toModule(require_core());
-var isWindows = process.platform === "win32";
-var isMacOS = process.platform === "darwin";
-var isLinux = process.platform === "linux";
+var isWindows = process2.platform === "win32";
 var version = (0, import_core4.getInput)("version", { required: true });
 var destination = (0, import_path2.resolve)((0, import_core4.getInput)("destination", { required: true }).replace(/~/g, (0, import_os2.homedir)()));
-var downloadLink = (() => {
-  const baseUrl = "https://dl.google.com/dl/cloudsdk/channels/rapid";
-  const version2 = (0, import_core4.getInput)("version", { required: true });
-  if (version2 === "latest") {
-    if (isWindows) {
-      return `${baseUrl}/google-cloud-sdk.zip`;
-    } else {
-      return `${baseUrl}/google-cloud-sdk.tar.gz`;
-    }
+var platformMappings = {
+  linux: "linux",
+  win32: "windows",
+  darwin: "darwin"
+};
+var extensionsMappings = {
+  linux: "tar.gz",
+  win32: "zip",
+  darwin: "tar.gz"
+};
+var archMappings = {
+  x32: "x86",
+  x64: "x86_64",
+  arm: "arm",
+  arm64: "arm"
+};
+var latestBaseUrl = "https://dl.google.com/dl/cloudsdk/channels/rapid";
+var versionBaseUrl = "https://storage.googleapis.com/cloud-sdk-release";
+
+// src/lib/mapping.ts
+function mapping(map, value, message = "Unsupported value {value}") {
+  if (!(value in map)) {
+    throw new Error(message.replace("{value}", value));
   }
-  if (isWindows) {
-    return `${baseUrl}/downloads/google-cloud-sdk-${version2}-windows-x86_64.zip`;
-  } else if (isMacOS) {
-    return `${baseUrl}/downloads/google-cloud-sdk-${version2}-darwin-x86_64.tar.gz`;
-  } else {
-    return `${baseUrl}/downloads/google-cloud-sdk-${version2}-linux-x86_64.tar.gz`;
-  }
-})();
+  return map[value];
+}
 
 // src/tasks/download.ts
+async function getDownloadLink() {
+  const platform2 = mapping(platformMappings, import_process.default.platform);
+  const arch = mapping(archMappings, import_process.default.arch);
+  const extension = mapping(extensionsMappings, import_process.default.platform);
+  const version2 = (0, import_core5.getInput)("version", { required: true });
+  if (version2 === "latest") {
+    return `${latestBaseUrl}/google-cloud-sdk.${extension}`;
+  }
+  return `${versionBaseUrl}/google-cloud-sdk-${version2}-${platform2}-${arch}.${extension}`;
+}
 async function download() {
   if (version === "local") {
     setPath(await (0, import_io.which)("gcloud", true));
     return null;
   }
   return (0, import_core5.group)("Download Google Cloud SDK", async () => {
+    const downloadLink = await getDownloadLink();
     const downloadPath = await (0, import_tool_cache.downloadTool)(downloadLink);
     let extractionPath;
     if (downloadLink.endsWith(".zip")) {
@@ -4502,7 +4521,7 @@ async function download() {
     } catch (_) {
       await (0, import_io.cp)(source, final, { recursive: true });
     }
-    await (0, import_tool_cache.cacheDir)(final, "google-cloud-sdk", version2, process.arch);
+    await (0, import_tool_cache.cacheDir)(final, "google-cloud-sdk", version2, import_process.default.arch);
     (0, import_core5.addPath)((0, import_path3.join)(final, "bin"));
     await Promise.all([(0, import_io.rmRF)(downloadPath), (0, import_io.rmRF)(extractionPath)]);
     setPath((0, import_path3.join)(final, "bin", "gcloud" + (isWindows ? ".cmd" : "")));

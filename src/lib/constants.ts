@@ -1,6 +1,8 @@
 import { homedir } from 'os';
 import { resolve } from 'path';
+import * as process from 'process';
 import { getInput } from '@actions/core';
+import mapping from './mapping';
 
 /** @type {boolean} If we are running on Windows */
 export const isWindows = process.platform === 'win32';
@@ -15,24 +17,24 @@ export const version = getInput('version', { required: true });
 /** @type {string} The destination directory. */
 export const destination = resolve(getInput('destination', { required: true }).replace(/~/g, homedir()));
 
-/** @type {string} The Cloud SDK download link. */
-export const downloadLink: string = (() => {
-  const baseUrl = 'https://dl.google.com/dl/cloudsdk/channels/rapid';
+export const platformMappings: Partial<Record<typeof process.platform, string>> = {
+  linux: 'linux',
+  win32: 'windows',
+  darwin: 'darwin',
+};
 
-  const version = getInput('version', { required: true });
-  if (version === 'latest') {
-    if (isWindows) {
-      return `${baseUrl}/google-cloud-sdk.zip`;
-    } else {
-      return `${baseUrl}/google-cloud-sdk.tar.gz`;
-    }
-  }
+export const extensionsMappings: Partial<Record<typeof process.platform, string>> = {
+  linux: 'tar.gz',
+  win32: 'zip',
+  darwin: 'tar.gz',
+};
 
-  if (isWindows) {
-    return `${baseUrl}/downloads/google-cloud-sdk-${version}-windows-x86_64.zip`;
-  } else if (isMacOS) {
-    return `${baseUrl}/downloads/google-cloud-sdk-${version}-darwin-x86_64.tar.gz`;
-  } else {
-    return `${baseUrl}/downloads/google-cloud-sdk-${version}-linux-x86_64.tar.gz`;
-  }
-})();
+export const archMappings: Record<typeof process.arch, string> = {
+  x32: 'x86',
+  x64: 'x86_64',
+  arm: 'arm',
+  arm64: 'arm',
+};
+
+export const latestBaseUrl = 'https://dl.google.com/dl/cloudsdk/channels/rapid';
+export const versionBaseUrl = 'https://storage.googleapis.com/cloud-sdk-release';

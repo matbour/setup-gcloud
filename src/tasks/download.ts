@@ -1,10 +1,38 @@
 import { readFileSync } from 'fs';
 import { join } from 'path';
-import { addPath, group } from '@actions/core';
+import process from 'process';
+import { addPath, getInput, group } from '@actions/core';
 import { cp, mkdirP, mv, rmRF, which } from '@actions/io';
 import { cacheDir, downloadTool, extractTar, extractZip } from '@actions/tool-cache';
-import { destination, downloadLink, isWindows, version } from '../lib/constants';
+import {
+  archMappings,
+  destination,
+  extensionsMappings,
+  isWindows,
+  latestBaseUrl,
+  platformMappings,
+  version,
+  versionBaseUrl,
+} from '../lib/constants';
 import { setPath } from '../lib/gcloud';
+import mapping from '../lib/mapping';
+
+/**
+ * @returns {string} The Cloud SDK download link.
+ */
+export async function getDownloadLink() {
+  const platform = mapping(platformMappings, process.platform);
+  const arch = mapping(archMappings, process.arch);
+  const extension = mapping(extensionsMappings, process.platform);
+
+  const version = getInput('version', { required: true });
+
+  if (version === 'latest') {
+    return `${latestBaseUrl}/google-cloud-sdk.${extension}`;
+  }
+
+  return `${versionBaseUrl}/google-cloud-sdk-${version}-${platform}-${arch}.${extension}`;
+}
 
 /**
  * Download the Google Cloud SDK, cache the installation path.
@@ -17,6 +45,7 @@ export default async function download(): Promise<string | null> {
   }
 
   return group('Download Google Cloud SDK', async () => {
+    const downloadLink = await getDownloadLink();
     const downloadPath = await downloadTool(downloadLink);
     let extractionPath: string;
 
