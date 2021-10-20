@@ -1,4 +1,4 @@
-import { getInput } from '@actions/core';
+import { getInput, group } from '@actions/core';
 import gcloud from '../lib/gcloud';
 
 /**
@@ -21,5 +21,7 @@ export default async function configureDocker() {
     return;
   }
 
-  await gcloud(['auth', 'configure-docker', ...registries, '--quiet']);
+  await group('Docker registries configuration', () => {
+    return gcloud(['auth', 'configure-docker', ...registries, '--quiet']);
+  });
 }

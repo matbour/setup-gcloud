@@ -1,7 +1,7 @@
 import { readFileSync } from 'fs';
 import { join } from 'path';
 import process from 'process';
-import { addPath, getInput, group, info } from '@actions/core';
+import { addPath, endGroup, getInput, group, info, startGroup } from '@actions/core';
 import { cp, mkdirP, mv, rmRF, which } from '@actions/io';
 import { cacheDir, downloadTool, extractTar, extractZip } from '@actions/tool-cache';
 import {
@@ -11,7 +11,7 @@ import {
   isWindows,
   latestBaseUrl,
   platformMappings,
-  version,
+  requestedVersion,
   versionBaseUrl,
 } from '../lib/constants';
 import { setPath } from '../lib/gcloud';
@@ -39,10 +39,12 @@ export async function getDownloadLink() {
  * @returns {Promise<string>}
  */
 export default async function download(): Promise<string | null> {
-  if (version === 'local') {
-    const w = await which('gcloud', true);
-    console.log({ w });
-    setPath(await which('gcloud', true));
+  if (requestedVersion === 'local') {
+    startGroup('Download Google Cloud SDK (skipped)');
+    const path = await which('gcloud', true);
+    setPath(path);
+    info(`Using gcloud command at ${path}`);
+    endGroup();
     return null;
   }
 

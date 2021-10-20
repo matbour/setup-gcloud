@@ -12,7 +12,7 @@ export const isMacOS = process.platform === 'darwin';
 export const isLinux = process.platform === 'linux';
 
 /** @type {string} The requested version. */
-export const version = getInput('version', { required: true });
+export const requestedVersion = getInput('version', { required: true });
 
 /** @type {string} The destination directory. */
 export const destination = resolve(getInput('destination', { required: true }).replace(/~/g, homedir()));

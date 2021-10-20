@@ -2,7 +2,7 @@ import { randomBytes } from 'crypto';
 import { unlinkSync, writeFileSync } from 'fs';
 import { tmpdir } from 'os';
 import { resolve } from 'path';
-import { getInput, warning } from '@actions/core';
+import { endGroup, getInput, startGroup, warning } from '@actions/core';
 import gcloud from '../lib/gcloud';
 import setProject from '../lib/set-project';
 
@@ -11,6 +11,7 @@ import setProject from '../lib/set-project';
  * And try to set the project id from the key file if the project is set to "auto".
  */
 export default async function auth() {
+  startGroup('Authentication');
   const serviceAccountKeyBase64 = getInput('service-account-key');
 
   if (serviceAccountKeyBase64.length === 0) {
@@ -43,4 +44,5 @@ export default async function auth() {
   } else {
     await setProject(getInput('project'));
   }
+  endGroup();
 }
