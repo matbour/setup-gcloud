@@ -4531,6 +4531,7 @@ async function download() {
 }
 
 // src/tasks/install.ts
+var import_child_process = __toModule(require("child_process"));
 var import_path4 = __toModule(require("path"));
 var import_core6 = __toModule(require_core());
 var import_exec2 = __toModule(require_exec());
@@ -4541,8 +4542,13 @@ async function install(directory) {
     if (components.length > 0) {
       args.push(`--additional-components=${components}`);
     }
-    const script = isWindows ? "install.bat" : "install.sh";
-    return await (0, import_exec2.exec)((0, import_path4.join)(directory, script), args);
+    if (isWindows) {
+      return new Promise((resolve3) => {
+        const proc = (0, import_child_process.spawn)((0, import_path4.join)(directory, "install.bat"), args, { stdio: "inherit" });
+        proc.on("close", (code) => resolve3(code));
+      });
+    }
+    return await (0, import_exec2.exec)((0, import_path4.join)(directory, "install.sh"), args);
   });
 }
 

@@ -1,3 +1,4 @@
+import { execSync, spawn, spawnSync } from 'child_process';
 import { join } from 'path';
 import { getInput, group } from '@actions/core';
 import { exec } from '@actions/exec';
@@ -18,8 +19,13 @@ export default async function install(directory: string): Promise<number> {
       args.push(`--additional-components=${components}`);
     }
 
-    const script = isWindows ? 'install.bat' : 'install.sh';
+    if (isWindows) {
+      return new Promise((resolve) => {
+        const proc = spawn(join(directory, 'install.bat'), args, { stdio: 'inherit' });
+        proc.on('close', (code) => resolve(code));
+      });
+    }
 
-    return await exec(join(directory, script), args);
+    return await exec(join(directory, 'install.sh'), args);
   });
 }
