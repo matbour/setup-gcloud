@@ -18,7 +18,7 @@ jobs:
       - name: Run ESLint
         run: pnpm lint
   unit_tests:
-    name: Test with EJest
+    name: Test with Jest
     runs-on: ubuntu-20.04
     steps:
       - name: Checkout
@@ -28,10 +28,16 @@ jobs:
         with:
           install: true
       - name: Run Jest
-        run: pnpm test
+        run: pnpm test -- --coverage
+      - name: Upload coverage reports
+        uses: actions/upload-artifact@v2
+        with:
+          name: coverage
+          path: coverage/
   sonarcloud:
     name: SonarCloud
     runs-on: ubuntu-20.04
+    needs: [unit_tests]
     steps:
       - name: Checkout
         uses: actions/checkout@v2
@@ -39,6 +45,11 @@ jobs:
           fetch-depth: 0
       - name: Patch sonar.properties
         run: sed -i s/\$VERSION/$(jq -r .version package.json)/ sonar-project.properties
+      - name: Download coverage reports
+        uses: actions/upload-artifact@v2
+        with:
+          name: coverage
+          path: coverage/
       - name: SonarCloud Scan
         uses: SonarSource/sonarcloud-github-action@v1.5
         env:

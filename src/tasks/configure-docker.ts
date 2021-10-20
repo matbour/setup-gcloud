@@ -7,14 +7,15 @@ import gcloud from '../lib/gcloud';
  * @example Configure europe-west6-docker.pkg.dev registry
  * $ gcloud auth configure-docker europe-west6-docker.pkg.dev
  */
-export default async function configureDocker() {
+export default async function configureDocker(): Promise<void> {
   const registries = getInput('configure-docker')
     .split(',')
-    .reduce<string[]>((registries, raw) => {
+    .reduce<string[]>((acc, raw) => {
       if (raw.length > 0) {
-        registries.push(raw);
+        acc.push(raw);
       }
-      return registries;
+
+      return acc;
     }, []);
 
   if (registries.length === 0) {

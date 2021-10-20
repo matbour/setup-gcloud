@@ -1,7 +1,7 @@
 import gcloud from './gcloud';
 
 /**
- * Execute gcloud config set project {projectId}
+ * Execute `gcloud config set project {projectId}`
  * @param {string} projectId
  * @returns {Promise<number>}
  */

@@ -5,7 +5,7 @@ import { setFailed } from '@actions/core';
 type Defined = object | Function | number | symbol | boolean | string | bigint;
 
 /**
- * Type-safe error handler which forwards the error to {@link setFailed}
+ * Type-safe error handler which forwards the error to {@link setFailed}.
  * @param {*} error The thrown error.
  */
 export default function onError(error: unknown): void {

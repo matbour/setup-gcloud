@@ -10,7 +10,7 @@ import setProject from '../lib/set-project';
  * Activate the service account using its JSON key file.
  * And try to set the project id from the key file if the project is set to "auto".
  */
-export default async function auth() {
+export default async function auth(): Promise<void> {
   startGroup('Authentication');
   const serviceAccountKeyBase64 = getInput('service-account-key');
 
@@ -44,5 +44,6 @@ export default async function auth() {
   } else {
     await setProject(getInput('project'));
   }
+
   endGroup();
 }

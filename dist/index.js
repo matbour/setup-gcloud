@@ -366,7 +366,7 @@ var require_tunnel = __commonJS({
         connectOptions.headers = connectOptions.headers || {};
         connectOptions.headers["Proxy-Authorization"] = "Basic " + new Buffer(connectOptions.proxyAuth).toString("base64");
       }
-      debug("making CONNECT request");
+      debug2("making CONNECT request");
       var connectReq = self.request(connectOptions);
       connectReq.useChunkedEncodingByDefault = false;
       connectReq.once("response", onResponse);
@@ -386,7 +386,7 @@ var require_tunnel = __commonJS({
         connectReq.removeAllListeners();
         socket.removeAllListeners();
         if (res.statusCode !== 200) {
-          debug("tunneling socket could not be established, statusCode=%d", res.statusCode);
+          debug2("tunneling socket could not be established, statusCode=%d", res.statusCode);
           socket.destroy();
           var error = new Error("tunneling socket could not be established, statusCode=" + res.statusCode);
           error.code = "ECONNRESET";
@@ -395,7 +395,7 @@ var require_tunnel = __commonJS({
           return;
         }
         if (head.length > 0) {
-          debug("got illegal response body from proxy");
+          debug2("got illegal response body from proxy");
           socket.destroy();
           var error = new Error("got illegal response body from proxy");
           error.code = "ECONNRESET";
@@ -403,13 +403,13 @@ var require_tunnel = __commonJS({
           self.removeSocket(placeholder);
           return;
         }
-        debug("tunneling connection has established");
+        debug2("tunneling connection has established");
         self.sockets[self.sockets.indexOf(placeholder)] = socket;
         return cb(socket);
       }
       function onError2(cause) {
         connectReq.removeAllListeners();
-        debug("tunneling socket could not be established, cause=%s\n", cause.message, cause.stack);
+        debug2("tunneling socket could not be established, cause=%s\n", cause.message, cause.stack);
         var error = new Error("tunneling socket could not be established, cause=" + cause.message);
         error.code = "ECONNRESET";
         options.request.emit("error", error);
@@ -467,9 +467,9 @@ var require_tunnel = __commonJS({
       }
       return target;
     }
-    var debug;
+    var debug2;
     if (process.env.NODE_DEBUG && /\btunnel\b/.test(process.env.NODE_DEBUG)) {
-      debug = function() {
+      debug2 = function() {
         var args = Array.prototype.slice.call(arguments);
         if (typeof args[0] === "string") {
           args[0] = "TUNNEL: " + args[0];
@@ -479,10 +479,10 @@ var require_tunnel = __commonJS({
         console.error.apply(console, args);
       };
     } else {
-      debug = function() {
+      debug2 = function() {
       };
     }
-    exports2.debug = debug;
+    exports2.debug = debug2;
   }
 });
 
@@ -1207,7 +1207,7 @@ var require_core = __commonJS({
       process.env["PATH"] = `${inputPath}${path.delimiter}${process.env["PATH"]}`;
     }
     exports2.addPath = addPath2;
-    function getInput6(name, options) {
+    function getInput5(name, options) {
       const val = process.env[`INPUT_${name.replace(/ /g, "_").toUpperCase()}`] || "";
       if (options && options.required && !val) {
         throw new Error(`Input required and not supplied: ${name}`);
@@ -1217,16 +1217,16 @@ var require_core = __commonJS({
       }
       return val.trim();
     }
-    exports2.getInput = getInput6;
+    exports2.getInput = getInput5;
     function getMultilineInput(name, options) {
-      const inputs = getInput6(name, options).split("\n").filter((x) => x !== "");
+      const inputs = getInput5(name, options).split("\n").filter((x) => x !== "");
       return inputs;
     }
     exports2.getMultilineInput = getMultilineInput;
     function getBooleanInput(name, options) {
       const trueValue = ["true", "True", "TRUE"];
       const falseValue = ["false", "False", "FALSE"];
-      const val = getInput6(name, options);
+      const val = getInput5(name, options);
       if (trueValue.includes(val))
         return true;
       if (falseValue.includes(val))
@@ -1253,10 +1253,10 @@ Support boolean input list: \`true | True | TRUE | false | False | FALSE\``);
       return process.env["RUNNER_DEBUG"] === "1";
     }
     exports2.isDebug = isDebug;
-    function debug(message) {
+    function debug2(message) {
       command_1.issueCommand("debug", {}, message);
     }
-    exports2.debug = debug;
+    exports2.debug = debug2;
     function error(message, properties = {}) {
       command_1.issueCommand("error", utils_1.toCommandProperties(properties), message instanceof Error ? message.toString() : message);
     }
@@ -2365,15 +2365,15 @@ var require_exec = __commonJS({
 var require_semver = __commonJS({
   "node_modules/.pnpm/semver@6.3.0/node_modules/semver/semver.js"(exports2, module2) {
     exports2 = module2.exports = SemVer;
-    var debug;
+    var debug2;
     if (typeof process === "object" && process.env && process.env.NODE_DEBUG && /\bsemver\b/i.test(process.env.NODE_DEBUG)) {
-      debug = function() {
+      debug2 = function() {
         var args = Array.prototype.slice.call(arguments, 0);
         args.unshift("SEMVER");
         console.log.apply(console, args);
       };
     } else {
-      debug = function() {
+      debug2 = function() {
       };
     }
     exports2.SEMVER_SPEC_VERSION = "2.0.0";
@@ -2470,7 +2470,7 @@ var require_semver = __commonJS({
     tok("STAR");
     src[t.STAR] = "(<|>)?=?\\s*\\*";
     for (i = 0; i < R; i++) {
-      debug(i, src[i]);
+      debug2(i, src[i]);
       if (!re[i]) {
         re[i] = new RegExp(src[i]);
       }
@@ -2536,7 +2536,7 @@ var require_semver = __commonJS({
       if (!(this instanceof SemVer)) {
         return new SemVer(version, options);
       }
-      debug("SemVer", version, options);
+      debug2("SemVer", version, options);
       this.options = options;
       this.loose = !!options.loose;
       var m = version.trim().match(options.loose ? re[t.LOOSE] : re[t.FULL]);
@@ -2583,7 +2583,7 @@ var require_semver = __commonJS({
       return this.version;
     };
     SemVer.prototype.compare = function(other) {
-      debug("SemVer.compare", this.version, this.options, other);
+      debug2("SemVer.compare", this.version, this.options, other);
       if (!(other instanceof SemVer)) {
         other = new SemVer(other, this.options);
       }
@@ -2610,7 +2610,7 @@ var require_semver = __commonJS({
       do {
         var a = this.prerelease[i2];
         var b = other.prerelease[i2];
-        debug("prerelease compare", i2, a, b);
+        debug2("prerelease compare", i2, a, b);
         if (a === void 0 && b === void 0) {
           return 0;
         } else if (b === void 0) {
@@ -2632,7 +2632,7 @@ var require_semver = __commonJS({
       do {
         var a = this.build[i2];
         var b = other.build[i2];
-        debug("prerelease compare", i2, a, b);
+        debug2("prerelease compare", i2, a, b);
         if (a === void 0 && b === void 0) {
           return 0;
         } else if (b === void 0) {
@@ -2891,7 +2891,7 @@ var require_semver = __commonJS({
       if (!(this instanceof Comparator)) {
         return new Comparator(comp, options);
       }
-      debug("comparator", comp, options);
+      debug2("comparator", comp, options);
       this.options = options;
       this.loose = !!options.loose;
       this.parse(comp);
@@ -2900,7 +2900,7 @@ var require_semver = __commonJS({
       } else {
         this.value = this.operator + this.semver.version;
       }
-      debug("comp", this);
+      debug2("comp", this);
     }
     var ANY = {};
     Comparator.prototype.parse = function(comp) {
@@ -2923,7 +2923,7 @@ var require_semver = __commonJS({
       return this.value;
     };
     Comparator.prototype.test = function(version) {
-      debug("Comparator.test", version, this.options.loose);
+      debug2("Comparator.test", version, this.options.loose);
       if (this.semver === ANY || version === ANY) {
         return true;
       }
@@ -3017,9 +3017,9 @@ var require_semver = __commonJS({
       range = range.trim();
       var hr = loose ? re[t.HYPHENRANGELOOSE] : re[t.HYPHENRANGE];
       range = range.replace(hr, hyphenReplace);
-      debug("hyphen replace", range);
+      debug2("hyphen replace", range);
       range = range.replace(re[t.COMPARATORTRIM], comparatorTrimReplace);
-      debug("comparator trim", range, re[t.COMPARATORTRIM]);
+      debug2("comparator trim", range, re[t.COMPARATORTRIM]);
       range = range.replace(re[t.TILDETRIM], tildeTrimReplace);
       range = range.replace(re[t.CARETTRIM], caretTrimReplace);
       range = range.split(/\s+/).join(" ");
@@ -3072,15 +3072,15 @@ var require_semver = __commonJS({
       });
     }
     function parseComparator(comp, options) {
-      debug("comp", comp, options);
+      debug2("comp", comp, options);
       comp = replaceCarets(comp, options);
-      debug("caret", comp);
+      debug2("caret", comp);
       comp = replaceTildes(comp, options);
-      debug("tildes", comp);
+      debug2("tildes", comp);
       comp = replaceXRanges(comp, options);
-      debug("xrange", comp);
+      debug2("xrange", comp);
       comp = replaceStars(comp, options);
-      debug("stars", comp);
+      debug2("stars", comp);
       return comp;
     }
     function isX(id) {
@@ -3094,7 +3094,7 @@ var require_semver = __commonJS({
     function replaceTilde(comp, options) {
       var r = options.loose ? re[t.TILDELOOSE] : re[t.TILDE];
       return comp.replace(r, function(_, M, m, p, pr) {
-        debug("tilde", comp, _, M, m, p, pr);
+        debug2("tilde", comp, _, M, m, p, pr);
         var ret;
         if (isX(M)) {
           ret = "";
@@ -3103,12 +3103,12 @@ var require_semver = __commonJS({
         } else if (isX(p)) {
           ret = ">=" + M + "." + m + ".0 <" + M + "." + (+m + 1) + ".0";
         } else if (pr) {
-          debug("replaceTilde pr", pr);
+          debug2("replaceTilde pr", pr);
           ret = ">=" + M + "." + m + "." + p + "-" + pr + " <" + M + "." + (+m + 1) + ".0";
         } else {
           ret = ">=" + M + "." + m + "." + p + " <" + M + "." + (+m + 1) + ".0";
         }
-        debug("tilde return", ret);
+        debug2("tilde return", ret);
         return ret;
       });
     }
@@ -3118,10 +3118,10 @@ var require_semver = __commonJS({
       }).join(" ");
     }
     function replaceCaret(comp, options) {
-      debug("caret", comp, options);
+      debug2("caret", comp, options);
       var r = options.loose ? re[t.CARETLOOSE] : re[t.CARET];
       return comp.replace(r, function(_, M, m, p, pr) {
-        debug("caret", comp, _, M, m, p, pr);
+        debug2("caret", comp, _, M, m, p, pr);
         var ret;
         if (isX(M)) {
           ret = "";
@@ -3134,7 +3134,7 @@ var require_semver = __commonJS({
             ret = ">=" + M + "." + m + ".0 <" + (+M + 1) + ".0.0";
           }
         } else if (pr) {
-          debug("replaceCaret pr", pr);
+          debug2("replaceCaret pr", pr);
           if (M === "0") {
             if (m === "0") {
               ret = ">=" + M + "." + m + "." + p + "-" + pr + " <" + M + "." + m + "." + (+p + 1);
@@ -3145,7 +3145,7 @@ var require_semver = __commonJS({
             ret = ">=" + M + "." + m + "." + p + "-" + pr + " <" + (+M + 1) + ".0.0";
           }
         } else {
-          debug("no pr");
+          debug2("no pr");
           if (M === "0") {
             if (m === "0") {
               ret = ">=" + M + "." + m + "." + p + " <" + M + "." + m + "." + (+p + 1);
@@ -3156,12 +3156,12 @@ var require_semver = __commonJS({
             ret = ">=" + M + "." + m + "." + p + " <" + (+M + 1) + ".0.0";
           }
         }
-        debug("caret return", ret);
+        debug2("caret return", ret);
         return ret;
       });
     }
     function replaceXRanges(comp, options) {
-      debug("replaceXRanges", comp, options);
+      debug2("replaceXRanges", comp, options);
       return comp.split(/\s+/).map(function(comp2) {
         return replaceXRange(comp2, options);
       }).join(" ");
@@ -3170,7 +3170,7 @@ var require_semver = __commonJS({
       comp = comp.trim();
       var r = options.loose ? re[t.XRANGELOOSE] : re[t.XRANGE];
       return comp.replace(r, function(ret, gtlt, M, m, p, pr) {
-        debug("xRange", comp, ret, gtlt, M, m, p, pr);
+        debug2("xRange", comp, ret, gtlt, M, m, p, pr);
         var xM = isX(M);
         var xm = xM || isX(m);
         var xp = xm || isX(p);
@@ -3214,12 +3214,12 @@ var require_semver = __commonJS({
         } else if (xp) {
           ret = ">=" + M + "." + m + ".0" + pr + " <" + M + "." + (+m + 1) + ".0" + pr;
         }
-        debug("xRange return", ret);
+        debug2("xRange return", ret);
         return ret;
       });
     }
     function replaceStars(comp, options) {
-      debug("replaceStars", comp, options);
+      debug2("replaceStars", comp, options);
       return comp.trim().replace(re[t.STAR], "");
     }
     function hyphenReplace($0, from, fM, fm, fp, fpr, fb, to, tM, tm, tp, tpr, tb) {
@@ -3271,7 +3271,7 @@ var require_semver = __commonJS({
       }
       if (version.prerelease.length && !options.includePrerelease) {
         for (i2 = 0; i2 < set.length; i2++) {
-          debug(set[i2].semver);
+          debug2(set[i2].semver);
           if (set[i2].semver === ANY) {
             continue;
           }
@@ -4383,15 +4383,24 @@ var import_crypto = __toModule(require("crypto"));
 var import_fs = __toModule(require("fs"));
 var import_os = __toModule(require("os"));
 var import_path = __toModule(require("path"));
-var import_core2 = __toModule(require_core());
+var import_core3 = __toModule(require_core());
 
 // src/lib/gcloud.ts
+var import_core2 = __toModule(require_core());
 var import_exec = __toModule(require_exec());
 var bin;
 function setPath(path) {
+  if (!path) {
+    bin = void 0;
+    return;
+  }
   bin = !path.includes(" ") ? path : `"${path}"`;
+  (0, import_core2.debug)(`Set gcloud bin at ${bin}`);
 }
 async function gcloud(args, options) {
+  if (!bin) {
+    throw new Error("gcloud executable was not defined");
+  }
   return (0, import_exec.exec)(bin, args, options);
 }
 
@@ -4405,10 +4414,10 @@ function setProject(projectId) {
 
 // src/tasks/auth.ts
 async function auth() {
-  (0, import_core2.startGroup)("Authentication");
-  const serviceAccountKeyBase64 = (0, import_core2.getInput)("service-account-key");
+  (0, import_core3.startGroup)("Authentication");
+  const serviceAccountKeyBase64 = (0, import_core3.getInput)("service-account-key");
   if (serviceAccountKeyBase64.length === 0) {
-    (0, import_core2.warning)("No service-account-key input was passed. If it is intentional, you can safely ignore this warning.");
+    (0, import_core3.warning)("No service-account-key input was passed. If it is intentional, you can safely ignore this warning.");
     return;
   }
   const serviceAccountKeyJson = Buffer.from(serviceAccountKeyBase64, "base64").toString();
@@ -4416,32 +4425,32 @@ async function auth() {
   (0, import_fs.writeFileSync)(serviceAccountKeyPath, serviceAccountKeyJson);
   await gcloud(["auth", "activate-service-account", `--key-file=${serviceAccountKeyPath}`]);
   (0, import_fs.unlinkSync)(serviceAccountKeyPath);
-  if ((0, import_core2.getInput)("project") === "auto" && (0, import_core2.getInput)("service-account-key") !== "") {
+  if ((0, import_core3.getInput)("project") === "auto" && (0, import_core3.getInput)("service-account-key") !== "") {
     const serviceAccountKey = JSON.parse(serviceAccountKeyJson.toString());
     if (serviceAccountKey.hasOwnProperty("project_id")) {
       await setProject(serviceAccountKey.project_id);
     } else {
-      (0, import_core2.warning)(`You gave a service account key, but it does not have the "project_id" key. Thus, the default project cannot be configured. Your service account key might malformed.`);
+      (0, import_core3.warning)(`You gave a service account key, but it does not have the "project_id" key. Thus, the default project cannot be configured. Your service account key might malformed.`);
     }
   } else {
-    await setProject((0, import_core2.getInput)("project"));
+    await setProject((0, import_core3.getInput)("project"));
   }
-  (0, import_core2.endGroup)();
+  (0, import_core3.endGroup)();
 }
 
 // src/tasks/configure-docker.ts
-var import_core3 = __toModule(require_core());
+var import_core4 = __toModule(require_core());
 async function configureDocker() {
-  const registries = (0, import_core3.getInput)("configure-docker").split(",").reduce((registries2, raw) => {
+  const registries = (0, import_core4.getInput)("configure-docker").split(",").reduce((acc, raw) => {
     if (raw.length > 0) {
-      registries2.push(raw);
+      acc.push(raw);
     }
-    return registries2;
+    return acc;
   }, []);
   if (registries.length === 0) {
     return;
   }
-  await (0, import_core3.group)("Docker registries configuration", () => {
+  await (0, import_core4.group)("Docker registries configuration", () => {
     return gcloud(["auth", "configure-docker", ...registries, "--quiet"]);
   });
 }
@@ -4449,70 +4458,76 @@ async function configureDocker() {
 // src/tasks/download.ts
 var import_fs2 = __toModule(require("fs"));
 var import_path3 = __toModule(require("path"));
-var import_process = __toModule(require("process"));
-var import_core5 = __toModule(require_core());
+var import_core6 = __toModule(require_core());
 var import_io = __toModule(require_io());
 var import_tool_cache = __toModule(require_tool_cache());
 
 // src/lib/constants.ts
 var import_os2 = __toModule(require("os"));
 var import_path2 = __toModule(require("path"));
-var process2 = __toModule(require("process"));
-var import_core4 = __toModule(require_core());
-var isWindows = process2.platform === "win32";
-var isMacOS = process2.platform === "darwin";
-var requestedVersion = (0, import_core4.getInput)("version", { required: true });
-var destination = (0, import_path2.resolve)((0, import_core4.getInput)("destination", { required: true }).replace(/~/g, (0, import_os2.homedir)()));
-var platformMappings = {
-  linux: "linux",
-  win32: "windows",
-  darwin: "darwin"
-};
-var extensionsMappings = {
-  linux: "tar.gz",
-  win32: "zip",
-  darwin: "tar.gz"
-};
-var archMappings = {
-  x32: "x86",
-  x64: "x86_64",
-  arm: "arm",
-  arm64: "arm"
-};
+var import_core5 = __toModule(require_core());
+var isWindows = process.platform === "win32";
+var isMacOS = process.platform === "darwin";
+var isLinux = process.platform === "linux";
+var requestedVersion = (0, import_core5.getInput)("version", { required: true });
+var destination = (0, import_path2.resolve)((0, import_core5.getInput)("destination", { required: true }).replace(/~/g, (0, import_os2.homedir)()));
+
+// src/lib/get-download-link.ts
 var latestBaseUrl = "https://dl.google.com/dl/cloudsdk/channels/rapid";
 var versionBaseUrl = "https://storage.googleapis.com/cloud-sdk-release";
-
-// src/lib/mapping.ts
-function mapping(map, value, message = "Unsupported value {value}") {
-  if (!(value in map)) {
-    throw new Error(message.replace("{value}", value));
+function getDownloadLink() {
+  let platform;
+  let arch;
+  let extension;
+  switch (process.platform) {
+    case "linux":
+      platform = "linux";
+      extension = "tar.gz";
+      break;
+    case "win32":
+      platform = "windows";
+      extension = "zip";
+      break;
+    case "darwin":
+      platform = "darwin";
+      extension = "tar.gz";
+      break;
+    default:
+      throw new Error(`Unsupported platform: ${process.platform}`);
   }
-  return map[value];
+  switch (process.arch) {
+    case "x32":
+      arch = "x86";
+      break;
+    case "x64":
+      arch = "x86_64";
+      break;
+    case "arm":
+    case "arm64":
+      arch = "arm";
+      break;
+    default:
+      throw new Error(`Unsupported arch: ${process.arch}`);
+  }
+  if (requestedVersion === "latest") {
+    return `${latestBaseUrl}/google-cloud-sdk.${extension}`;
+  }
+  return `${versionBaseUrl}/google-cloud-sdk-${requestedVersion}-${platform}-${arch}.${extension}`;
 }
 
 // src/tasks/download.ts
-async function getDownloadLink() {
-  const platform2 = mapping(platformMappings, import_process.default.platform);
-  const arch = mapping(archMappings, import_process.default.arch);
-  const extension = mapping(extensionsMappings, import_process.default.platform);
-  const version = (0, import_core5.getInput)("version", { required: true });
-  if (version === "latest") {
-    return `${latestBaseUrl}/google-cloud-sdk.${extension}`;
-  }
-  return `${versionBaseUrl}/google-cloud-sdk-${version}-${platform2}-${arch}.${extension}`;
-}
 async function download() {
   if (requestedVersion === "local") {
-    (0, import_core5.startGroup)("Download Google Cloud SDK (skipped)");
+    (0, import_core6.startGroup)("Download Google Cloud SDK (skipped)");
     const path = await (0, import_io.which)("gcloud", true);
     setPath(path);
-    (0, import_core5.info)(`Using gcloud command at ${path}`);
-    (0, import_core5.endGroup)();
+    (0, import_core6.info)(`Using gcloud command at ${path}`);
+    (0, import_core6.endGroup)();
     return null;
   }
-  return (0, import_core5.group)("Download Google Cloud SDK", async () => {
-    const downloadLink = await getDownloadLink();
-    (0, import_core5.info)(`Downloading Google Cloud SDK from ${downloadLink}`);
+  return (0, import_core6.group)("Download Google Cloud SDK", async () => {
+    const downloadLink = getDownloadLink();
+    (0, import_core6.info)(`Downloading Google Cloud SDK from ${downloadLink}`);
     const downloadPath = await (0, import_tool_cache.downloadTool)(downloadLink);
     let extractionPath;
     if (downloadLink.endsWith(".zip")) {
@@ -4531,9 +4546,9 @@ async function download() {
     } catch (_) {
       await (0, import_io.cp)(source, final, { recursive: true });
     }
-    await (0, import_tool_cache.cacheDir)(final, "google-cloud-sdk", version, import_process.default.arch);
-    (0, import_core5.addPath)((0, import_path3.join)(final, "bin"));
+    await (0, import_tool_cache.cacheDir)(final, "google-cloud-sdk", version, process.arch);
     await Promise.all([(0, import_io.rmRF)(downloadPath), (0, import_io.rmRF)(extractionPath)]);
+    (0, import_core6.addPath)((0, import_path3.join)(final, "bin"));
     setPath((0, import_path3.join)(final, "bin", "gcloud" + (isWindows ? ".cmd" : "")));
     return final;
   });
@@ -4542,12 +4557,12 @@ async function download() {
 // src/tasks/install.ts
 var import_child_process = __toModule(require("child_process"));
 var import_path4 = __toModule(require("path"));
-var import_core6 = __toModule(require_core());
+var import_core7 = __toModule(require_core());
 var import_exec2 = __toModule(require_exec());
 async function install(directory) {
-  return (0, import_core6.group)("Install Google Cloud SDK", async () => {
+  return (0, import_core7.group)("Install Google Cloud SDK", async () => {
     const args = ["--quiet", "--usage-reporting=false", "--command-completion=false", "--path-update=false"];
-    const components = (0, import_core6.getInput)("components");
+    const components = (0, import_core7.getInput)("components");
     if (components.length > 0) {
       args.push(`--additional-components=${components}`);
     }

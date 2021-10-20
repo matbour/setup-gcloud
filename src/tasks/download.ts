@@ -1,38 +1,11 @@
 import { readFileSync } from 'fs';
 import { join } from 'path';
-import process from 'process';
-import { addPath, endGroup, getInput, group, info, startGroup } from '@actions/core';
+import { addPath, endGroup, group, info, startGroup } from '@actions/core';
 import { cp, mkdirP, mv, rmRF, which } from '@actions/io';
 import { cacheDir, downloadTool, extractTar, extractZip } from '@actions/tool-cache';
-import {
-  archMappings,
-  destination,
-  extensionsMappings,
-  isWindows,
-  latestBaseUrl,
-  platformMappings,
-  requestedVersion,
-  versionBaseUrl,
-} from '../lib/constants';
+import { destination, isWindows, requestedVersion } from '../lib/constants';
 import { setPath } from '../lib/gcloud';
-import mapping from '../lib/mapping';
-
-/**
- * @returns {string} The Cloud SDK download link.
- */
-export async function getDownloadLink() {
-  const platform = mapping(platformMappings, process.platform);
-  const arch = mapping(archMappings, process.arch);
-  const extension = mapping(extensionsMappings, process.platform);
-
-  const version = getInput('version', { required: true });
-
-  if (version === 'latest') {
-    return `${latestBaseUrl}/google-cloud-sdk.${extension}`;
-  }
-
-  return `${versionBaseUrl}/google-cloud-sdk-${version}-${platform}-${arch}.${extension}`;
-}
+import getDownloadLink from '../lib/get-download-link';
 
 /**
  * Download the Google Cloud SDK, cache the installation path.
@@ -49,7 +22,7 @@ export default async function download(): Promise<string | null> {
   }
 
   return group('Download Google Cloud SDK', async () => {
-    const downloadLink = await getDownloadLink();
+    const downloadLink = getDownloadLink();
 
     info(`Downloading Google Cloud SDK from ${downloadLink}`);
 
@@ -83,9 +56,9 @@ export default async function download(): Promise<string | null> {
     }
 
     await cacheDir(final, 'google-cloud-sdk', version, process.arch);
-    addPath(join(final, 'bin'));
     await Promise.all([rmRF(downloadPath), rmRF(extractionPath)]);
 
+    addPath(join(final, 'bin'));
     setPath(join(final, 'bin', 'gcloud' + (isWindows ? '.cmd' : '')));
 
     return final;
