@@ -40,6 +40,8 @@ export async function getDownloadLink() {
  */
 export default async function download(): Promise<string | null> {
   if (version === 'local') {
+    const w = await which('gcloud', true);
+    console.log({ w });
     setPath(await which('gcloud', true));
     return null;
   }

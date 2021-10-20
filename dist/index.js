@@ -4499,6 +4499,8 @@ async function getDownloadLink() {
 }
 async function download() {
   if (version === "local") {
+    const w = await (0, import_io.which)("gcloud", true);
+    console.log({ w });
     setPath(await (0, import_io.which)("gcloud", true));
     return null;
   }
