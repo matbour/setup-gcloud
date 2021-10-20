@@ -4545,7 +4545,7 @@ async function install(directory) {
     const script = isWindows ? "install.bat" : "install.sh";
     return await (0, import_exec2.exec)((0, import_path4.join)(directory, script), args, {
       env: {
-        CLOUDSDK_PYTHON: await (0, import_io2.which)("python")
+        CLOUDSDK_PYTHON: await (0, import_io2.which)("python3").catch(() => (0, import_io2.which)("python"))
       }
     });
   });
