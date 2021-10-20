@@ -1,7 +1,7 @@
 import { readFileSync } from 'fs';
 import { join } from 'path';
 import process from 'process';
-import { addPath, getInput, group } from '@actions/core';
+import { addPath, getInput, group, info } from '@actions/core';
 import { cp, mkdirP, mv, rmRF, which } from '@actions/io';
 import { cacheDir, downloadTool, extractTar, extractZip } from '@actions/tool-cache';
 import {
@@ -46,6 +46,9 @@ export default async function download(): Promise<string | null> {
 
   return group('Download Google Cloud SDK', async () => {
     const downloadLink = await getDownloadLink();
+
+    info(`Downloading Google Cloud SDK from ${downloadLink}`);
+
     const downloadPath = await downloadTool(downloadLink);
     let extractionPath: string;
 
