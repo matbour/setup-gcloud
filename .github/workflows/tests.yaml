@@ -46,12 +46,12 @@ jobs:
       - name: Patch sonar.properties
         run: sed -i s/\$VERSION/$(jq -r .version package.json)/ sonar-project.properties
       - name: Download coverage reports
-        uses: actions/upload-artifact@v2
+        uses: actions/download-artifact@v2
         with:
           name: coverage
           path: coverage/
       - name: SonarCloud Scan
-        uses: SonarSource/sonarcloud-github-action@v1.5
+        uses: SonarSource/sonarcloud-github-action@master
         with:
           args: >
             -X
@@ -60,6 +60,7 @@ jobs:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
   integration_tests:
     name: Integration tests
+    needs: [sonarcloud]
     strategy:
       matrix:
         os:
