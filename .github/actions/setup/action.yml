@@ -1,0 +1,29 @@
+name: Setup environment
+description: Setup Node and install dependencies
+inputs:
+  install:
+    description: Install the dependencies
+    default: 'false'
+    required: false
+runs:
+  using: composite
+  steps:
+    - name: Get pnpm latest version
+      id: pnpm
+      run: echo "::set-output name=latest-version::$(npm show pnpm version)"
+      shell: bash
+    - name: Install dependencies with pnpm
+      uses: pnpm/action-setup@v2.0.1
+      with:
+        version: ${{ steps.pnpm.outputs.latest-version }}
+    - name: Setup Node.js
+      uses: actions/setup-node@v2
+      with:
+        node-version: '12'
+        cache: pnpm
+    - name: Get pnpm latest version
+      shell: bash
+      run: |
+        if [ "${{ inputs.install }}" == 'true' ]; then
+          pnpm install
+        fi

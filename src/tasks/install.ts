@@ -1,0 +1,35 @@
+import { spawn } from 'child_process';
+import { join } from 'path';
+import { getInput, group } from '@actions/core';
+import { exec } from '@actions/exec';
+import { isMacOS, isWindows } from '../lib/constants';
+
+/**
+ * Install the Google Cloud SDK.
+ * @param {string} directory The target directory.
+ * @returns {Promise<number>}
+ */
+export default async function install(directory: string): Promise<number> {
+  return group('Install Google Cloud SDK', async () => {
+    const args = ['--quiet', '--usage-reporting=false', '--command-completion=false', '--path-update=false'];
+
+    const components = getInput('components');
+    if (components.length > 0) {
+      args.push(`--additional-components=${components}`);
+    }
+
+    if (isMacOS) {
+      // On MacOS, the SDK tries to install python
+      args.push('--install-python=false');
+    }
+
+    if (isWindows) {
+      return new Promise((resolve) => {
+        const proc = spawn(join(directory, 'install.bat'), args, { stdio: 'inherit' });
+        proc.on('close', (code) => resolve(code));
+      });
+    }
+
+    return await exec(join(directory, 'install.sh'), args);
+  });
+}

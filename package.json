@@ -25,31 +25,37 @@
   },
   "scripts": {
     "clean": "rimraf dist",
-    "format": "prettier --write \"src/**/*.ts\"",
+    "build": "esbuild src/main.ts --platform=node --target=node12 --bundle --outfile=dist/index.js --sourcemap --analyze --color=true",
+    "test": "jest",
+    "run": "pnpm build && node -r dotenv/config dist/index.js dotenv_config_path=.env.local",
     "lint": "eslint \"src/**\"",
-    "lint:fix": "eslint --fix \"src/**\"",
-    "prebuild": "npm run clean",
-    "build": "ncc build --source-map --no-source-map-register ./src/install.ts"
+    "lint:fix": "eslint --fix \"src/**\""
   },
   "dependencies": {
     "@actions/core": "^1.2.6",
     "@actions/exec": "^1.0.4",
+    "@actions/io": "^1.1.1",
     "@actions/tool-cache": "^1.6.1",
     "source-map-support": "^0.5.19"
   },
   "devDependencies": {
-    "@types/node": "^12.19.15",
+    "@arkweid/lefthook": "^0.7.7",
+    "@csquare/prettier-config": "^1.2.0",
+    "@swc-node/jest": "^1.3.3",
+    "@types/jest": "^27.0.2",
+    "@types/node": "^12",
     "@typescript-eslint/eslint-plugin": "^4.14.0",
     "@typescript-eslint/parser": "^4.14.0",
-    "@zeit/ncc": "^0.22.3",
+    "dotenv": "^10.0.0",
+    "esbuild": "^0.13.8",
     "eslint": "^7.18.0",
     "eslint-config-prettier": "^6.14.0",
-    "husky": "^4.3.8",
-    "lint-staged": "^10.5.3",
+    "jest": "^27.3.0",
     "prettier": "^2.2.1",
     "rimraf": "^3.0.2",
     "standard-commit": "^4.2.4",
     "typescript": "^4.1.3"
   },
-  "private": true
+  "private": true,
+  "prettier": "@csquare/prettier-config"
 }

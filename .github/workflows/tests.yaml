@@ -1,27 +1,43 @@
 name: Tests
 on:
   push:
-    branches: [ main ]
+    branches: [main]
   pull_request:
-    types: [ opened, synchronize, reopened ]
+    types: [opened, synchronize, reopened]
 jobs:
   lint:
     name: Lint with ESLint / Prettier
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
     steps:
       - name: Checkout
         uses: actions/checkout@v2
-      - name: Setup node
-        uses: actions/setup-node@v1
+      - name: Setup environment
+        uses: ./.github/actions/setup
         with:
-          node-version: '12'
+          install: true
       - name: Run ESLint
-        run: |
-          npm install
-          npm run lint
+        run: pnpm lint
+  unit_tests:
+    name: Test with Jest
+    runs-on: ubuntu-20.04
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Setup environment
+        uses: ./.github/actions/setup
+        with:
+          install: true
+      - name: Run Jest
+        run: pnpm test -- --coverage
+      - name: Upload coverage reports
+        uses: actions/upload-artifact@v2
+        with:
+          name: coverage
+          path: coverage/
   sonarcloud:
     name: SonarCloud
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
+    needs: [unit_tests]
     steps:
       - name: Checkout
         uses: actions/checkout@v2
@@ -29,22 +45,37 @@ jobs:
           fetch-depth: 0
       - name: Patch sonar.properties
         run: sed -i s/\$VERSION/$(jq -r .version package.json)/ sonar-project.properties
+      - name: Download coverage reports
+        uses: actions/download-artifact@v2
+        with:
+          name: coverage
+          path: coverage/
       - name: SonarCloud Scan
-        uses: SonarSource/sonarcloud-github-action@v1.5
+        uses: SonarSource/sonarcloud-github-action@master
+        with:
+          args: >
+            -X
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-  test:
+  integration_tests:
     name: Integration tests
+    needs: [sonarcloud]
     strategy:
       matrix:
-        os: [ ubuntu-18.04, ubuntu-20.04, macos-10.15, windows-2019 ]
-        version: [ latest, local, 245.0.0 ]
-        project: [ auto, windys-lab ]
+        os:
+          - ubuntu-18.04
+          - ubuntu-20.04
+          - macos-10.15
+          - macos-11
+          - windows-2016
+          - windows-2019
+        version: [latest, local, 360.0.0]
+        project: [auto, windys-lab]
         exclude:
           - os: macos-10.15
             version: local
-          - os: windows-2019
+          - os: macos-11
             version: local
       fail-fast: false
     runs-on: ${{ matrix.os }}
@@ -56,8 +87,9 @@ jobs:
         with:
           version: ${{ matrix.version }}
           project: ${{ matrix.project }}
-          components: beta
           service-account-key: ${{ secrets.GCLOUD_AUTH }}
+          components: beta
+          configure-docker: europe-west6-docker.pkg.dev
       - name: Test Google Cloud SDK CLI
         run: |
           gcloud version
